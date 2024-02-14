@@ -1,7 +1,6 @@
 import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React , {useState}from 'react'
 import { useNavigation } from '@react-navigation/native'
-import useControls from '../hooks/useControls'
 
 export default function SigninScreen() {
 
