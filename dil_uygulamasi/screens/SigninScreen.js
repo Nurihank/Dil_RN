@@ -11,13 +11,6 @@ export default function SigninScreen() {
     console.log(sifre)
     const navigation = useNavigation()
     
-    const signIn = ()=>{
-        const [userControl,result] = useControls()
-
-        userControl(kullaniciAdi,sifre)
-       
-    }
-
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -43,10 +36,10 @@ export default function SigninScreen() {
             </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={signIn} style={styles.button}>
+            <TouchableOpacity style={styles.button}>
                 <Text style={{color:"#191970" ,fontSize:20,fontWeight:"bold"}}>GİRİŞ YAP</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity onPress={()=>navigation.navigate("Signup")} style={styles.button}>
                 <Text style={{color:"#191970" ,fontSize:20,fontWeight:"bold"}}>KAYIT OL</Text>
             </TouchableOpacity>
         </View>
