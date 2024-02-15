@@ -1,20 +1,44 @@
 import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React , {useState}from 'react'
 import { useNavigation } from '@react-navigation/native'
+import api from '../api/api'
 
 export default function SigninScreen() {
 
     const [kullaniciAdi, setKullaniciAdi] = useState("")
+    const [email, setEmail] = useState("")
     const [sifre, setSifre] = useState("")
-    console.log(kullaniciAdi)
-    console.log(sifre)
+
+    const [result, setResult] = useState("")
+    /* console.log(kullaniciAdi)
+    console.log(sifre) */
     const navigation = useNavigation()
     
+    const handleSignup = async()=>{
+        try {
+            console.log
+            const response = await api.post("/signup",{
+                kullaniciAdi:kullaniciAdi,
+                email:email,
+                sifre:sifre
+            })
+            setResult(response.data)
+            
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    if(result.status = "SUCCES"){
+        navigation.navigate("Signin")
+    }
 
   return (
     <KeyboardAvoidingView style={styles.container}>
         <View style={styles.textContainer}>
             <Text style={styles.text}>Dil Uygulamasına Hoşgeldiniz</Text>
+            
         </View>
         <View style={styles.inputContainer}>
             <TextInput style={styles.input}
@@ -25,8 +49,8 @@ export default function SigninScreen() {
              />
              <TextInput style={styles.input}
              placeholder='E-posta Girin'
-             value={kullaniciAdi}
-             onChangeText={(text) => setKullaniciAdi(text)}
+             value={email}
+             onChangeText={(text) => setEmail(text)}
 
              />
             <TextInput style={styles.input} 
@@ -36,7 +60,7 @@ export default function SigninScreen() {
             />
         </View>
         <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={()=>navigation.navigate("Signup")} style={styles.button}>
+            <TouchableOpacity onPress={()=>handleSignup()} style={styles.button}>
                 <Text style={{color:"#191970" ,fontSize:20,fontWeight:"bold"}}>KAYIT OL</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>navigation.navigate("Signin")} style={styles.button}>

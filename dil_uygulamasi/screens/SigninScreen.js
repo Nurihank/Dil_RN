@@ -1,23 +1,43 @@
 import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import userLogin from '../hooks/userLogin'
+import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
+import api from "../api/api"
+
+
 
 
 export default function SigninScreen() {
-
+   
     const [kullaniciAdi, setKullaniciAdi] = useState("")
     const [sifre, setSifre] = useState("")
-    console.log(kullaniciAdi)
-    console.log(sifre)
+
+    const [result, setResult] = useState("")
+
     const navigation = useNavigation()
 
-   const [userCheck, result] = userLogin()
-    const deneme = ()=>{
-        
-        userCheck(kullaniciAdi,sifre)
-        console.log("result")
+    const handleSignin = async()=>{
+        try {
+            const response = await api.get("/signin",{
+                params:{
+                    kullaniciAdi:kullaniciAdi,
+                    sifre:sifre
+                }
+            })
+            setResult(response.data)
+        } catch (error) {
+            console.log(error)
+        }
     }
+
+
+    if(result.status == "SUCCES"){
+        alert("Başarılı bir şekilde girdin")
+        const deneme = ()=>navigation.navigate("HomeScreen")
+        deneme
+    }
+
+
     return (
         <KeyboardAvoidingView style={styles.container}>
             <View style={styles.textContainer}>
@@ -28,7 +48,6 @@ export default function SigninScreen() {
                     placeholder='Kullanici Adi Girin'
                     value={kullaniciAdi}
                     onChangeText={(text) => setKullaniciAdi(text)}
-
                 />
                 <TextInput style={styles.input}
                     placeholder='Şifre Girin'
@@ -38,15 +57,16 @@ export default function SigninScreen() {
             </View>
             <View>
                 <TouchableOpacity style={styles.forgotContainer}>
-                    <Text style={{ fontWeight: "bold", fontSize: 15 }}>Şifremi Unuttum</Text>
+                    <Text style={{ fontWeight : "bold", fontSize: 15 }}>Şifremi Unuttum</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={deneme}>
+                <TouchableOpacity style={styles.button} onPress={()=>handleSignin()}>
                     <Text style={{ color: "#191970", fontSize: 20, fontWeight: "bold" }}>GİRİŞ YAP</Text>
                 </TouchableOpacity>
+            
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("Signup")}
+                    onPress={navigation.navigate("Signup")}
                     style={styles.button}>
                     <Text style={{ color: "#191970", fontSize: 20, fontWeight: "bold" }}>KAYIT OL</Text>
                 </TouchableOpacity>
