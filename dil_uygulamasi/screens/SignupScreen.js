@@ -1,5 +1,5 @@
 import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React , {useState}from 'react'
+import React , {useState,useEffect}from 'react'
 import { useNavigation } from '@react-navigation/native'
 import api from '../api/api'
 
@@ -16,24 +16,27 @@ export default function SigninScreen() {
     
     const handleSignup = async()=>{
         try {
-            console.log
+            console.log("asd")
             const response = await api.post("/signup",{
                 kullaniciAdi:kullaniciAdi,
                 email:email,
                 sifre:sifre
             })
             setResult(response.data)
-            
-            
-        } catch (error) {
+            setTimeout(() => {
+                
+                if ("SUCCES" == result.status){
+                    navigation.navigate("Signin")
+                }
+                    
+            }, 5000);
+            console.log(result.status)
+        } catch (error) { 
             console.log(error)
         }
     }
 
-    if(result.status = "SUCCES"){
-        navigation.navigate("Signin")
-    }
-
+  
   return (
     <KeyboardAvoidingView style={styles.container}>
         <View style={styles.textContainer}>
@@ -45,13 +48,11 @@ export default function SigninScreen() {
              placeholder='Kullanici Adi Girin'
              value={kullaniciAdi}
              onChangeText={(text) => setKullaniciAdi(text)}
-
              />
              <TextInput style={styles.input}
              placeholder='E-posta Girin'
              value={email}
              onChangeText={(text) => setEmail(text)}
-
              />
             <TextInput style={styles.input} 
             placeholder='Şifre Girin'

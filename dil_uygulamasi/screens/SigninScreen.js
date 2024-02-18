@@ -17,6 +17,7 @@ export default function SigninScreen() {
     const navigation = useNavigation()
 
     const handleSignin = async()=>{
+        console.log("asdas")
         try {
             const response = await api.get("/signin",{
                 params:{
@@ -30,13 +31,11 @@ export default function SigninScreen() {
         }
     }
 
-
-    if(result.status == "SUCCES"){
-        alert("Başarılı bir şekilde girdin")
-        const deneme = ()=>navigation.navigate("HomeScreen")
-        deneme
+    const handleSignup = async ()=>{
+        const sigUpScreen = ()=>navigation.navigate("Signup")
+        sigUpScreen() 
     }
-
+   
 
     return (
         <KeyboardAvoidingView style={styles.container}>
@@ -61,12 +60,11 @@ export default function SigninScreen() {
                 </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={()=>handleSignin()}>
+                <TouchableOpacity style={styles.button} onPress={() => handleSignin()}>
                     <Text style={{ color: "#191970", fontSize: 20, fontWeight: "bold" }}>GİRİŞ YAP</Text>
                 </TouchableOpacity>
-            
                 <TouchableOpacity
-                    onPress={navigation.navigate("Signup")}
+                    onPress={()=>handleSignup()}
                     style={styles.button}>
                     <Text style={{ color: "#191970", fontSize: 20, fontWeight: "bold" }}>KAYIT OL</Text>
                 </TouchableOpacity>
