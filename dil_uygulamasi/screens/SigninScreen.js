@@ -8,7 +8,7 @@ import api from "../api/api"
 
 
 export default function SigninScreen() {
-   
+
     const [kullaniciAdi, setKullaniciAdi] = useState("")
     const [sifre, setSifre] = useState("")
 
@@ -16,26 +16,41 @@ export default function SigninScreen() {
 
     const navigation = useNavigation()
 
-    const handleSignin = async()=>{
+    const handleSignin = async () => {
         console.log("asdas")
         try {
-            const response = await api.get("/signin",{
-                params:{
-                    kullaniciAdi:kullaniciAdi,
-                    sifre:sifre
+            const response = await api.get("/signin", {
+                params: {
+                    kullaniciAdi: kullaniciAdi,
+                    sifre: sifre
                 }
             })
-            setResult(response.data)
+            console.log(response.data.status)
+
+            if ("SUCCES" == response.data.status) {
+                alert(response.data.message)
+                navigation.navigate("HomeScreen")
+
+            } else {
+                console.log(response.data.status)
+            }
         } catch (error) {
             console.log(error)
         }
     }
-
-    const handleSignup = async ()=>{
-        const sigUpScreen = ()=>navigation.navigate("Signup")
-        sigUpScreen() 
+    if ("SUCCES" == result.status) {
+        alert(result.message)
+        const GoHomeScreen = async () => await navigation.navigate("HomeScreen")
+        GoHomeScreen()
+    } else {
+        console.log(result.status)
     }
-   
+
+    const handleSignup = async () => {
+        const signUpScreen = () => navigation.navigate("Signup")
+        signUpScreen()
+    }
+
 
     return (
         <KeyboardAvoidingView style={styles.container}>
@@ -56,7 +71,7 @@ export default function SigninScreen() {
             </View>
             <View>
                 <TouchableOpacity style={styles.forgotContainer}>
-                    <Text style={{ fontWeight : "bold", fontSize: 15 }}>Şifremi Unuttum</Text>
+                    <Text style={{ fontWeight: "bold", fontSize: 15 }}>Şifremi Unuttum</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.buttonContainer}>
@@ -64,7 +79,7 @@ export default function SigninScreen() {
                     <Text style={{ color: "#191970", fontSize: 20, fontWeight: "bold" }}>GİRİŞ YAP</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={()=>handleSignup()}
+                    onPress={() => handleSignup()}
                     style={styles.button}>
                     <Text style={{ color: "#191970", fontSize: 20, fontWeight: "bold" }}>KAYIT OL</Text>
                 </TouchableOpacity>

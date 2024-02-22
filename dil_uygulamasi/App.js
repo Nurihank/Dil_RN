@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SigninScreen from './screens/SigninScreen';
 import SignupScreen from "./screens/SignupScreen"
 import HomeScreen from './screens/HomeScreen';
+import 'react-native-gesture-handler';
 
 export default function App() {
 
