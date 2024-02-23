@@ -1,10 +1,9 @@
-import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
 import api from "../api/api"
-
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function SigninScreen() {
@@ -12,12 +11,9 @@ export default function SigninScreen() {
     const [kullaniciAdi, setKullaniciAdi] = useState("")
     const [sifre, setSifre] = useState("")
 
-    const [result, setResult] = useState("")
-
     const navigation = useNavigation()
 
     const handleSignin = async () => {
-        console.log("asdas")
         try {
             const response = await api.get("/signin", {
                 params: {
@@ -25,30 +21,30 @@ export default function SigninScreen() {
                     sifre: sifre
                 }
             })
-            console.log(response.data.status)
-
+            console.log(response.data)
             if ("SUCCES" == response.data.status) {
+                const setUser = async () => { 
+                    try {
+                        await AsyncStorage.setItem('user', JSON.stringify(response.data.id));//sadece string verileri depolar
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }
+                setUser()
                 alert(response.data.message)
-                navigation.navigate("HomeScreen")
-
-            } else {
-                console.log(response.data.status)
+                navigation.navigate("Drawer")
+            } else if ("FAILED" == response.data.status) {
+                Alert.alert(response.data.message)
             }
         } catch (error) {
             console.log(error)
         }
     }
-    if ("SUCCES" == result.status) {
-        alert(result.message)
-        const GoHomeScreen = async () => await navigation.navigate("HomeScreen")
-        GoHomeScreen()
-    } else {
-        console.log(result.status)
-    }
 
     const handleSignup = async () => {
         const signUpScreen = () => navigation.navigate("Signup")
         signUpScreen()
+        
     }
 
 

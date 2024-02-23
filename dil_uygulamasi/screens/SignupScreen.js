@@ -2,51 +2,54 @@ import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpa
 import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import api from '../api/api'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SigninScreen() {
 
     const [kullaniciAdi, setKullaniciAdi] = useState("")
     const [email, setEmail] = useState("")
     const [sifre, setSifre] = useState("")
-
-    const [result, setResult] = useState("")
     /* console.log(kullaniciAdi)
     console.log(sifre) */
     const navigation = useNavigation()
 
     const handleSignup = async () => {
         try {
-            console.log("asd")
             const response = await api.post("/signup", {
                 kullaniciAdi: kullaniciAdi,
                 email: email,
                 sifre: sifre
             })
-            try {
-                await setResult(response.data)
-            } catch (error) {
-
+            console.log(response.data.status)
+            if ("SUCCES" == response.data.status) {
+                const userGet = async () => {
+                    try {
+                        const value = await AsyncStorage.getItem('user');
+                        if (value !== null) {
+                            console.log(value)
+                        }
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }
+                userGet()
+                alert(response.data.message)
+                navigation.navigate("Signin")         
+            } else if ("FAILED" == response.data.status){
+                alert(response.data.message)
             }
-
         } catch (error) {
             console.log(error)
         }
-
+        
     }
 
-    if ("SUCCES" == result.status) {
-        alert(result.message)
-        const GoBackSignin = async () => await navigation.navigate("Signin")
-        GoBackSignin()
-    } else {
-        console.log(result.status)
-    }
+   
 
     return (
         <KeyboardAvoidingView style={styles.container}>
             <View style={styles.textContainer}>
                 <Text style={styles.text}>Dil Uygulamasına Hoşgeldiniz</Text>
-                <Text>{result.message}</Text>
             </View>
             <View style={styles.inputContainer}>
                 <TextInput style={styles.input}
