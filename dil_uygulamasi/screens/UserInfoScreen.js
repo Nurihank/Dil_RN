@@ -11,25 +11,26 @@ export default function UserInfoScreen() {
 
     try {
       const value = await AsyncStorage.getItem('user');
-      if (value !== null) {
-
+      console.log(value)
+      if (value) {
+       // console.log("asd")
         const response = await api.get("/user/" + value, {
           params: {
             id: value
           }
         })
-        setEmail(response.data[0].email)
-        setKullaniciAdi(response.data[0].kullaniciAdi)
+        setEmail(response.data.message[0].email)
+        setKullaniciAdi(response.data.message[0].kullaniciAdi)
+       
       }
     } catch (e) {
-
+      console.log(e)
     }
-  };
-
+  };  
   useEffect(() => {
     getData()
-  }, [])
-
+  }, []) 
+  
   return (
     <View>
       <Text>{kullaniciAdi}</Text> 

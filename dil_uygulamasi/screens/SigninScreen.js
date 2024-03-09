@@ -14,6 +14,7 @@ export default function SigninScreen() {
     const navigation = useNavigation()
 
     const handleSignin = async () => {
+        console.log("asd")
         try {
             const response = await api.get("/signin", {
                 params: {
@@ -21,7 +22,7 @@ export default function SigninScreen() {
                     sifre: sifre
                 }
             })
-            console.log(response.data)
+            console.log(response.data.id)
             if ("SUCCES" == response.data.status) {
                 const setUser = async () => { 
                     try {
