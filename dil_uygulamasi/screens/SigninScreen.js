@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native'
 import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
 import api from "../api/api"
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import UserModel from '../model/ModelUser';
 
 
 export default function SigninScreen() {
@@ -24,7 +25,7 @@ export default function SigninScreen() {
             })
             console.log(response.data.id)
             if ("SUCCES" == response.data.status) {
-                const setUser = async () => { 
+                const setUser = async () => {
                     try {
                         await AsyncStorage.setItem('user', JSON.stringify(response.data.id));//sadece string verileri depolar
                     } catch (e) {
@@ -33,6 +34,7 @@ export default function SigninScreen() {
                 }
                 setUser()
                 alert(response.data.message)
+                UserModel.setCurrentUser("sex")
                 navigation.navigate("Drawer")
             } else if ("FAILED" == response.data.status) {
                 Alert.alert(response.data.message)
@@ -45,7 +47,7 @@ export default function SigninScreen() {
     const handleSignup = async () => {
         const signUpScreen = () => navigation.navigate("Signup")
         signUpScreen()
-        
+
     }
 
 
