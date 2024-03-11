@@ -15,7 +15,6 @@ export default function SigninScreen() {
     const navigation = useNavigation()
 
     const handleSignin = async () => {
-        console.log("asd")
         try {
             const response = await api.get("/signin", {
                 params: {
@@ -23,18 +22,18 @@ export default function SigninScreen() {
                     sifre: sifre
                 }
             })
-            console.log(response.data.id)
             if ("SUCCES" == response.data.status) {
                 const setUser = async () => {
                     try {
                         await AsyncStorage.setItem('user', JSON.stringify(response.data.id));//sadece string verileri depolar
+                        UserModel.setUser(response.data.id)
                     } catch (e) {
                         console.log(e)
                     }
                 }
                 setUser()
                 alert(response.data.message)
-                UserModel.setCurrentUser("sex")
+                
                 navigation.navigate("Drawer")
             } else if ("FAILED" == response.data.status) {
                 Alert.alert(response.data.message)

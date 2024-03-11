@@ -11,12 +11,13 @@ export default function DrawerScreen({ route }) {
 
     return (
         <Drawer.Navigator >
+        <Drawer.Screen name="DenemeScreen" component={DenemeScreen} options={{
+            drawerItemStyle:{display:'none'}
+        }}/>
             <Drawer.Screen name="HomeScreen" component={HomeScreen} />
             <Drawer.Screen name="UserInfo" component={UserInfoScreen} />
             <Drawer.Screen name="Logout" component={Logout} />
-            <Drawer.Screen name="DenemeScreen" component={DenemeScreen} options={{
-                drawerItemStyle:{display:'none'}
-            }}/>
+            
         </Drawer.Navigator>
     )
 }

@@ -13,7 +13,6 @@ export default function UserInfoScreen() {
       const value = await AsyncStorage.getItem('user');
       console.log(value)
       if (value) {
-       // console.log("asd")
         const response = await api.get("/user/" + value, {
           params: {
             id: value
