@@ -6,6 +6,10 @@ import SigninScreen from './screens/SigninScreen';
 import SignupScreen from "./screens/SignupScreen"
 import 'react-native-gesture-handler';
 import DrawerScreen from "./navigation/HomeScreen/DrawerScreen"
+import GecisEkrani from './screens/GecisEkrani';
+import MeslekEkrani from './screens/SecimEkranları/MeslekEkrani';
+import DilEkrani from './screens/SecimEkranları/DilEkrani';
+import SectigiDilEkranı from './screens/SecimEkranları/SectigiDilEkranı';
 
 export default function App() {
 
@@ -15,6 +19,10 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="Signin" component={SigninScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
+        <Stack.Screen name="GecisEkrani" component={GecisEkrani} />
+        <Stack.Screen name="MeslekEkrani" component={MeslekEkrani} />
+        <Stack.Screen name="DilEkrani" component={DilEkrani} />
+        <Stack.Screen name="SectigiDilEkranı" component={SectigiDilEkranı} />
         <Stack.Screen name="Drawer" component={DrawerScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

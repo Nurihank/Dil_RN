@@ -16,7 +16,7 @@ export default function SigninScreen() {
 
     const handleSignin = async () => {
         try {
-            const response = await api.get("/signin", {
+            const response = await api.get("/kullanici/signin", {
                 params: {
                     kullaniciAdi: kullaniciAdi,
                     sifre: sifre
@@ -25,8 +25,9 @@ export default function SigninScreen() {
             if ("SUCCES" == response.data.status) {
                 const setUser = async () => {
                     try {
-                        await AsyncStorage.setItem('user', JSON.stringify(response.data.id));//sadece string verileri depolar
+                       // await AsyncStorage.setItem('user', JSON.stringify(response.data.id));//sadece string verileri depolar
                         UserModel.setUser(response.data.id)
+                       // console.log(response.data.id)
                     } catch (e) {
                         console.log(e)
                     }
@@ -34,19 +35,18 @@ export default function SigninScreen() {
                 setUser()
                 alert(response.data.message)
                 
-                navigation.navigate("Drawer")
+                navigation.navigate("GecisEkrani")
             } else if ("FAILED" == response.data.status) {
                 Alert.alert(response.data.message)
             }
         } catch (error) {
-            console.log(error)
+            console.log(error)  
         }
     }
 
     const handleSignup = async () => {
         const signUpScreen = () => navigation.navigate("Signup")
         signUpScreen()
-
     }
 
 

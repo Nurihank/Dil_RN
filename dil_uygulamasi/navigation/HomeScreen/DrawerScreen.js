@@ -4,20 +4,16 @@ import { createDrawerNavigator } from '@react-navigation/drawer' //bunu import e
 import UserInfoScreen from '../../screens/UserInfoScreen'
 import HomeScreen from '../../screens/HomeScreen'
 import Logout from '../../screens/Logout'
-import DenemeScreen from '../../screens/DenemeScreen'
-
+import GecisEkrani from '../../screens/GecisEkrani'
+import MeslekEkrani from '../../screens/SecimEkranları/MeslekEkrani'
 export default function DrawerScreen({ route }) {
     const Drawer = createDrawerNavigator() //draver'i tanımladık
 
     return (
         <Drawer.Navigator >
-        <Drawer.Screen name="DenemeScreen" component={DenemeScreen} options={{
-            drawerItemStyle:{display:'none'}
-        }}/>
             <Drawer.Screen name="HomeScreen" component={HomeScreen} />
             <Drawer.Screen name="UserInfo" component={UserInfoScreen} />
-            <Drawer.Screen name="Logout" component={Logout} />
-            
+            <Drawer.Screen name="Logout" component={Logout} /> 
         </Drawer.Navigator>
     )
 }
