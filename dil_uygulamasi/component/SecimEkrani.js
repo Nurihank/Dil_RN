@@ -1,4 +1,4 @@
-import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View,Image,ScrollView} from 'react-native'
 import React, { useState } from 'react'
 import SearchBar from './SearchBar'
 import GetDb from '../Hooks/GetDb'
@@ -63,15 +63,16 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                     data={result}
                     renderItem={({ item }) => {
                         return (
-                            <View>
-                                <Text>{item.meslek}</Text>
+                            <View style={{ flexDirection: "row", backgroundColor:"#4169e1",marginVertical:10}}>
                                 <RadioButton
                                     value={item.idMeslek}
                                     status={selectedValue === item.idMeslek ? "checked" : "unchecked"}
-
                                     onPress={() => setSelectedValue(item.idMeslek)}
-                                    color="#007BFF"
+                                    color="darkgrey"
+                                    left="15"
+                                    backgroundColor="#000000"
                                 />
+                                <Text style={styles.textStyle}>{item.meslek}</Text>
                             </View>
                         )
 
@@ -80,7 +81,7 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                 <View>
                     <TouchableOpacity onPress={() => { (selectedValue == "") ? Alert.alert("Bir Meslek Seç") : Gecis("/meslek") }} //tıkladığımız veriyi doğru mu diye kontrol ettik
                     >
-                        <Text>Seçimi Onaylıyorum</Text>
+                        <Text style={styles.secimTextStyles}>Seçimi Onaylıyorum</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -96,15 +97,16 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                         data={result}
                         renderItem={({ item }) => {
                             return (
-                                <View>
-                                    <Text>{item.dil_adi}</Text>
+                                <View style={{ flexDirection: "row", backgroundColor: "#4169e1", marginVertical: 10 }}>                  
                                     <RadioButton
                                         value={item.id}
                                         status={selectedValue === item.id ? "checked" : "unchecked"}
-
                                         onPress={() => setSelectedValue(item.id)}
-                                        color="#007BFF"
+                                        color="darkgrey"
+                                        left="15"
+                                        backgroundColor="#000000"
                                     />
+                                    <Text style={styles.textStyle}>{item.dil_adi}</Text>
                                 </View>
                             )
 
@@ -113,7 +115,7 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                     <View>
                         <TouchableOpacity onPress={() => { (selectedValue == "") ? Alert.alert("Bir Dil Seç") : Gecis("/dil") }} //tıkladığımız veriyi doğru mu diye kontrol ettik
                         >
-                            <Text>Seçimi Onaylıyorum</Text>
+                            <Text style={styles.secimTextStyles}>Seçimi Onaylıyorum</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -129,15 +131,16 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                             data={result}
                             renderItem={({ item }) => {
                                 return (
-                                    <View>
-                                        <Text>{item.dil_adi}</Text>
+                                    <View style={{ flexDirection: "row", backgroundColor: "#4169e1", marginVertical: 10 }}>              
                                         <RadioButton
                                             value={item.id}
                                             status={selectedValue === item.id ? "checked" : "unchecked"}
-
                                             onPress={() => setSelectedValue(item.id)}
-                                            color="#007BFF"
+                                            color="darkgrey"
+                                            left="15"
+                                            backgroundColor="#000000"
                                         />
+                                        <Text style={styles.textStyle}>{item.dil_adi}</Text>
                                     </View>
                                 )
 
@@ -146,7 +149,7 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                         <View>
                             <TouchableOpacity onPress={() => { (selectedValue == "") ? Alert.alert("Bir Meslek Seç") : Gecis("/sectigiDil") }} //tıkladığımız veriyi doğru mu diye kontrol ettik
                             >
-                                <Text>Seçimi Onaylıyorum</Text>
+                                <Text style={styles.secimTextStyles}>Seçimi Onaylıyorum</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -157,5 +160,18 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
 }
 
 const styles = StyleSheet.create({
+    textStyle:{
+        fontSize:25,
+        color:"#87cefa",
+        fontWeight:"bold",
+        marginHorizontal:15,
+        left:15
+    },
+    secimTextStyles:{
+        fontSize:25,
+        left:150,
+        top:25,
+        fontWeight:"bold"
+    }
 
 }) 

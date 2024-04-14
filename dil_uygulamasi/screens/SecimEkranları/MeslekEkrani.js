@@ -11,8 +11,8 @@ export default function MeslekEkrani() {
     
     return (
         <View style={styles.container}>
-            <View>
-                <Text>Meslek Seçim Ekranı</Text>
+            <View style={{ alignItems: "center",justifyContent:"center", backgroundColor:"#e9967a",height:75}}>
+                <Text style={{ fontSize: 35  ,fontWeight:"bold"}}>Meslek Seçim Ekranı</Text>
             </View>
             <View>
                 <SecimEkrani apiInfo="/meslek" apiSecim="/meslekSecim" //Seçim ekranına /meslek gönderdik api için
