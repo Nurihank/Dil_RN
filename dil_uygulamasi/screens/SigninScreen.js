@@ -25,7 +25,7 @@ export default function SigninScreen() {
             if ("SUCCES" == response.data.status) {
                 const setUser = async () => {
                     try {
-                       // await AsyncStorage.setItem('user', JSON.stringify(response.data.id));//sadece string verileri depolar
+                        await AsyncStorage.setItem('jwt_token', JSON.stringify(response.data.accessToken));//sadece string verileri depolar
                         UserModel.setUser(response.data.id)
                        // console.log(response.data.id)
                     } catch (e) {
