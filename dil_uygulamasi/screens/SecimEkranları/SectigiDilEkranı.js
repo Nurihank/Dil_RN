@@ -9,7 +9,7 @@ export default function SectigiDilEkranı() {
         <Text>Öğrenmek İstediğin Dili Seçim Ekranı</Text>
       </View>
       <View>
-        <SecimEkrani apiInfo="/sectigiDil" apiSecim="/sectigiDilSecim" //Seçim ekranına /meslek gönderdik api için
+        <SecimEkrani apiInfo="/sectigiDil" apiSecim="/sectigiDilSecim" //Seçim ekranına gönderiyo<
         />
       </View>
     </View>

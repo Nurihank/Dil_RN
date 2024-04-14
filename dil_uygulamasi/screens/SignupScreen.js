@@ -17,7 +17,6 @@ export default function SigninScreen() {
 
     const handleSignup = async () => {
         try {
-            console.log("asd")
             const response = await api.post("/kullanici/signup", {
                 kullaniciAdi: kullaniciAdi,
                 email: email,

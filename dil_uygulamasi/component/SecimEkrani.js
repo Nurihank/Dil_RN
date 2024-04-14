@@ -13,32 +13,30 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
     const [searchApi, result] = GetDb({ apiInfo }) //gelen api bilgisine göre veriyi getirdik result = gelen sonuç , searchApi = arama yapmak için kullanacaz 
     const [selectedValue, setSelectedValue] = useState("") //Radio buttonu ile seçilen veriyi tutmak için useState ' i kullandık
     const [term, setTerm] = useState("")  //arama yapmak için bu useState kullandık
-
+    
     const user = UserModel.getCurrentUser() //kullanıcının id'sini almak için
-
-    const Gecis = async () => {
-        if (apiInfo == "/meslek") { //seçim ekranı meslekse buraya 
+    const Gecis = async (term) => {
+        console.log(apiSecim)
+        if (term == "/meslek") { //seçim ekranı meslekse buraya 
             const response = await api.post("/kullanici" + apiSecim, {
                 meslek: selectedValue,
                 id: user[0].id
             })
             if (response.data.STATUS == "SUCCES") {
-                setSelectedValue("")
+                setSelectedValue(null)
                 navigation.navigate("DilEkrani")
             }
 
-        } else if (apiInfo == "/dil") {
-            console.log("zaa")
+        } else if (term == "/dil") {
             const response = await api.post("/kullanici" + apiSecim, {
                 dil: selectedValue,
                 id: user[0].id
             })
             if (response.data.STATUS == "SUCCES") {
-                setSelectedValue("")
+                setSelectedValue(null)
                 navigation.navigate("SectigiDilEkranı")
             }
-        } else if (apiInfo == "/sectigiDil") {
-            console.log("asd")
+        } else if (term == "/sectigiDil") {
             const response = await api.post("/kullanici" + apiSecim, {
                 sectigiDil: selectedValue,
                 id: user[0].id
@@ -49,13 +47,10 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
             }
         }
         else {
-            console.log("züüü")
+            console.log(apiInfo)
         }
 
     }
-    /* const ad = result
-    console.log(ad) */
-
     return (
         apiInfo == "/meslek" ?
             <View>
@@ -83,7 +78,7 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                     }}
                 />
                 <View>
-                    <TouchableOpacity onPress={() => { (selectedValue == "") ? Alert.alert("Bir Meslek Seç") : Gecis() }} //tıkladığımız veriyi doğru mu diye kontrol ettik
+                    <TouchableOpacity onPress={() => { (selectedValue == "") ? Alert.alert("Bir Meslek Seç") : Gecis("/meslek") }} //tıkladığımız veriyi doğru mu diye kontrol ettik
                     >
                         <Text>Seçimi Onaylıyorum</Text>
                     </TouchableOpacity>
@@ -116,7 +111,7 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                         }}
                     />
                     <View>
-                        <TouchableOpacity onPress={() => { (selectedValue == "") ? Alert.alert("Bir Dil Seç") : Gecis() }} //tıkladığımız veriyi doğru mu diye kontrol ettik
+                        <TouchableOpacity onPress={() => { (selectedValue == "") ? Alert.alert("Bir Dil Seç") : Gecis("/dil") }} //tıkladığımız veriyi doğru mu diye kontrol ettik
                         >
                             <Text>Seçimi Onaylıyorum</Text>
                         </TouchableOpacity>
@@ -130,7 +125,6 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                             <SearchBar term={term} termChange={setTerm} termEnd={() => searchApi(term)} //searchBarımız yaptık arama yapmak için
                             />
                         </View>
-
                         <FlatList  //gelen resultu flatlist ile yansıtmak için yaptık
                             data={result}
                             renderItem={({ item }) => {
@@ -150,7 +144,7 @@ export default function SecimEkrani({ apiInfo, apiSecim }) { //gelen api bilgile
                             }}
                         />
                         <View>
-                            <TouchableOpacity onPress={() => { (selectedValue == "") ? Alert.alert("Bir Meslek Seç") : Gecis() }} //tıkladığımız veriyi doğru mu diye kontrol ettik
+                            <TouchableOpacity onPress={() => { (selectedValue == "") ? Alert.alert("Bir Meslek Seç") : Gecis("/sectigiDil") }} //tıkladığımız veriyi doğru mu diye kontrol ettik
                             >
                                 <Text>Seçimi Onaylıyorum</Text>
                             </TouchableOpacity>
