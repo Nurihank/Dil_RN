@@ -1,40 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../api/api';
+import React from 'react'
+import UserModel from '../model/ModelUser'
 
 export default function UserInfoScreen() {
 
-  const [kullaniciAdi, setKullaniciAdi] = useState("")
-  const [email, setEmail] = useState("")
-  const getData = async () => {
-
-    try {
-      const value = await AsyncStorage.getItem('user');
-      console.log(value)
-      if (value) {
-        const response = await api.get("/kullanici/user/" + value, {
-          params: {
-            id: value
-          }
-        })
-        setEmail(response.data.message[0].email)
-        setKullaniciAdi(response.data.message[0].kullaniciAdi)
-       
-      }
-    } catch (e) {
-      console.log(e)
-    }
-  };  
-  useEffect(() => {
-    getData()
-  }, []) 
-  
+  const user = UserModel.getCurrentUser()
+  var userId = user[0].id
+ console.log()
   return (
     <View>
-      <Text>{kullaniciAdi}</Text> 
-      <Text>{email}</Text>
-    </View> 
+      <Text>{userId}</Text>
+    </View>
   )
 }
 

@@ -34,8 +34,7 @@ export default function SigninScreen() {
                 }
                 setUser()
                 alert(response.data.message)
-                
-                navigation.navigate("GecisEkrani")
+                navigation.navigate("Drawer")
             } else if ("FAILED" == response.data.status) {
                 Alert.alert(response.data.message)
             }

@@ -1,8 +1,10 @@
-import { Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import api from '../api/api'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MeslekEkrani from './SecimEkranları/MeslekEkrani';
+import UserModel from '../model/ModelUser';
 
 export default function SigninScreen() {
 
@@ -23,29 +25,34 @@ export default function SigninScreen() {
             })
             console.log(response.data.status)
             if ("SUCCES" == response.data.status) {
-                const userGet = async () => {
-                    try {
-                        const value = await AsyncStorage.getItem('user');
-                        if (value !== null) {
-                            console.log(value)
-                        }
-                    } catch (e) {
-                        console.log(e)
-                    }
-                }
-                userGet()
                 alert(response.data.message)
-                navigation.navigate("Signin")         
-            } else if ("FAILED" == response.data.status){
+                //kullanıcı başarılı şekilde kayıt olduysa otomatik giriş yapar ve seçim ekranlarına gider
+                const responseSignin = await api.get("/kullanici/signin", {
+                    params: {
+                        kullaniciAdi: kullaniciAdi,
+                        sifre: sifre
+                    }
+                })
+                if ("SUCCES" == responseSignin.data.status) 
+                {
+                    UserModel.setUser(responseSignin.data.id)
+                    navigation.navigate("MeslekEkrani") //kayıt olunca Secim ekranı olan meslek ekranına gittik
+                } 
+                else if (responseSignin.data.status == "FAILED") 
+                {
+                    Alert.alert(responseSignin.data.message)
+                }
+                //  navigation.navigate("MeslekEkrani")         
+            } else if ("FAILED" == response.data.status) {
                 alert(response.data.message)
             }
         } catch (error) {
             console.log(error)
         }
-        
+
     }
 
-   
+
 
     return (
         <KeyboardAvoidingView style={styles.container}>
