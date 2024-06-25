@@ -4,11 +4,11 @@ import { RadioButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native'
 import SecimEkrani from '../../component/SecimEkrani';
 
-export default function MeslekEkrani() {
+export default function MeslekEkrani({route}) {
 
     const navigation = useNavigation()
 
-    
+    console.log(route.params.name)
     return (
         <View style={styles.container}>
             <View style={{ alignItems: "center",justifyContent:"center", backgroundColor:"#e9967a",height:75}}>

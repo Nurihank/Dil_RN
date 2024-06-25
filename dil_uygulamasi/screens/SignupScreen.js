@@ -37,7 +37,7 @@ export default function SigninScreen() {
                     console.log(responseSignin.data.accessToken)
                     await AsyncStorage.setItem('jwt_token', JSON.stringify(responseSignin.data.accessToken));//sadece string verileri depolar
                     UserModel.setUser(responseSignin.data.id)
-                    navigation.navigate("MeslekEkrani") //kayıt olunca Secim ekranı olan meslek ekranına gittik
+                    navigation.navigate("OnBoarding",{name:kullaniciAdi})
                 } 
                 else if (responseSignin.data.status == "FAILED") 
                 {

@@ -9,6 +9,7 @@ import DrawerScreen from "./navigation/HomeScreen/DrawerScreen"
 import MeslekEkrani from './screens/SecimEkranları/MeslekEkrani';
 import DilEkrani from './screens/SecimEkranları/DilEkrani';
 import SectigiDilEkranı from './screens/SecimEkranları/SectigiDilEkranı';
+import OnBoarding from './screens/OnBoarding';
 
 export default function App() {
 
@@ -22,6 +23,7 @@ export default function App() {
         <Stack.Screen name="DilEkrani" component={DilEkrani} />
         <Stack.Screen name="SectigiDilEkranı" component={SectigiDilEkranı} />
         <Stack.Screen name="Drawer" component={DrawerScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="OnBoarding" component={OnBoarding} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

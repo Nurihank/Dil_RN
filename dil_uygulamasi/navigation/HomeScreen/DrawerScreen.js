@@ -14,7 +14,7 @@ export default function DrawerScreen({ route }) {
             <Drawer.Screen name="DenemeScreen" component={Deneme} />
             <Drawer.Screen name="HomeScreen" component={HomeScreen} />
             <Drawer.Screen name="UserInfo" component={UserInfoScreen} />
-            <Drawer.Screen name="Logout" component={Logout} /> 
+            <Drawer.Screen name="Logout" component={Logout} />
         </Drawer.Navigator>
     )
 }
