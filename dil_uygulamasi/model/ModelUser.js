@@ -18,7 +18,7 @@ export default class UserModel {
    
     static getCurrentUser = () => {
       //  console.log(this.currentUser)
-        console.log("get")
+        //console.log("get")
         return  this.currentUser
     }
     /* static getMeslekId = async () => {

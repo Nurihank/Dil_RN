@@ -1,19 +1,16 @@
-import { Alert, Button, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState, useEffect } from 'react'
-import { useNavigation } from '@react-navigation/native'
-import api from '../api/api'
+import { Alert, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { FontAwesome } from '@expo/vector-icons'; // FontAwesome kullanarak ikonlar ekliyoruz
+import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MeslekEkrani from './SecimEkranları/MeslekEkrani';
 import UserModel from '../model/ModelUser';
 
-export default function SigninScreen() {
-
-    const [kullaniciAdi, setKullaniciAdi] = useState("")
-    const [email, setEmail] = useState("")
-    const [sifre, setSifre] = useState("")
-    /* console.log(kullaniciAdi)
-    console.log(sifre) */
-    const navigation = useNavigation()
+export default function SignupScreen() {
+    const [kullaniciAdi, setKullaniciAdi] = useState("");
+    const [email, setEmail] = useState("");
+    const [sifre, setSifre] = useState("");
+    const navigation = useNavigation();
 
     const handleSignup = async () => {
         try {
@@ -21,39 +18,31 @@ export default function SigninScreen() {
                 kullaniciAdi: kullaniciAdi,
                 email: email,
                 sifre: sifre
-            })
+            });
             console.log(response.data.status)
-            if ("SUCCES" == response.data.status) {
-                alert(response.data.message)
-                //kullanıcı başarılı şekilde kayıt olduysa otomatik giriş yapar ve seçim ekranlarına gider
+            if (response.data.status === "SUCCES") {
+                Alert.alert(response.data.message);
                 const responseSignin = await api.get("/kullanici/signin", {
                     params: {
                         kullaniciAdi: kullaniciAdi,
                         sifre: sifre
                     }
-                })
-                if ("SUCCES" == responseSignin.data.status) 
-                {
-                    console.log(responseSignin.data.accessToken)
-                    await AsyncStorage.setItem('jwt_token', JSON.stringify(responseSignin.data.accessToken));//sadece string verileri depolar
-                    UserModel.setUser(responseSignin.data.id)
-                    navigation.navigate("OnBoarding",{name:kullaniciAdi})
-                } 
-                else if (responseSignin.data.status == "FAILED") 
-                {
-                    Alert.alert(responseSignin.data.message)
+                });
+                console.log(responseSignin.data.status)
+                if (responseSignin.data.status === "SUCCES") {
+                    await AsyncStorage.setItem('jwt_token', JSON.stringify(responseSignin.data.accessToken));
+                    UserModel.setUser(responseSignin.data.id);
+                    navigation.navigate("MeslekEkrani", { name: kullaniciAdi });
+                } else if (responseSignin.data.status === "FAILED") {
+                    Alert.alert(responseSignin.data.message);
                 }
-                //  navigation.navigate("MeslekEkrani")         
-            } else if ("FAILED" == response.data.status) {
-                alert(response.data.message)
+            } else if (response.data.status === "FAILED") {
+                alert(response.data.message);
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-
-    }
-
-
+    };
 
     return (
         <KeyboardAvoidingView style={styles.container}>
@@ -61,80 +50,109 @@ export default function SigninScreen() {
                 <Text style={styles.text}>Dil Uygulamasına Hoşgeldiniz</Text>
             </View>
             <View style={styles.inputContainer}>
-                <TextInput style={styles.input}
-                    placeholder='Kullanici Adi Girin'
+                <TextInput
+                    style={styles.input}
+                    placeholder='Kullanıcı Adı Girin'
                     value={kullaniciAdi}
                     onChangeText={(text) => setKullaniciAdi(text)}
                 />
-                <TextInput style={styles.input}
+                <TextInput
+                    style={styles.input}
                     placeholder='E-posta Girin'
                     value={email}
                     onChangeText={(text) => setEmail(text)}
+                    keyboardType='email-address'
+                    autoCapitalize='none'
                 />
-                <TextInput style={styles.input}
+                <TextInput
+                    style={styles.input}
                     placeholder='Şifre Girin'
+                    secureTextEntry
                     value={sifre}
                     onChangeText={(text) => setSifre(text)}
                 />
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity onPress={() => handleSignup()} style={styles.button}>
-                    <Text style={{ color: "#191970", fontSize: 20, fontWeight: "bold" }}>KAYIT OL</Text>
+                <TouchableOpacity onPress={handleSignup} style={styles.button}>
+                    <Text style={styles.buttonText}>KAYIT OL</Text>
+                    <FontAwesome name="user-plus" size={24} color="#fff" style={styles.buttonIcon} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate("Signin")} style={styles.button}>
-                    <Text style={{ color: "#191970", fontSize: 20, fontWeight: "bold" }}>GİRİŞ EKRANINA</Text>
-                    <Text style={{ color: "#191970", fontSize: 20, fontWeight: "bold" }}>GERİ DÖN</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("Signin")} style={[styles.button, styles.secondaryButton]}>
+                    <Text style={[styles.buttonText, { color: '#00796b' }]}>GİRİŞ EKRANINA GERİ DÖN</Text>
+                    <FontAwesome name="sign-in" size={24} color="#00796b" style={styles.buttonIcon} />
                 </TouchableOpacity>
-
             </View>
         </KeyboardAvoidingView>
-
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#e0ffff",
-        height: "100%",
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#e0ffff',
+        padding: 20,
     },
     textContainer: {
-        backgroundColor: "#87cefa",
-        margin: 10,
-        padding: 10,
+        backgroundColor: '#87cefa',
+        padding: 20,
         borderRadius: 20,
-        //  marginBottom:100
+        marginBottom: 30,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     text: {
-        fontSize: 20,
-        fontWeight: "bold"
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
     },
     inputContainer: {
-        width: "75%",
-
+        width: '100%',
+        marginBottom: 20,
     },
     input: {
-        marginVertical: 10,
-        backgroundColor: "white",
-        padding: 10,
-        borderRadius: 20
-    },
-    forgotContainer: {
-        marginTop: 12,
-        marginLeft: 180
+        backgroundColor: '#fff',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 15,
+        borderColor: '#ddd',
+        borderWidth: 1,
     },
     buttonContainer: {
-        width: "50%",
-        marginTop: 10,
-        alignItems: "center"
+        width: '100%',
+        alignItems: 'center',
     },
     button: {
+        backgroundColor: '#00796b',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 15,
+        paddingHorizontal: 30,
         borderRadius: 25,
-        alignItems: "center",
-        backgroundColor: "#faf0e6",
         marginVertical: 10,
-        padding: 15,
-
-    }
-})
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    secondaryButton: {
+        backgroundColor: '#faf0e6',
+        borderColor: '#00796b',
+        borderWidth: 2,
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginRight: 10,
+    },
+    buttonIcon: {
+        marginLeft: 10,
+    },
+});

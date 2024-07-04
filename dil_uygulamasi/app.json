@@ -1,5 +1,6 @@
 {
   "expo": {
+    "jsEngine": "hermes",
     "name": "dil_uygulamasi",
     "slug": "dil_uygulamasi",
     "version": "1.0.0",

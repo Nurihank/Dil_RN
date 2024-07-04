@@ -8,7 +8,7 @@ export default ({ apiInfo })=>{
     
     const searchApi = async (term)=>{
         const response = await api.get("/kullanici" + apiInfo)
-        console.log(apiInfo)
+        //console.log(apiInfo)
         setresult(response.data.result)
     }
 
