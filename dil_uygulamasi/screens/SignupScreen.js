@@ -32,7 +32,7 @@ export default function SignupScreen() {
                 if (responseSignin.data.status === "SUCCES") {
                     await AsyncStorage.setItem('jwt_token', JSON.stringify(responseSignin.data.accessToken));
                     UserModel.setUser(responseSignin.data.id);
-                    navigation.navigate("MeslekEkrani", { name: kullaniciAdi });
+                    navigation.navigate("SecimEkrani", { name: kullaniciAdi });
                 } else if (responseSignin.data.status === "FAILED") {
                     Alert.alert(responseSignin.data.message);
                 }

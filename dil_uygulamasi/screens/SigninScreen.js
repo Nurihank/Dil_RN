@@ -19,7 +19,8 @@ export default function SigninScreen() {
                     sifre: sifre
                 }
             });
-            if (response.data.status === "SUCCESS") {
+            console.log(response.data.status)
+            if (response.data.status === "SUCCES") {
                 await AsyncStorage.setItem('jwt_token', JSON.stringify(response.data.accessToken));
                 UserModel.setUser(response.data.id);
                 navigation.navigate("Welcome");

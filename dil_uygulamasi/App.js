@@ -15,6 +15,7 @@ import Logout from './screens/Logout';
 import WelcomeScreen from './screens/WelcomeScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import DilSeviyesiEkrani from './screens/SecimEkranları/DilSeviyesiEkrani';
+import SeçimEkrani from './screens/SeçimEkrani';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -33,6 +34,7 @@ export default function App() {
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="DilSeviyesiEkrani" component={DilSeviyesiEkrani} />
+        <Stack.Screen name="SecimEkrani" component={SeçimEkrani} />
       </Stack.Navigator>
     </NavigationContainer>
   );
