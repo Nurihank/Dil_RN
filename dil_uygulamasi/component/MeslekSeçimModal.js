@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Modal } from 'react-native-paper';
 import api from '../api/api';
-import { RadioButton } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons'; // İleri gitme simgesi için ekledik
 import { AntDesign } from '@expo/vector-icons'; // Geri dönme simgesi için ekledik
 import UserModel from '../model/ModelUser';
-import DilSeçimModal from './DilSeçimModal';
 
-export default function MeslekSeçimModal({ visible, GeriTusu }) {
+export default function MeslekSeçimModal({ visible, MeslekModalGeriTusu, MeslekSecimiOnayi }) {
   const [meslekler, setMeslekler] = useState([]);
   const [selectedValue, setSelectedValue] = useState(null);
-  const [userID, setUserID] = useState(null);
   const user = UserModel.getCurrentUser(); // Kullanıcının id'sini almak için
-
-  const [DilSecimModalVisible, setDilSecimModalVisible] = useState(false);
 
   useEffect(() => {
     GetAllMeslek();
@@ -36,18 +31,30 @@ export default function MeslekSeçimModal({ visible, GeriTusu }) {
       try {
         const response = await api.post("/kullanici/meslekSecim", {
           id: user[0].id,
-          meslek: selectedValue
+          meslek: selectedValue.idMeslek
         });
-        console.log("Meslek seçimi başarıyla kaydedildi");
-        setDilSecimModalVisible(true);
-      } catch (error) {
+        MeslekSecimiOnayi();
+      }
+      catch (error) {
         console.error("Meslek seçimi kaydedilirken hata oluştu:", error);
       }
     }
   };
 
-  const handleCloseDilSecimModal = () => {
-    setDilSecimModalVisible(false);
+  const renderItem = ({ item }) => {
+    const isSelected = selectedValue === item.idMeslek;
+    return (
+      <TouchableOpacity
+        style={[styles.itemContainer, isSelected && styles.selectedItem]}
+        onPress={() => setSelectedValue(item)}
+      >
+        <Image
+          source={require("../assets/dil.png")} // Replace with your image URI
+          style={styles.image}
+        />
+        <Text style={styles.textStyle}>{item.meslek}</Text>
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -55,34 +62,38 @@ export default function MeslekSeçimModal({ visible, GeriTusu }) {
       visible={visible}
       style={styles.modal} // Modal için genel stil
     >
+
       <View style={styles.container}>
+        {!selectedValue ?
+          <Text style={styles.textStyle}>Seçilen Meslek = </Text> :
+          <Text style={styles.textStyle}>Seçilen Meslek = {selectedValue.meslek}</Text>}
         <FlatList
           data={meslekler} // FlatList'e gösterilecek veri
-          renderItem={({ item }) => (
-            <View style={styles.itemContainer}>
-              <RadioButton
-                value={item.idMeslek}
-                status={selectedValue === item.idMeslek ? "checked" : "unchecked"}
-                onPress={() => setSelectedValue(item.idMeslek)}
-                color="darkgrey"
-              />
-              <Text style={styles.textStyle}>{item.meslek}</Text>
-            </View>
-          )}
+          renderItem={renderItem}
           keyExtractor={(item) => item.idMeslek.toString()}
+          numColumns={2} // İki sütunlu görünüm
+          columnWrapperStyle={styles.columnWrapper} // Sütunları sarmalayan stil
         />
         <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={GeriTusu} style={styles.button}>
+          <TouchableOpacity onPress={MeslekModalGeriTusu} style={styles.button}>
             <AntDesign name="arrowleft" size={24} color="white" />
             <Text style={styles.buttonText}>Geri Dön</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.onaylaButton} onPress={handleOnayla}>
-            <Text style={styles.buttonText}>Onayla</Text>
-            <Ionicons name="checkmark-outline" size={24} color="white" />
-          </TouchableOpacity>
+          {!selectedValue ?
+            <TouchableOpacity style={{
+              backgroundColor: "white", flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 15, borderRadius: 5, width: '48%',
+            }} onPress={handleOnayla}>
+              <Text style={styles.buttonText}>Onayla</Text>
+              <Ionicons name="checkmark-outline" size={24} color="white" />
+            </TouchableOpacity>
+            :
+            <TouchableOpacity style={styles.onaylaButton} onPress={handleOnayla}>
+              <Text style={styles.buttonText}>Onayla</Text>
+              <Ionicons name="checkmark-outline" size={24} color="white" />
+            </TouchableOpacity>}
+
         </View>
       </View>
-      <DilSeçimModal visible={DilSecimModalVisible} handleClose={handleCloseDilSecimModal} />
     </Modal>
   );
 }
@@ -95,23 +106,35 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)' // Modal arka plan rengi ve opaklık
   },
   container: {
+    flex: 1,
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 20,
-    width: '80%', // Modal içeriği genişliği
-    maxHeight: '100%' // Modal maksimum yüksekliği
+    width: '100%', // Modal içeriği genişliği
   },
   itemContainer: {
-    flexDirection: 'row',
+    flex: 1,
+    flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#e0e0e0',
     padding: 10,
     borderRadius: 5,
-    marginBottom: 10
+    margin: 5 // Kenarlar arasında boşluk
+  },
+  selectedItem: {
+    backgroundColor: '#d0d0d0' // Seçilen öğe arka plan rengi
+  },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 25
   },
   textStyle: {
-    marginLeft: 10,
+    marginTop: 10,
     fontSize: 16
+  },
+  columnWrapper: {
+    justifyContent: 'space-between' // Sütunlar arasını boşluk bırakır
   },
   buttonContainer: {
     flexDirection: 'row',

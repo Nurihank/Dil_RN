@@ -1,4 +1,4 @@
-rootProject.name = 'Dil_RN'
+rootProject.name = 'dil_uygulamasi'
 
 dependencyResolutionManagement {
   versionCatalogs {

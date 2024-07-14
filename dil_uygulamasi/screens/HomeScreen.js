@@ -3,10 +3,18 @@ import React, { useState, useEffect } from 'react';
 import UserModel from '../model/ModelUser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from 'react-native-paper';
+import api from '../api/api';
 
 export default function HomeScreen() {
   const [user, setUser] = useState(undefined); // Başlangıçta undefined olarak ayarla
-
+  useEffect(() => {
+    const getUser = async ()=>{
+      const response = await api.get("/kullanici/KullaniciBilgileri/" + user)
+      console.log(response.data.user[0].dil)
+    }
+    getUser()
+  }, [])
+  
   const fetchUser = async () => {
     try {
       const currentUser = await UserModel.getCurrentUser();

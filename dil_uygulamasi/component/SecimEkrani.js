@@ -17,7 +17,7 @@ export default function SecimEkrani({ apiSecim, apiInfo }) { //gelen api bilgile
 
     const user = UserModel.getCurrentUser() //kullanıcının id'sini almak için
     const Gecis = async (term) => {
-        console.log(term)
+
         if (term == "/mesleki") { //seçim ekranı meslekse buraya 
             const response = await api.post("/kullanici" + apiSecim, {
                 meslek: selectedValue,
@@ -48,7 +48,7 @@ export default function SecimEkrani({ apiSecim, apiInfo }) { //gelen api bilgile
                 navigation.navigate("DilSeviyesiEkrani")
             }
         } else if (term == "/seviyei") {
-            console.log("sdasdafsgsf")
+       
             const response = await api.post("/kullanici" + apiSecim, {
                 dilSeviyesi: dilSeviyesi,
                 id: user[0].id

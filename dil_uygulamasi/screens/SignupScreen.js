@@ -13,13 +13,13 @@ export default function SignupScreen() {
     const navigation = useNavigation();
 
     const handleSignup = async () => {
-        try {
+        try {  
             const response = await api.post("/kullanici/signup", {
                 kullaniciAdi: kullaniciAdi,
                 email: email,
                 sifre: sifre
             });
-            console.log(response.data.status)
+            console.log(response.data)
             if (response.data.status === "SUCCES") {
                 Alert.alert(response.data.message);
                 const responseSignin = await api.get("/kullanici/signin", {

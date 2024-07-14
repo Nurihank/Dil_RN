@@ -3,17 +3,47 @@ import React,{useState} from 'react';
 import { Ionicons } from '@expo/vector-icons'; // Örneğin, Expo'nun içe aktarımlarından biri
 import MeslekSeçimModal from '../component/MeslekSeçimModal';
 import { AntDesign } from '@expo/vector-icons';
+import DilSeçimModal from '../component/DilSeçimModal';
+import OgrenilecekDilSecimModal from '../component/OgrenilecekDilSecimModal';
+import { useNavigation } from '@react-navigation/native';
+
 export default function SeçimEkrani() {
 
     const [MeslekSecimModalVisible, setMeslekSecimModalVisible] = useState(false)
-  
+    const [DilSecimModalVisible, setDilSecimModalVisible] = useState(false)
+    const [OgrenilecekDilSecimModalVisible, setOgrenilecekDilSecimModalVisible] = useState(false)
+    const [DilSeviyesiModalVisible, setDilSeviyesiModalVisible] = useState(false)
+    const navigation = useNavigation();
   const handleNext = () => {
     setMeslekSecimModalVisible(true)
-    console.log('İleri gitme işlemi yapılacak');
   };
-  const GeriTusu = ()=>{
+
+  const MeslekModalGeriTusu = ()=>{
     setMeslekSecimModalVisible(false)
   }
+  const DilModalGeriTusu = ()=>{
+    setMeslekSecimModalVisible(true)
+    setDilSecimModalVisible(false)
+  }
+  const OgrenilecekModalGeriTusu = ()=> {
+    setDilSecimModalVisible(true)
+    setOgrenilecekDilSecimModalVisible(false)
+  }
+
+  const MeslekSecimiOnayi= ()=>{
+    setMeslekSecimModalVisible(false)
+    setDilSecimModalVisible(true)
+  }
+  const DilSecimiOnayi = ()=>{
+    setDilSecimModalVisible(false)
+    setOgrenilecekDilSecimModalVisible(true)
+  }
+  const OgrenilecekDilSecimOnayi = ()=> {
+    setOgrenilecekDilSecimModalVisible(false)
+    navigation.navigate("HomeScreen")
+  }
+
+
   console.log(MeslekSecimModalVisible)
   return (
     
@@ -33,7 +63,18 @@ export default function SeçimEkrani() {
         </TouchableOpacity>
         <MeslekSeçimModal
             visible={MeslekSecimModalVisible}
-            GeriTusu={GeriTusu}
+            MeslekModalGeriTusu={MeslekModalGeriTusu}
+            MeslekSecimiOnayi={MeslekSecimiOnayi}
+        />
+        <DilSeçimModal
+          visible={DilSecimModalVisible}
+          DilModalGeriTusu={DilModalGeriTusu}
+          DilSecimiOnayi={DilSecimiOnayi}
+        />
+        <OgrenilecekDilSecimModal
+          visible={OgrenilecekDilSecimModalVisible}
+          OgrenilecekModalGeriTusu={OgrenilecekModalGeriTusu}
+          OgrenilecekDilSecimOnayi={OgrenilecekDilSecimOnayi}
         />
       </View>
    
