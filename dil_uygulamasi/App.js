@@ -12,6 +12,7 @@ import Logout from './screens/Logout';
 import WelcomeScreen from './screens/WelcomeScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import SeçimEkrani from './screens/SeçimEkrani';
+import ProfileScreen from './screens/ProfileScreen';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -21,12 +22,13 @@ export default function App() {
         <Stack.Screen name="OnBoarding" component={OnBoardingScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Signin" component={SigninScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="UserInfo" component={UserInfoScreen} />
         <Stack.Screen name="Logout" component={Logout} />
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="SecimEkrani" component={SeçimEkrani} options={{ headerShown: false }} />
+        <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

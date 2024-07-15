@@ -1,63 +1,50 @@
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import UserModel from '../model/ModelUser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator } from 'react-native-paper';
 import api from '../api/api';
+import { FontAwesome5, AntDesign, Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function HomeScreen() {
-  const [user, setUser] = useState(undefined); // Başlangıçta undefined olarak ayarla
-  useEffect(() => {
-    const getUser = async ()=>{
-      const response = await api.get("/kullanici/KullaniciBilgileri/" + user)
-      console.log(response.data.user[0].dil)
-    }
-    getUser()
-  }, [])
-  
-  const fetchUser = async () => {
-    try {
-      const currentUser = await UserModel.getCurrentUser();
-      if (currentUser && currentUser.length > 0) {
-        setUser(currentUser[0].id); // Eğer kullanıcı varsa, id'yi ayarla
-      } else {
-        setUser(null); // Kullanıcı bulunamazsa null olarak ayarla
-      }
-    } catch (error) {
-      console.error("Kullanıcı getirilemedi:", error);
-      setUser(null); // Hata durumunda null olarak ayarla
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  if (user === undefined) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007BFF" />
-      </View>
-    );
-  }
+  const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
-      {user ? (
-        <Text style={styles.userText}>Kullanıcı ID: {user}</Text>
-      ) : (
-        <Text style={styles.errorText}>Kullanıcı bulunamadı</Text>
-      )}
+    <View style={styles.mainContainer}>
+      <View style={styles.container}>
+        {/* Your main content goes here */}
+        <Text style={styles.contentText}>Dil Uygulamasi</Text>
+      </View>
+      <View style={styles.footer}>
+        <View style={styles.footerSection}>
+          <TouchableOpacity onPress={()=>navigation.navigate("ProfileScreen")}>
+            <FontAwesome5 name="user" size={35} color="black" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.footerSection}>
+          <TouchableOpacity>
+            <AntDesign name="book" size={35} color="black" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.footerSection}>
+          <TouchableOpacity>
+            <AntDesign name="shoppingcart" size={38} color="black" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.footerSection}>
+          <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+            <Feather name="settings" size={35} color="black" />
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: {
+  mainContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f8ff',
   },
   container: {
     flex: 1,
@@ -65,14 +52,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f0f8ff',
   },
-  userText: {
+  contentText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
   },
-  errorText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'red',
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#87cefa',
+    height: 70,
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+  },
+  footerSection: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
