@@ -13,30 +13,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
-        {/* Your main content goes here */}
         <Text style={styles.contentText}>Dil Uygulamasi</Text>
-      </View>
-      <View style={styles.footer}>
-        <View style={styles.footerSection}>
-          <TouchableOpacity onPress={()=>navigation.navigate("ProfileScreen")}>
-            <FontAwesome5 name="user" size={35} color="black" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.footerSection}>
-          <TouchableOpacity>
-            <AntDesign name="book" size={35} color="black" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.footerSection}>
-          <TouchableOpacity>
-            <AntDesign name="shoppingcart" size={38} color="black" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.footerSection}>
-          <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-            <Feather name="settings" size={35} color="black" />
-          </TouchableOpacity>
-        </View>
       </View>
     </View>
   );
@@ -56,19 +33,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    backgroundColor: '#87cefa',
-    height: 70,
-    borderTopWidth: 1,
-    borderColor: '#ccc',
-  },
-  footerSection: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  }
 });

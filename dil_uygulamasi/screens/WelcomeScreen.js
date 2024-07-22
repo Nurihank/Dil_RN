@@ -8,7 +8,7 @@ export default function WelcomeScreen() {
     const navigation = useNavigation();
 
     const AnaSayfayaGecis = () => {
-        navigation.navigate("HomeScreen");
+        navigation.navigate("Bottom");
     };
 
     return (

@@ -40,7 +40,7 @@ export default function SeçimEkrani() {
   }
   const OgrenilecekDilSecimOnayi = ()=> {
     setOgrenilecekDilSecimModalVisible(false)
-    navigation.navigate("HomeScreen")
+    navigation.navigate("Bottom")
   }
 
 
