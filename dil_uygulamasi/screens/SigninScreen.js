@@ -19,9 +19,13 @@ export default function SigninScreen() {
                     sifre: sifre
                 }
             });
-            console.log(response.data.status)
+            console.log(response.data)
             if (response.data.status === "SUCCES") {
-                await AsyncStorage.setItem('jwt_token', JSON.stringify(response.data.accessToken));
+                await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
+                await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
+
+                await AsyncStorage.setItem('id', JSON.stringify(response.data.id));
+
                 UserModel.setUser(response.data.id);
                 navigation.navigate("Welcome");
             } else if (response.data.status === "FAILED") {

@@ -1,67 +1,54 @@
 import { Image, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
-import UserModel from '../model/ModelUser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ProgressBars from '../component/ProgressBars'; // ProgressBars olarak import edildi
 
 export default function ProfileScreen() {
     const [userId, setUserId] = useState(undefined);
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState(null);
-
-    const fetchUser = async () => {
-        try {
-            const currentUser = await UserModel.getCurrentUser();
-            if (currentUser && currentUser.length > 0) {
-                setUserId(currentUser[0].id);
-            } else {
-                setUserId(null);
-            }
-        } catch (error) {
-            console.error("Kullanıcı getirilemedi:", error);
-            setUserId(null);
-        }
-        setLoading(false);
-    };
+    const [user, setUser] = useState(null); // Başlangıçta null olarak ayarlandı
 
     const getUserInfo = async () => {
+        const id = await AsyncStorage.getItem("id");
+        setUserId(id);
+        console.log(id);
         try {
-            const response = await api.get("/kullanici/KullaniciBilgileri", {
-                params: {
-                    id: userId
-                }
-            });
-            if (response.data && response.data.user) {
-                setUser(response.data.user[0]); // Kullanıcı verisini güncelle
-            } else {
-                setUser(null);
+            const accessToken = await AsyncStorage.getItem("accessToken");
+            const refreshToken = await AsyncStorage.getItem("refreshToken");
+            console.log(accessToken)
+            if (!accessToken) {
+                throw new Error("Access token not fou nd");
             }
+   
+            const response = await api.get("/kullanici/KullaniciBilgileri", {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                },    
+                params: {
+                    id: id
+                },
+            });
+            
+            console.log(response.data);
+            setUser(response.data.user[0]); // response.data.user[0] olarak güncellendi
+            setLoading(false); // Veri alındıktan sonra loading durumu false yapılıyor
         } catch (error) {
             console.error("Bilgiler getirilemedi:", error);
-            setUser(null);
+            setUser(null); // Hata durumunda user'ı null yap
+            setLoading(false); // Hata durumunda loading durumu false yap
         }
     };
 
     useEffect(() => {
-        fetchUser();
+        getUserInfo();
     }, []);
-
-    useEffect(() => {
-        if (userId !== undefined) {
-            getUserInfo();
-        }
-    }, [userId]);
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        );
-    }
 
     return (
         <View style={styles.container}>
-            {user ? (
+            {loading ? (
+                <ActivityIndicator style={styles.loadingContainer} size="large" color="#0000ff" />
+            ) : userId && user ? ( // userId ve user kontrolü eklendi
                 <>
                     <View style={styles.profileImageContainer}>
                         <Image
@@ -84,8 +71,9 @@ export default function ProfileScreen() {
                     </View>
                 </>
             ) : (
-                <Text style={styles.errorText}>Kullanıcı bulunamadı</Text>
+                <Text style={styles.errorText}>Kullanıcı bilgileri bulunamadı veya hata oluştu.</Text>
             )}
+            <ProgressBars />
         </View>
     );
 }

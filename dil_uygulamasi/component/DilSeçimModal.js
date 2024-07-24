@@ -5,6 +5,7 @@ import api from '../api/api';
 import { Ionicons } from '@expo/vector-icons'; // İleri gitme simgesi için ekledik
 import { AntDesign } from '@expo/vector-icons'; // Geri dönme simgesi için ekledik
 import UserModel from '../model/ModelUser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOnayi }) {
   const [diller, setDiller] = useState([]);
@@ -25,12 +26,13 @@ export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOna
   };
 
   const handleOnayla = async () => {
+    const id = await AsyncStorage.getItem("id")
     if (!selectedValue) {
       alert("Bir Dil Seçmelisin");
     } else {
       try {
         const response = await api.post("/kullanici/dilSecim", {
-          id: user[0].id,
+          id: id,
           dil: selectedValue.id
         });
         DilSecimiOnayi();  //DİL ONAYI YAPILACAK

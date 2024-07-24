@@ -5,13 +5,13 @@ import api from '../api/api';
 import { Ionicons } from '@expo/vector-icons'; // İleri gitme simgesi için ekledik
 import { AntDesign } from '@expo/vector-icons'; // Geri dönme simgesi için ekledik
 import UserModel from '../model/ModelUser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MeslekSeçimModal({ visible, MeslekModalGeriTusu, MeslekSecimiOnayi }) {
   const [meslekler, setMeslekler] = useState([]);
   const [selectedValue, setSelectedValue] = useState(null);
-  const user = UserModel.getCurrentUser(); // Kullanıcının id'sini almak için
 
-  useEffect(() => {
+  useEffect(() => { 
     GetAllMeslek();
   }, []);
 
@@ -25,12 +25,13 @@ export default function MeslekSeçimModal({ visible, MeslekModalGeriTusu, Meslek
   };
 
   const handleOnayla = async () => {
+    const id = await AsyncStorage.getItem("id")
     if (!selectedValue) {
       alert("Bir Meslek Seçmelisin");
     } else {
       try {
         const response = await api.post("/kullanici/meslekSecim", {
-          id: user[0].id,
+          id: id,
           meslek: selectedValue.idMeslek
         });
         MeslekSecimiOnayi();

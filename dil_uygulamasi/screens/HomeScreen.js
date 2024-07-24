@@ -6,12 +6,16 @@ import { ActivityIndicator } from 'react-native-paper';
 import api from '../api/api';
 import { FontAwesome5, AntDesign, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import ProgressBars from '../component/ProgressBars';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
 
   return (
     <View style={styles.mainContainer}>
+      <View style={{alignItems:"center"}}>
+        <ProgressBars/>
+      </View>
       <View style={styles.container}>
         <Text style={styles.contentText}>Dil Uygulamasi</Text>
       </View>
@@ -22,12 +26,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor: '#f0f8ff',
   },
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f8ff',
+   
   },
   contentText: {
     fontSize: 20,
