@@ -14,6 +14,7 @@ import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import SeçimEkrani from './screens/SeçimEkrani';
 import ProfileScreen from './screens/ProfileScreen';
 import BottomNavigator from './navigator/BottomNavigator';
+import SozlukEkrani from './screens/SozlukEkrani';
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
@@ -30,7 +31,7 @@ export default function App() {
         <Stack.Screen name="SecimEkrani" component={SeçimEkrani} options={{ headerShown: false }} />
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Bottom" component={BottomNavigator} options={{ headerShown: false }} />
-
+        <Stack.Screen name="Sozluk" component={SozlukEkrani} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

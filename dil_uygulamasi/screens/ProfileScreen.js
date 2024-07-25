@@ -15,28 +15,55 @@ export default function ProfileScreen() {
         console.log(id);
         try {
             const accessToken = await AsyncStorage.getItem("accessToken");
-            const refreshToken = await AsyncStorage.getItem("refreshToken");
-            console.log(accessToken)
+            console.log("accestoken " + accessToken);
             if (!accessToken) {
-                throw new Error("Access token not fou nd");
+                throw new Error("Access token not found");
             }
-   
+
             const response = await api.get("/kullanici/KullaniciBilgileri", {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
-                },    
+                },
                 params: {
                     id: id
                 },
             });
-            
-            console.log(response.data);
-            setUser(response.data.user[0]); // response.data.user[0] olarak güncellendi
-            setLoading(false); // Veri alındıktan sonra loading durumu false yapılıyor
+
+            setUser(response.data.user[0]);
+            setLoading(false);
         } catch (error) {
-            console.error("Bilgiler getirilemedi:", error);
-            setUser(null); // Hata durumunda user'ı null yap
-            setLoading(false); // Hata durumunda loading durumu false yap
+            handleTokenError(error);
+        }
+    };
+
+    const handleTokenError = async (error) => {
+        if (error.response && error.response.data.message === "Token süresi dolmuş") {
+            await refreshAccessToken();
+        } else {
+            console.log("Token hatalı veya süresi dolmuş, kullanıcıyı çıkış yapmaya yönlendir.");
+            setUser(null);
+            
+        }
+    };
+
+    const refreshAccessToken = async () => {
+        try {
+            const refreshToken = await AsyncStorage.getItem("refreshToken");
+            console.log("asda")
+            if (!refreshToken) {
+                throw new Error("Refresh token not found");
+            }
+
+            const response = await api.put('/kullanici/NewAccessToken', {
+                id: userId // Bu kısım body kısmı içinde olacak
+            }); 
+
+            console.log("Başarılı cevap:", response.data.accessToken);
+            await AsyncStorage.setItem('accessToken', response.data.accessToken);
+            getUserInfo(); // Yeniden kullanıcı bilgilerini al
+        } catch (error) {
+            console.log("Yenileme hatası:", error.response ? error.response.data.message : error.message);
+            setUser(null); // Kullanıcıyı çıkış yapmaya yönlendir veya hata mesajı göster
         }
     };
 
