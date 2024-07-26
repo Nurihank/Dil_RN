@@ -50,10 +50,10 @@ export default function OgrenilecekDilSecimModal({ visible, OgrenilecekModalGeri
                 style={[styles.itemContainer, isSelected && styles.selectedItem]}
                 onPress={() => setSelectedValue(item)}
             >
-                <Image
-                    source={require("../assets/dil.png")} // Replace with your image URI
+                 <Image
+                    source={{uri: item.dilPathImage}} // Replace with your image URI
                     style={styles.image}
-                />
+                    />
                 <Text style={styles.textStyle}>{item.dil_adi}</Text>
             </TouchableOpacity>
         );
@@ -127,9 +127,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#d0d0d0' // Seçilen öğe arka plan rengi
     },
     image: {
-        width: 50,
-        height: 50,
-        borderRadius: 25
+        width: 80,
+        height: 80,
+        borderRadius: 100
     },
     textStyle: {
         marginTop: 10,

@@ -23,6 +23,8 @@
     "radio-buttons-react-native": "^1.0.4",
     "react": "18.2.0",
     "react-native": "0.74.3",
+    "react-native-add-calendar-event": "^5.0.0",
+    "react-native-calendars": "^1.1306.0",
     "react-native-fontawesome": "^7.0.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-onboard": "^2.6.0",

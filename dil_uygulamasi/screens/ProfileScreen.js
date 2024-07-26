@@ -1,21 +1,27 @@
-import { Image, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { ScrollView, Image, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBars from '../component/ProgressBars'; // ProgressBars olarak import edildi
+import { Calendar } from 'react-native-calendars';
 
 export default function ProfileScreen() {
     const [userId, setUserId] = useState(undefined);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null); // Başlangıçta null olarak ayarlandı
+    const [selectedDate, setSelectedDate] = useState('');
+    const [markedDates, setMarkedDates] = useState({}); // State for marked dates
+
+    const handleDayPress = (day) => {
+        console.log(day.dateString);
+        setSelectedDate(day.dateString);
+    };
 
     const getUserInfo = async () => {
         const id = await AsyncStorage.getItem("id");
         setUserId(id);
-        console.log(id);
         try {
             const accessToken = await AsyncStorage.getItem("accessToken");
-            console.log("accestoken " + accessToken);
             if (!accessToken) {
                 throw new Error("Access token not found");
             }
@@ -31,6 +37,24 @@ export default function ProfileScreen() {
 
             setUser(response.data.user[0]);
             setLoading(false);
+
+            const takvim = await api.get("/kullanici/Takvim", {
+                params: {
+                    kullaniciID: id  
+                }
+            });
+     
+            const dates = takvim.data.reduce((acc, item) => {
+                const date = item.Tarih.split('T')[0]; 
+                acc[date] = { 
+                    marked: true, 
+                    dotColor: 'green', 
+                    dotStyle: { borderRadius: 6 } 
+                }; 
+                return acc;
+            }, {});
+            setMarkedDates(dates); 
+
         } catch (error) {
             handleTokenError(error);
         }
@@ -42,28 +66,26 @@ export default function ProfileScreen() {
         } else {
             console.log("Token hatalı veya süresi dolmuş, kullanıcıyı çıkış yapmaya yönlendir.");
             setUser(null);
-            
         }
     };
 
     const refreshAccessToken = async () => {
         try {
             const refreshToken = await AsyncStorage.getItem("refreshToken");
-            console.log("asda")
             if (!refreshToken) {
                 throw new Error("Refresh token not found");
             }
 
             const response = await api.put('/kullanici/NewAccessToken', {
-                id: userId // Bu kısım body kısmı içinde olacak
+                id: userId 
             }); 
 
             console.log("Başarılı cevap:", response.data.accessToken);
             await AsyncStorage.setItem('accessToken', response.data.accessToken);
-            getUserInfo(); // Yeniden kullanıcı bilgilerini al
+            getUserInfo(); 
         } catch (error) {
             console.log("Yenileme hatası:", error.response ? error.response.data.message : error.message);
-            setUser(null); // Kullanıcıyı çıkış yapmaya yönlendir veya hata mesajı göster
+            setUser(null);
         }
     };
 
@@ -72,7 +94,7 @@ export default function ProfileScreen() {
     }, []);
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
             {loading ? (
                 <ActivityIndicator style={styles.loadingContainer} size="large" color="#0000ff" />
             ) : userId && user ? ( // userId ve user kontrolü eklendi
@@ -96,12 +118,22 @@ export default function ProfileScreen() {
                         <Text style={styles.infoTitle}>Öğrendiğin Dil</Text>
                         <Text style={styles.infoText}>{user.OgrenilecekDil} Öğreniyor</Text>
                     </View>
+                    <ProgressBars />
+                    <Calendar
+                        onDayPress={handleDayPress}
+                        markedDates={markedDates}
+                        style={styles.calendar}
+                    />
+                    {selectedDate ? (
+                        <Text style={styles.selectedDateText}>Seçilen Tarih: {selectedDate}</Text>
+                    ) : (
+                        <Text style={styles.selectedDateText}>Tarih Seçin</Text>
+                    )}
                 </>
             ) : (
                 <Text style={styles.errorText}>Kullanıcı bilgileri bulunamadı veya hata oluştu.</Text>
             )}
-            <ProgressBars />
-        </View>
+        </ScrollView>
     );
 }
 
@@ -112,9 +144,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     container: {
-        flex: 1,
+        flexGrow: 1,
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#fff'
     },
     profileImageContainer: {
         alignItems: 'center',
@@ -152,5 +184,16 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 18,
         color: 'red',
+    },
+    calendar: {
+        width: '100%',
+        borderWidth: 1,
+        borderColor: 'gray',
+        marginTop: 25
+    },
+    selectedDateText: {
+        marginTop: 20,
+        fontSize: 18,
+        marginBottom: 65 
     },
 });

@@ -19,9 +19,10 @@ export default function MeslekSeçimModal({ visible, MeslekModalGeriTusu, Meslek
     try {
       const response = await api.get("/kullanici/meslek");
       setMeslekler(response.data.result); // Meslekleri state'e set et
+
     } catch (error) {
       console.error("Error fetching meslekler:", error);
-    }
+    }   
   };
 
   const handleOnayla = async () => {
@@ -50,9 +51,10 @@ export default function MeslekSeçimModal({ visible, MeslekModalGeriTusu, Meslek
         onPress={() => setSelectedValue(item)}
       >
         <Image
-          source={require("../assets/dil.png")} // Replace with your image URI
+         source={{ uri: item.meslekPathImage }} // Replace with your image URI
           style={styles.image}
         />
+
         <Text style={styles.textStyle}>{item.meslek}</Text>
       </TouchableOpacity>
     );
@@ -95,6 +97,7 @@ export default function MeslekSeçimModal({ visible, MeslekModalGeriTusu, Meslek
 
         </View>
       </View>
+
     </Modal>
   );
 }
@@ -126,9 +129,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#d0d0d0' // Seçilen öğe arka plan rengi
   },
   image: {
-    width: 50,
-    height: 50,
-    borderRadius: 25
+    width: 100,
+    height: 100,
+    borderRadius: 100
   },
   textStyle: {
     marginTop: 10,
