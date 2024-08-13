@@ -14,7 +14,7 @@ export default function HomeScreen() {
     navigation.navigate("Oyun")
   };
 
-  useEffect(async()=>{
+  /* useEffect(()=>{
     const SendToDay = async () => {
       try {
           const today = new Date();
@@ -34,7 +34,7 @@ export default function HomeScreen() {
   };
 
   SendToDay();
-  },[])
+  },[]) */
 
   return (
     <View style={styles.mainContainer}>
