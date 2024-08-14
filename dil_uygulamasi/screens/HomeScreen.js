@@ -1,45 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity,Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity,Text, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ProgressBars from '../component/ProgressBars';
 import { AntDesign } from '@expo/vector-icons';
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNPickerSelect from 'react-native-picker-select';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [animating, setAnimating] = useState(false); // Animasyon durumu için state
+  const [Seviyeler,setSeviyeler] = useState([])
+  const [selectedSeviyeID, setSelectedSeviyeID] = useState(null);
 
   const oyun = () => {
     navigation.navigate("Oyun")
   };
 
-  /* useEffect(()=>{
-    const SendToDay = async () => {
-      try {
-          const today = new Date();
-          
-        const id = await AsyncStorage.getItem("id")
-         
+  useEffect(()=>{
+    const SeviyeGetir = async()=>{
+  
+      const Seviye = await api.get("/kullanici/Seviye")
+      const formattedData = Seviye.data.map(item => ({
+        label: item.SeviyeAdi || 'Default Label', // Adjust based on your data structure
+        value: item.SeviyeID || 'defaultValue'   // Adjust based on your data structure
+      }));
 
-          const response = await api.post("/kullanici/Takvim", {
-            kullaniciID: id,
-              tarih: today
-          });
-
-          console.log("API Response:", response.data); 
-      } catch (error) {
-          console.error("Error sending date to API:", error);
-      }
+      setSeviyeler(formattedData);
+   
+    } 
+    SeviyeGetir()
+  },[])
+   
+  const placeholder = {
+    label: 'Seviye Seç',
+    value: null,
   };
-
-  SendToDay();
-  },[]) */
 
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
         <ProgressBars/>
+        <View>
+      <Text>Select an option:</Text>
+      <RNPickerSelect
+            placeholder={placeholder}
+            items={Seviyeler}
+            onValueChange={(value) => setSelectedSeviyeID(value)}
+            value={selectedSeviyeID}
+          />
+          {selectedSeviyeID ? <Text>{selectedSeviyeID}</Text> : null }
+    </View>
         <View>
           <TouchableOpacity style={styles.iconButton} onPress={oyun}>
             <AntDesign name="playcircleo" size={120} color="#6495ed" style={{marginLeft:25}}/>
@@ -47,7 +58,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+      </View>
   );
 }
 

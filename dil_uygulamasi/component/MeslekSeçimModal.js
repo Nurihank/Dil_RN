@@ -73,7 +73,6 @@ export default function MeslekSeçimModal({ visible, MeslekModalGeriTusu, Meslek
         <FlatList
           data={meslekler} // FlatList'e gösterilecek veri
           renderItem={renderItem}
-          keyExtractor={(item) => item.idMeslek.toString()}
           numColumns={2} // İki sütunlu görünüm
           columnWrapperStyle={styles.columnWrapper} // Sütunları sarmalayan stil
         />

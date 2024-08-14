@@ -50,7 +50,6 @@ export default function OyunEkrani2() {
             <FlatList
                 data={answerWord}
                 renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
                 contentContainerStyle={styles.answerContainer}
                 numColumns={2}
             />

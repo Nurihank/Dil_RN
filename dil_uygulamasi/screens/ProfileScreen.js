@@ -26,14 +26,14 @@ export default function ProfileScreen() {
             if (!accessToken) {
                 throw new Error("Access token not found");
             }
-
+           // console.log(accessToken)
             const response = await api.get("/kullanici/KullaniciBilgileri", {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 },
                 params: {
                     id: id
-                },
+                }, 
             });
 
             setUser(response.data.user[0]);
@@ -44,17 +44,17 @@ export default function ProfileScreen() {
                     kullaniciID: id  
                 }
             });
-     
+      
             const dates = takvim.data.reduce((acc, item) => {
-                const date = item.Tarih.split('T')[0]; 
+                const date = item.Tarih.split('T')[0];  
                 acc[date] = { 
                     marked: true, 
                     dotColor: 'green', 
                     dotStyle: { borderRadius: 6 } 
                 }; 
                 return acc;
-            }, {});
-            setMarkedDates(dates);  */
+            }, {}); 
+            setMarkedDates(dates);  */ 
 
         } catch (error) {
             handleTokenError(error);
@@ -62,10 +62,11 @@ export default function ProfileScreen() {
     };
 
     const handleTokenError = async (error) => {
+        console.log(error.response.data)
         if (error.response && error.response.data.message === "Token süresi dolmuş") {
             await refreshAccessToken();
         } else {
-            console.log("Token hatalı veya süresi dolmuş, kullanıcıyı çıkış yapmaya yönlendir.");
+           // console.log("Token hatalı veya süresi dolmuş, kullanıcıyı çıkış yapmaya yönlendir.");
             setUser(null);
         }
     };
@@ -81,13 +82,13 @@ export default function ProfileScreen() {
                 id: userId 
             }); 
 
-            console.log("Başarılı cevap:", response.data.accessToken);
+            //console.log("Başarılı cevap:", response.data.accessToken);
             await AsyncStorage.setItem('accessToken', response.data.accessToken);
             getUserInfo(); 
         } catch (error) {
-            console.log("Yenileme hatası:", error.response ? error.response.data.message : error.message);
+          //  console.log("Yenileme hatası:", error.response ? error.response.data.message : error.message);
             setUser(null);
-        }
+        }   
     };
 
     useEffect(() => {

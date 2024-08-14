@@ -33,7 +33,7 @@ export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOna
       try {
         const response = await api.post("/kullanici/dilSecim", {
           id: id,
-          dil: selectedValue.id
+          dil: selectedValue.DilID
         });
         DilSecimiOnayi();  //DİL ONAYI YAPILACAK
       }
@@ -44,7 +44,7 @@ export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOna
   };
 
   const renderItem = ({ item }) => {
-    const isSelected = selectedValue === item.id;
+    const isSelected = selectedValue === item.id; 
     return (
       <TouchableOpacity
         style={[styles.itemContainer, isSelected && styles.selectedItem]}
@@ -54,7 +54,7 @@ export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOna
           source={{uri: item.dilPathImage}} // Replace with your image URI
           style={styles.image}
         />
-        <Text style={styles.textStyle}>{item.dil_adi}</Text>
+        <Text style={styles.textStyle}>{item.LocalName}</Text>
       </TouchableOpacity>
     );
   };
@@ -72,7 +72,7 @@ export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOna
         <FlatList
           data={diller} // FlatList'e gösterilecek veri
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+ 
           numColumns={2} // İki sütunlu görünüm
           columnWrapperStyle={styles.columnWrapper} // Sütunları sarmalayan stil
         />

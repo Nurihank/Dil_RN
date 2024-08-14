@@ -19,7 +19,9 @@ export default function OgrenilecekDilSecimModal({ visible, OgrenilecekModalGeri
     const GetAllDiller = async () => {
         try {
             const response = await api.get("/kullanici/dil");
-            setOgrenilecekDiller(response.data.result);
+            const englishDiller = response.data.result.filter(dil => dil.LocalName === 'English');
+
+            setOgrenilecekDiller(englishDiller);
         } catch (error) {
             console.error("Error fetching diller:", error);
         }
@@ -34,7 +36,7 @@ export default function OgrenilecekDilSecimModal({ visible, OgrenilecekModalGeri
             try {
                 const response = await api.post("/kullanici/sectigiDilSecim", {
                     id: id,
-                    sectigiDil: selectedValue.id
+                    sectigiDil: selectedValue.DilID
                 });
                 OgrenilecekDilSecimOnayi(); 
             }
@@ -54,7 +56,7 @@ export default function OgrenilecekDilSecimModal({ visible, OgrenilecekModalGeri
                     source={{uri: item.dilPathImage}} // Replace with your image URI
                     style={styles.image}
                     />
-                <Text style={styles.textStyle}>{item.dil_adi}</Text>
+                <Text style={styles.textStyle}>{item.LocalName}</Text>
             </TouchableOpacity>
         );
     };
@@ -72,7 +74,6 @@ export default function OgrenilecekDilSecimModal({ visible, OgrenilecekModalGeri
                 <FlatList
                     data={ogrenilecekDiller} // FlatList'e gösterilecek veri
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
                     numColumns={2} // İki sütunlu görünüm
                     columnWrapperStyle={styles.columnWrapper} // Sütunları sarmalayan stil
                 />

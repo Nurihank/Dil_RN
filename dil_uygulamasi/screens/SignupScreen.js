@@ -30,11 +30,14 @@ export default function SignupScreen() {
                 });
                 console.log(responseSignin.data.status)
                 if (responseSignin.data.status === "SUCCES") {
+                    console.log("girdii")
                     await AsyncStorage.setItem('jwt_token', JSON.stringify(responseSignin.data.accessToken));
                     UserModel.setUser(responseSignin.data.id);
                     console.log(responseSignin.data.id)
                     await AsyncStorage.setItem("id",JSON.stringify(responseSignin.data.id) )
                     navigation.navigate("SecimEkrani", { name: kullaniciAdi });
+                    console.log("çıktı")
+
                 } else if (responseSignin.data.status === "FAILED") {
                     Alert.alert(responseSignin.data.message);
                 }
