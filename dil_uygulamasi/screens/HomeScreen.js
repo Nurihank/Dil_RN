@@ -6,37 +6,58 @@ import { AntDesign } from '@expo/vector-icons';
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from 'react-native-picker-select';
+import UserModel from '../model/ModelUser';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [animating, setAnimating] = useState(false); // Animasyon durumu için state
   const [Seviyeler,setSeviyeler] = useState([])
-  const [selectedSeviyeID, setSelectedSeviyeID] = useState(null);
+  const [selectedSeviyeID, setSelectedSeviyeID] = useState(1);
+  const [selectSezonID, setSelectedSezonID] = useState(1);
+  const [user, setUser] = useState(null); // Başlangıçta null olarak ayarlandı
 
-  const oyun = () => {
-    navigation.navigate("Oyun")
+  
+
+  const oyun = () => { 
+    navigation.navigate("Oyun") 
   };
-
+ 
   useEffect(()=>{
-    const SeviyeGetir = async()=>{
+    const SeviyeGetir = async()=>{ 
   
       const Seviye = await api.get("/kullanici/Seviye")
       const formattedData = Seviye.data.map(item => ({
         label: item.SeviyeAdi || 'Default Label', // Adjust based on your data structure
         value: item.SeviyeID || 'defaultValue'   // Adjust based on your data structure
       }));
-
       setSeviyeler(formattedData);
-   
     } 
     SeviyeGetir()
-  },[])
+    
+    const user = UserModel.getCurrentUser();
+    console.log("kullanici = "+user)
+
+ 
+  },[]) 
    
   const placeholder = {
     label: 'Seviye Seç',
     value: null,
   };
 
+  const SezonlariGetir = ()=>
+  {
+    const SezonGetir = async()=>
+    {
+      const response  = await api.get("/kullanici/Seviye",{
+        params:{
+          SeviyeID:selectedSeviyeID
+          
+        }
+      }
+      )
+    } 
+  }
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
@@ -49,7 +70,8 @@ export default function HomeScreen() {
             onValueChange={(value) => setSelectedSeviyeID(value)}
             value={selectedSeviyeID}
           />
-          {selectedSeviyeID ? <Text>{selectedSeviyeID}</Text> : null }
+          {selectedSeviyeID ? SezonlariGetir()  : null }
+
     </View>
         <View>
           <TouchableOpacity style={styles.iconButton} onPress={oyun}>
