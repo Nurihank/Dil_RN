@@ -29,32 +29,15 @@ export default function ProfileScreen() {
            // console.log(accessToken)
             const response = await api.get("/kullanici/KullaniciBilgileri", {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`
+                    Authorization: `Bearer ${accessToken}` 
                 },
-                params: {
+                params: {  
                     id: id
                 }, 
             });
 
             setUser(response.data.user[0]);
             setLoading(false);
-
-           /*  const takvim = await api.get("/kullanici/Takvim", {
-                params: {
-                    kullaniciID: id  
-                }
-            });
-      
-            const dates = takvim.data.reduce((acc, item) => {
-                const date = item.Tarih.split('T')[0];  
-                acc[date] = { 
-                    marked: true, 
-                    dotColor: 'green', 
-                    dotStyle: { borderRadius: 6 } 
-                }; 
-                return acc;
-            }, {}); 
-            setMarkedDates(dates);  */ 
 
         } catch (error) {
             handleTokenError(error);
@@ -70,14 +53,14 @@ export default function ProfileScreen() {
             setUser(null);
         }
     };
-
+ 
     const refreshAccessToken = async () => {
         try {
             const refreshToken = await AsyncStorage.getItem("refreshToken");
             if (!refreshToken) {
                 throw new Error("Refresh token not found");
             }
-
+            //REFRESH TOKEN kontrolüne bak 
             const response = await api.put('/kullanici/NewAccessToken', {
                 id: userId 
             }); 
@@ -93,6 +76,7 @@ export default function ProfileScreen() {
 
     useEffect(() => {
         getUserInfo();
+        console.log("asd")
     }, []);
 
     return (

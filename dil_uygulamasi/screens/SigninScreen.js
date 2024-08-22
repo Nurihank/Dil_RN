@@ -27,30 +27,6 @@ export default function SigninScreen() {
                 await AsyncStorage.setItem('id', JSON.stringify(response.data.id));
 
                 await UserModel.setUser(response.data.id);
-                const getUserInfo = async () => {
-                    const id = await AsyncStorage.getItem("id");
-                   // setUserId(id);
-                    try {
-                        const accessToken = await AsyncStorage.getItem("accessToken");
-                        if (!accessToken) {
-                            throw new Error("Access token not found");
-                        }
-                       // console.log(accessToken)
-                        const response = await api.get("/kullanici/kullanici", {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`
-                            },
-                            params: {
-                                id: id
-                            }, 
-                        });
-                        console.log(response.data)
-                        setUser(response.data);
-                    } catch (error) {
-                       // handleTokenError(error);
-                    }
-                };
-                getUserInfo()
                 navigation.navigate("Welcome");
             } else if (response.data.status === "FAILED") {
                 Alert.alert(response.data.message);
