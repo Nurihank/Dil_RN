@@ -12,8 +12,8 @@ export default function HomeScreen() {
   const navigation = useNavigation();
   const [Seviyeler, setSeviyeler] = useState([]);
   const [selectedSeviyeID, setSelectedSeviyeID] = useState(null);
-  const [sezon, setSezon] = useState([]);
-  const[bolum,setBolum] = useState([])
+  const [sezonlar, setSezonlar] = useState([]);
+  const [bolumler, setBolumler] = useState([]);
   const [activeSections, setActiveSections] = useState([]); // Accordion için gerekli
   const [userId, setUserId] = useState(null);
   const [meslekID, setMeslekID] = useState();
@@ -56,8 +56,8 @@ export default function HomeScreen() {
               HangiDilID: HangiDilID,
             },
           });
-          setSezon(response.data);
           console.log(response.data)
+          setSezonlar(response.data);
         } catch (error) {
           console.log("Sezonları getirirken hata oluştu:", error);
         }
@@ -66,45 +66,51 @@ export default function HomeScreen() {
     }
   }, [selectedSeviyeID, HangiDilID]);
 
-  const placeholder = {
-    label: 'Seviye Seç',
-    value: null,
+  // Bölümleri Getir
+  const BolumleriGetir = async (sezonID) => {
+    try {
+      const response = await api.get("/kullanici/Bolum", {
+        params: {
+          SezonID: sezonID,
+          HangiDilID:HangiDilID
+        },
+      });
+      console.log(response.data)
+      setBolumler(response.data);
+    } catch (error) {
+      console.log("Bölümleri getirirken hata oluştu:", error);
+    }
   };
 
- 
-  const renderHeader = (section) => {  //başlık
+  const renderAccordionHeader = (section) => { //Accordion'un başlık kısmını render eder. 
     return (
       <View style={styles.accordionHeader}>
         <Text style={styles.headerText}>{section.Ceviri}</Text>
       </View>
     );
   };
- 
-  const renderContent = (section) => { //tıkladığımda açılan ekranın içeriği
 
-    const BolumGetir =async ()=>{
-      const response = await api.get("/kullanici/Bolum",{
-        params:{
-          SezonID:section.SezonID,
-          HangiDilID:HangiDilID
-        }
-      })
-      console.log(response.data)
-      setBolum(response.data)
-    }
-    BolumGetir();
+  const renderAccordionContent = (section) => { //Accordion'un içerik kısmını render eder.
     return (
       <View style={styles.accordionContent}>
-        <Text>{bolum.Ceviri}</Text>
+        {bolumler.map((bolum, index) => (
+          <Text key={index}>{bolum.Ceviri}</Text>
+        ))}
       </View>
     );
   };
 
-  const updateSections = (activeSections) => { //accordionun açılmasını sağlıyor
-    console.log(activeSections)
-    
-    
+  const updateSections = (activeSections) => { //Aktif olan Accordion bölümlerini günceller.
     setActiveSections(activeSections);
+    if (activeSections.length > 0) {
+      const selectedSezonID = sezonlar[activeSections[0]].SezonID;
+      BolumleriGetir(selectedSezonID); // Seçili sezonun bölümlerini getir
+    }
+  };
+
+  const placeholder = {
+    label: 'Seviye Seç',
+    value: null,
   };
 
   return (
@@ -120,12 +126,11 @@ export default function HomeScreen() {
             value={selectedSeviyeID}
           />
         </View>
-
         <Accordion
-          sections={sezon}
+          sections={sezonlar}
           activeSections={activeSections}
-          renderHeader={renderHeader}
-          renderContent={renderContent}
+          renderHeader={renderAccordionHeader}
+          renderContent={renderAccordionContent}
           onChange={updateSections}
         />
       </View>
@@ -136,24 +141,33 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#f0f8ff',
-    justifyContent: 'center',
+    backgroundColor: '#f7f7f7', // Daha yumuşak bir arka plan rengi
+    padding: 16,
   },
   container: {
     flex: 1,
     alignItems: 'center',
   },
   accordionHeader: {
-    backgroundColor: '#f1c40f',
-    padding: 10,
-    marginVertical: 5,
+    backgroundColor: '#3498db', // Canlı mavi renk başlıklar için
+    padding: 15,
+    marginVertical: 8,
+    borderRadius: 8,
+    elevation: 3, // Android için gölge efekti
+    shadowColor: '#000', // iOS için gölge efekti
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   headerText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#ffffff', // Beyaz yazı rengi
   },
   accordionContent: {
-    backgroundColor: '#ecf0f1',
-    padding: 10,
+    backgroundColor: '#ecf0f1', // Hafif gri içerik arka planı
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 8,
   },
 });

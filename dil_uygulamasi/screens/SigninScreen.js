@@ -13,12 +13,15 @@ export default function SigninScreen() {
 
     const handleSignin = async () => {
         try {
+            console.log("sad")
             const response = await api.get("/kullanici/signin", {
                 params: {
                     kullaniciAdi: kullaniciAdi,
                     sifre: sifre
                 }
             });
+            console.log("sad")
+
             console.log(response.data)
             if (response.data.status === "SUCCES") {
                 await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
