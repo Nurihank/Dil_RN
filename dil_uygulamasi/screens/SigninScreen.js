@@ -6,7 +6,7 @@ import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserModel from '../model/ModelUser';
 
-export default function SigninScreen() {
+export default function SigninScreen() { 
     const [kullaniciAdi, setKullaniciAdi] = useState("");
     const [sifre, setSifre] = useState("");
     const navigation = useNavigation();
