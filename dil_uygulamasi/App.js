@@ -17,6 +17,7 @@ import BottomNavigator from './navigator/BottomNavigator';
 import SozlukEkrani from './screens/SozlukEkrani';
 import OyunEkrani from './screens/OyunEkrani';
 import OyunEkrani2 from './screens/OyunEkrani2';
+import EgitimScreen from './screens/EgitimScreen';
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
@@ -34,7 +35,8 @@ export default function App() {
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Bottom" component={BottomNavigator} options={{ headerShown: false }} />
         <Stack.Screen name="Sozluk" component={SozlukEkrani} options={{ headerShown: false }} />
-        <Stack.Screen name="Oyun" component={OyunEkrani2} options={{ headerShown: false }} />
+        <Stack.Screen name="OyunEkrani" component={OyunEkrani2} options={{ headerShown: false }} />
+        <Stack.Screen name="Egitim" component={EgitimScreen} options={{ headerShown: false }} />
 
       </Stack.Navigator>
     </NavigationContainer>
