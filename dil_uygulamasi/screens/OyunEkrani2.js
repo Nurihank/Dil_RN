@@ -6,6 +6,7 @@ export default function OyunEkrani2(props) {
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [kelimeler, setKelimeler] = useState([]);
     const [anaKelime, setAnaKelime] = useState([]);
+    
     const KelimeleriGetir = async () => {
         try {
             const response = await api.get("/kullanici/oyun", {

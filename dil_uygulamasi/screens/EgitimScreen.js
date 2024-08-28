@@ -1,15 +1,16 @@
-import { FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Dimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function EgitimScreen(props) {
     const [kelimeler, setKelimeler] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0); // Track the current word index
     const [dil, setDil] = useState(false);
 
     const KelimeleriGetir = async () => {
-        console.log(props.route.params.id);
         try {
             const response = await api.get("/kullanici/Egitim", {
                 params: {
@@ -28,7 +29,6 @@ export default function EgitimScreen(props) {
 
             if (data.length > 0) {
                 const shuffledData = shuffleArray([...data]);
-                console.log(shuffledData)
                 setKelimeler(shuffledData);
             }
         } catch (error) {
@@ -40,42 +40,49 @@ export default function EgitimScreen(props) {
         KelimeleriGetir();
     }, []);
 
-    const renderItem = ({ item }) => (
-        <View style={styles.card}>
-            <View style={styles.textContainer}>
-                <TouchableOpacity>
-                    <Text style={styles.cardText}>{dil ? item.Ceviri : item.Value}</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity onPress={() => setDil(!dil)}>
-                    <Text style={styles.toggleText}>
-                        {dil ? 'Öğrenmek İstedigin Dilde Gör' : 'Kendi Dilinde Gör'}
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.addButton}>
-                    <Image
-                        source={require('../assets/dictionary.png')} // Update the path to your icon
-                        style={styles.icon}
-                    />
-                    <Text style={styles.addText}>Sözlüğe Ekle</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-    );
+    const nextWord = () => {
+        if (currentIndex < kelimeler.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+
+    const previousWord = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
 
     return (
         <View style={styles.container}>
-            <FlatList
-                data={kelimeler}
-                renderItem={renderItem}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.flatListContent}
-                snapToAlignment="center" 
-                snapToInterval={screenWidth * 0.8 + 20} // Item width + margin
-                decelerationRate="fast" 
-            />
+            <TouchableOpacity style={styles.backButton} onPress={() => props.navigation.goBack()}>
+                <AntDesign name="arrowleft" size={24} color="black" />
+            </TouchableOpacity>
+
+            {kelimeler.length > 0 && (
+                <View style={styles.wordContainer}>
+                    <Text style={styles.wordText}>
+                        {dil ? kelimeler[currentIndex].Ceviri : kelimeler[currentIndex].Value}
+                    </Text>
+                </View>
+            )}
+
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity onPress={previousWord} style={styles.navigationButton} disabled={currentIndex === 0}>
+                    <Text style={styles.buttonText}>◀️</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setDil(!dil)} style={styles.languageButton}>
+                    <Text style={styles.buttonText}>
+                        {dil ? 'Öğrenmek İstedigin Dilde Gör' : 'Kendi Dilinde Gör'}
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={nextWord} style={styles.navigationButton} disabled={currentIndex === kelimeler.length - 1}>
+                    <Text style={styles.buttonText}>▶️</Text>
+                </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.addButton}>
+                <Text style={styles.addButtonText}>Sözlüğe Ekle</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -83,55 +90,65 @@ export default function EgitimScreen(props) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
-        backgroundColor: '#f5f5f5'
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',
+        padding: 20,
+        position: 'relative', // Make sure the container is relative to use absolute positioning inside it
     },
-    card: {
-        width: screenWidth * 0.8, // Adjust the width of each card
+    wordContainer: {
+        width: screenWidth * 0.8,
         height: 200,
         backgroundColor: '#fff',
-        borderRadius: 8,
-        marginHorizontal: 10, // Horizontal margin between cards
         justifyContent: 'center',
         alignItems: 'center',
+        borderRadius: 10,
         elevation: 4,
-        position: 'relative'
+        marginBottom: 20,
     },
-    textContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    cardText: {
-        fontSize: 18,
-        color: '#333'
+    wordText: {
+        fontSize: 24,
+        color: '#333',
     },
     buttonContainer: {
-        position: 'absolute',
-        bottom: 10,
-        right: 10,
         flexDirection: 'row',
-        alignItems: 'center'
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: screenWidth * 0.8,
     },
-    toggleText: {
-        fontSize: 14,
-        color: '#007BFF',
-        marginRight: 10
+    navigationButton: {
+        backgroundColor: '#007BFF',
+        padding: 10,
+        borderRadius: 5,
+    },
+    languageButton: {
+        backgroundColor: '#28a745',
+        padding: 10,
+        borderRadius: 5,
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
     },
     addButton: {
-        flexDirection: 'row',
-        alignItems: 'center'
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        backgroundColor: '#007BFF',
+        padding: 10,
+        borderRadius: 5,
     },
-    icon: {
-        width: 24,
-        height: 24,
-        marginRight: 5
+    addButtonText: {
+        color: '#fff',
+        fontSize: 16,
     },
-    addText: {
-        fontSize: 14,
-        color: '#007BFF'
+    backButton: {
+        position: 'absolute',
+        top: 50,
+        left: 20,
+        backgroundColor: '#fff',
+        padding: 10,
+        borderRadius: 5,
+        elevation: 2,
     },
-    flatListContent: {
-        alignItems: 'center', // Centers the content vertically
-    }
 });
