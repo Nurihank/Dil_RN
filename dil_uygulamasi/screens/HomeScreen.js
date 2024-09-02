@@ -80,7 +80,7 @@ export default function HomeScreen() {
       });
       setBolumler(response.data);
     } catch (error) {
-      console.log("Bölümleri getirirken hata oluştu:", error);
+      console.log("Bölümleri getirirken hata oluştu:", error) ;
     }
   };
 
