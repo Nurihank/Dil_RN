@@ -2,12 +2,93 @@ import { Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function OyunEkrani2(props) {
-    const [soru, setSoru] = useState(0); // Start from 0
+    const [soru, setSoru] = useState(0);
     const [kelimeler, setKelimeler] = useState([]);
     const [anaKelime, setAnaKelime] = useState(null);
+    const [anakelimeler, setAnaKelimeler] = useState([]);
+    const [devamEtButton, setDevamEtButton] = useState(false);
+    const [yanlisKelimeler, setYanlisKelimeler] = useState([]);
+    const [seciliSik, setSeciliSik] = useState(null);
+    const [cevapDurumu, setCevapDurumu] = useState(null);
+    const [userId, setUserId] = useState(null);
+
     const navigation = useNavigation();
+
+    const getUserID = async () => {
+        const id = await AsyncStorage.getItem("id");
+        setUserId(id);
+      };
+
+    const DigerSoru = async (yanlisKelime) => {
+        if (yanlisKelime) {
+            setYanlisKelimeler(prev => [...prev, yanlisKelime]);
+        }
+
+        if (soru >= 2) { 
+            Alert.alert(
+                "Tebrikler!",
+                "Testi bitirdin.",
+                [
+                  {
+                    text: "Devam Et", 
+                    onPress: () => {
+                        navigation.navigate("Bottom");
+                    },
+                    style: "default"
+                  }
+                ]
+            ); 
+        }
+        
+        setSoru(soru + 1); 
+        setDevamEtButton(false); 
+        setSeciliSik(null); 
+        setCevapDurumu(null); 
+        const data = kelimeler;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; 
+            }
+            return array;
+        }
+
+        if (data.length > 0) {
+            const shuffledData = shuffleArray([...data]); 
+            setKelimeler(shuffledData);
+        }
+    }
+
+    useEffect(() => {
+        if (soru >= 2) {
+            console.log("Yanlış Kelimeler:", yanlisKelimeler); // Yanlış kelimeleri burada yazdırın
+        }
+    }, [yanlisKelimeler]);
+
+    const TekrarDene = ()=>{
+        setAnaKelime(anakelimeler[soru])
+        setDevamEtButton(false); 
+        setSeciliSik(null); 
+        setCevapDurumu(null); 
+        const data = kelimeler;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; 
+            }
+            return array;
+        }
+
+        if (data.length > 0) {
+            const shuffledData = shuffleArray([...data]); 
+            setKelimeler(shuffledData);
+        }
+    }
 
     const KelimeleriGetir = async () => {
         try {
@@ -18,19 +99,19 @@ export default function OyunEkrani2(props) {
             });
 
             const data = response.data;
-
+            setAnaKelimeler(response.data)
             function shuffleArray(array) {
                 for (let i = array.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [array[i], array[j]] = [array[j], array[i]]; 
                 }
                 return array;
-            }
+            } 
 
             if (data.length > 0) {
-                const shuffledData = shuffleArray([...data]); // Shuffle the array
+                const shuffledData = shuffleArray([...data]); 
                 setKelimeler(shuffledData);
-                setSoru(0); // Reset the question index
+                setSoru(0); 
             }
                 
         } catch (error) {
@@ -38,12 +119,19 @@ export default function OyunEkrani2(props) {
         }
     };
 
-    const SozlugeEkle = (Kelime)=>{
-        console.log(Kelime)
+    const SozlugeEkle = async(Kelime) => {
+        console.log(Kelime.AnaKelimeID);
+        console.log(userId)
+
+        const response = await api.post("/kullanici/SozlugeKelimeEkleme",{
+            KullaniciID:userId,
+            AnaKelimeID:Kelime.AnaKelimeID
+        })
+        Alert.alert(response.data.message)
     }
+
     const CevapDogruMu = (cevap) => {
         if (cevap === anaKelime.value) {
-            Alert.alert("Doğru cevap", "Tebrikler!");
             if (soru >= 2) { 
                 Alert.alert(
                     "Tebrikler!",
@@ -51,48 +139,75 @@ export default function OyunEkrani2(props) {
                     [
                       {
                         text: "Devam Et", 
-                        onPress: () => navigation.navigate("Bottom"),
+                        onPress: () => DigerSoru(),
                         style: "default"
                       }
                     ]
-                  );                
+                ); 
             } else {
-                setSoru(soru + 1); 
+                setDevamEtButton(true);
             }
+            setCevapDurumu('correct'); 
         } else {
-            Alert.alert("Yanlış cevap", "Tekrar deneyin.");
+            Alert.alert(
+                "Yanlış Cevap!",
+                "Lütfen cevabınızı kontrol edin.",
+                [
+                    {
+                        text: "Tekrar Dene", 
+                        onPress: () => TekrarDene(),
+                        style: "default"
+                    },
+                    {
+                        text: "Devam Et", 
+                        onPress: () => DigerSoru(anaKelime.value),
+                        style: "default"
+                    }
+                ]
+            );
+            setCevapDurumu('incorrect'); 
         }
+        setSeciliSik(cevap); 
     };
 
     useFocusEffect(
         React.useCallback(() => {
             KelimeleriGetir();
+            getUserID()
         }, [props.route.params.id])
     );
 
     useEffect(() => {
         if (kelimeler.length > 0 && soru < kelimeler.length) {
-            setAnaKelime(kelimeler[soru]); 
+            setAnaKelime(anakelimeler[soru]); 
         }
     }, [soru, kelimeler]);
 
-    const renderItem = ({ item }) => (
-        <TouchableOpacity 
-            onPress={() => CevapDogruMu(item.value)} 
-            style={styles.answerItem}
-        >
-            <Text style={styles.answerText}>{item.ceviri}</Text>
-        </TouchableOpacity>
-    );
+    const renderItem = ({ item }) => {
+        const isSelected = item.value === seciliSik;
+        const isCorrect = isSelected && cevapDurumu === 'correct';
+        const isIncorrect = isSelected && cevapDurumu === 'incorrect';
+        return (
+            <TouchableOpacity 
+                onPress={() => CevapDogruMu(item.value)} 
+                style={[ 
+                    styles.answerItem, 
+                    isCorrect && styles.correctAnswer, 
+                    isIncorrect && styles.incorrectAnswer
+                ]}
+            >
+                <Text style={styles.answerText}>{item.ceviri}</Text>
+            </TouchableOpacity>
+        );
+    };
 
     return ( 
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.questionCount}>{soru + 1}/3</Text>
-                <TouchableOpacity onPress={()=>SozlugeEkle(anaKelime)}>
+                <TouchableOpacity onPress={() => SozlugeEkle(anaKelime)}>
                     <Text style={styles.title}>Sözlüğe Ekle</Text>
                 </TouchableOpacity>
-                
             </View>
             <View style={styles.askContainer}>
                 <Image source={require("../assets/question.png")} style={styles.image} />  
@@ -105,6 +220,14 @@ export default function OyunEkrani2(props) {
                 contentContainerStyle={styles.answerContainer}
                 numColumns={2}
             />
+            {devamEtButton 
+                ?
+                <TouchableOpacity onPress={() => DigerSoru()}>
+                    <Image source={require("../assets/nextButton.png")} style={styles.nextButton}/>
+                </TouchableOpacity>
+                : 
+                null
+            }
         </View>
     );
 }
@@ -175,5 +298,17 @@ const styles = StyleSheet.create({
     answerText: {
         fontSize: 18,
         color: '#ffffff', // White
+    },
+    correctAnswer: {
+        backgroundColor: '#4caf50', // Green
+    },
+    incorrectAnswer: {
+        backgroundColor: '#f44336', // Red
+    },
+    nextButton: {
+        height: 75,
+        width: 75,
+        left: 275,
+        bottom: 25
     }
 });

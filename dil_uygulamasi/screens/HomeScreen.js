@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ProgressBars from '../component/ProgressBars';
@@ -8,6 +8,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import UserModel from '../model/ModelUser';
 import Accordion from 'react-native-collapsible/Accordion';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -35,21 +36,31 @@ export default function HomeScreen() {
 
   const Oyun = (id) => {
     navigation.navigate("OyunEkrani", { id: id });
-  }
+  };
 
-  useEffect(() => {
-    setUserID();
-    getUserInfo();
-    const SeviyeGetir = async () => {
-      const Seviye = await api.get("/kullanici/Seviye");
-      const formattedData = Seviye.data.map(item => ({
-        label: item.SeviyeAdi || 'Default Label',
-        value: item.SeviyeID || 'defaultValue'
-      }));
-      setSeviyeler(formattedData);
-    };
-    SeviyeGetir();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        await setUserID();
+        await getUserInfo();
+        const SeviyeGetir = async () => {
+          try {
+            const Seviye = await api.get("/kullanici/Seviye");
+            const formattedData = Seviye.data.map(item => ({
+              label: item.SeviyeAdi || 'Default Label',
+              value: item.SeviyeID || 'defaultValue'
+            }));
+            setSeviyeler(formattedData);
+          } catch (error) {
+            console.log("Seviyeleri getirirken hata oluştu:", error);
+          }
+        };
+        await SeviyeGetir();
+      };
+
+      fetchData();
+    }, [])
+  );
 
   useEffect(() => {
     if (selectedSeviyeID && HangiDilID) {
@@ -80,7 +91,7 @@ export default function HomeScreen() {
       });
       setBolumler(response.data);
     } catch (error) {
-      console.log("Bölümleri getirirken hata oluştu:", error) ;
+      console.log("Bölümleri getirirken hata oluştu:", error);
     }
   };
 
@@ -114,7 +125,6 @@ export default function HomeScreen() {
       BolumleriGetir(selectedSezonID);
     }
   };
-
   const placeholder = {
     label: 'Seviye Seç',
     value: null,
@@ -133,7 +143,7 @@ export default function HomeScreen() {
             value={selectedSeviyeID}
             style={pickerSelectStyles}
           />
-          <TouchableOpacity style={styles.eğitimButton} onPress={() => {navigation.navigate("Egitim",{id:selectedSeviyeID})}}>
+          <TouchableOpacity style={styles.eğitimButton} onPress={() => { navigation.navigate("Egitim", { id: selectedSeviyeID }) }}>
             <FontAwesome name="book" size={24} color="#ffffff" />
             <Text style={styles.eğitimText}>Eğitim</Text>
           </TouchableOpacity>

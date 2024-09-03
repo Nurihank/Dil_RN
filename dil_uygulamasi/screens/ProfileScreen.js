@@ -1,10 +1,10 @@
 import { ScrollView, Image, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBars from '../component/ProgressBars'; // ProgressBars olarak import edildi
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
-
+import { Calendar } from 'react-native-calendars';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ProfileScreen() {
     const [userId, setUserId] = useState(undefined);
@@ -18,6 +18,7 @@ export default function ProfileScreen() {
         setSelectedDate(day.dateString);
     };
 
+    // Kullanıcı bilgilerini al
     const getUserInfo = async () => {
         const id = await AsyncStorage.getItem("id");
         setUserId(id);
@@ -26,7 +27,6 @@ export default function ProfileScreen() {
             if (!accessToken) {
                 throw new Error("Access token not found");
             }
-           // console.log(accessToken)
             const response = await api.get("/kullanici/KullaniciBilgileri", {
                 headers: {
                     Authorization: `Bearer ${accessToken}` 
@@ -49,7 +49,6 @@ export default function ProfileScreen() {
         if (error.response && error.response.data.message === "Token süresi dolmuş") {
             await refreshAccessToken();
         } else {
-           // console.log("Token hatalı veya süresi dolmuş, kullanıcıyı çıkış yapmaya yönlendir.");
             setUser(null);
         }
     };
@@ -60,24 +59,26 @@ export default function ProfileScreen() {
             if (!refreshToken) {
                 throw new Error("Refresh token not found");
             }
-            //REFRESH TOKEN kontrolüne bak 
             const response = await api.put('/kullanici/NewAccessToken', {
                 id: userId 
             }); 
 
-            //console.log("Başarılı cevap:", response.data.accessToken);
             await AsyncStorage.setItem('accessToken', response.data.accessToken);
             getUserInfo(); 
         } catch (error) {
-          //  console.log("Yenileme hatası:", error.response ? error.response.data.message : error.message);
             setUser(null);
         }   
     };
 
-    useEffect(() => {
-        getUserInfo();
-        console.log("asd")
-    }, []);
+    // useFocusEffect ile ekran odaklandığında veri yenileme
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async ()=>{
+                await getUserInfo();
+            }
+            fetchData()
+        }, [userId])
+    );
 
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
