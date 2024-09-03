@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -9,6 +10,12 @@ export default function EgitimScreen(props) {
     const [kelimeler, setKelimeler] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0); // Track the current word index
     const [dil, setDil] = useState(false);
+    const [userId, setUserId] = useState(null);
+
+    const setUserID = async () => {
+        const id = await AsyncStorage.getItem("id");
+        setUserId(id);
+    };
 
     const KelimeleriGetir = async () => {
         try {
@@ -35,8 +42,17 @@ export default function EgitimScreen(props) {
             console.error(error);
         }
     };
-
+    const SozlugeEkle = async(AnaKelimeID)=>{
+        console.log(userId)
+        console.log(AnaKelimeID)
+        const response = await api.post("/kullanici/SozlugeKelimeEkleme",{
+            KullaniciID:userId,
+            AnaKelimeID:AnaKelimeID
+        })
+        console.log(response.data)
+    }
     useEffect(() => {
+        setUserID()
         KelimeleriGetir();
     }, []);
 
@@ -51,7 +67,7 @@ export default function EgitimScreen(props) {
             setCurrentIndex(currentIndex - 1);
         }
     };
-
+    console.log()
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => props.navigation.goBack()}>
@@ -80,7 +96,7 @@ export default function EgitimScreen(props) {
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.addButton}>
+            <TouchableOpacity style={styles.addButton} onPress={()=>SozlugeEkle(kelimeler[currentIndex].AnaKelimelerID)}>
                 <Text style={styles.addButtonText}>Sözlüğe Ekle</Text>
             </TouchableOpacity>
         </View>
