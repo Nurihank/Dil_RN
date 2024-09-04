@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Alert, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Speech from 'expo-speech';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -16,7 +17,24 @@ export default function EgitimScreen(props) {
         const id = await AsyncStorage.getItem("id");
         setUserId(id);
     };
+    const speakWord = (word) => {
+        const options = {
+                rate: 0.50,  // Adjust the speed (0.75 is slower than normal, where 1.0 is the default speed)
+                pitch: 1.0,  // Adjust the pitch (1.0 is the default pitch)
+       
+            language: 'en',  // You can set the language here (e.g., 'en' for English)
+             
+            onStart: () => console.log("Speech started"),
 
+            onDone: () => console.log("Speech finished"),
+                
+            
+        }       
+            
+            
+              Speech.speak(word, options)
+        
+        }
     const KelimeleriGetir = async () => {
         try {
             const response = await api.get("/kullanici/Egitim", {
@@ -79,7 +97,11 @@ export default function EgitimScreen(props) {
                     <Text style={styles.wordText}>
                         {dil ? kelimeler[currentIndex].Ceviri : kelimeler[currentIndex].Value}
                     </Text>
-                </View>
+                    <TouchableOpacity onPress={() => speakWord(kelimeler[currentIndex].Value)}>
+                        <Image source={require("../assets/microphone.png")} style={{height:40,width:40}}/>
+                </TouchableOpacity>
+                    </View>
+                
             )}
 
             <View style={styles.buttonContainer}>
@@ -108,9 +130,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#E0EAFC', // Gradient için geçici renk
         padding: 20,
-        position: 'relative', // Make sure the container is relative to use absolute positioning inside it
     },
     wordContainer: {
         width: screenWidth * 0.8,
@@ -118,13 +139,18 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 10,
-        elevation: 4,
+        borderRadius: 15, // Daha yuvarlak köşeler
+        elevation: 8, // Daha belirgin gölge
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 5,
         marginBottom: 20,
     },
     wordText: {
-        fontSize: 24,
-        color: '#333',
+        fontSize: 28, // Daha büyük yazı
+        color: '#2C3E50', // Daha belirgin yazı rengi
+        fontWeight: 'bold', // Kalın yazı
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -133,30 +159,37 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.8,
     },
     navigationButton: {
-        backgroundColor: '#007BFF',
-        padding: 10,
-        borderRadius: 5,
+        backgroundColor: '#3498DB', // Daha canlı bir mavi
+        padding: 15,
+        borderRadius: 10, // Daha yuvarlak köşeler
     },
     languageButton: {
-        backgroundColor: '#28a745',
-        padding: 10,
-        borderRadius: 5,
+        backgroundColor: '#1ABC9C', // Daha canlı bir yeşil
+        padding: 15,
+        borderRadius: 10, // Daha yuvarlak köşeler
     },
     buttonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 18, // Daha büyük yazı
+        fontWeight: '600', // Yazıyı kalınlaştır
     },
     addButton: {
         position: 'absolute',
         bottom: 20,
         right: 20,
-        backgroundColor: '#007BFF',
-        padding: 10,
-        borderRadius: 5,
+        backgroundColor: '#E74C3C', // Kırmızı buton
+        padding: 15,
+        borderRadius: 50, // Yuvarlak buton
+        elevation: 8, // Daha belirgin gölge
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 5,
     },
     addButtonText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 18, // Daha büyük yazı
+        fontWeight: 'bold', // Kalın yazı
     },
     backButton: {
         position: 'absolute',
@@ -164,7 +197,12 @@ const styles = StyleSheet.create({
         left: 20,
         backgroundColor: '#fff',
         padding: 10,
-        borderRadius: 5,
-        elevation: 2,
+        borderRadius: 10, // Daha yuvarlak köşeler
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
     },
 });
+

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Speech from 'expo-speech';
 
 export default function OyunEkrani2(props) {
     const [soru, setSoru] = useState(0);
@@ -23,6 +24,7 @@ export default function OyunEkrani2(props) {
       };
 
     const DigerSoru = async (yanlisKelime) => {
+        console.log(yanlisKelime)
         if (yanlisKelime) {
             setYanlisKelimeler(prev => [...prev, yanlisKelime]);
         }
@@ -64,6 +66,7 @@ export default function OyunEkrani2(props) {
     }
 
     useEffect(() => {
+        console.log("awsd")
         if (soru >= 2) {
             console.log("Yanlış Kelimeler:", yanlisKelimeler); // Yanlış kelimeleri burada yazdırın
         }
@@ -176,6 +179,24 @@ export default function OyunEkrani2(props) {
             getUserID()
         }, [props.route.params.id])
     );
+    const speakWord = (word) => {
+        const options = {
+                rate: 0.50,  // Adjust the speed (0.75 is slower than normal, where 1.0 is the default speed)
+                pitch: 1.0,  // Adjust the pitch (1.0 is the default pitch)
+       
+            language: 'en',  // You can set the language here (e.g., 'en' for English)
+             
+            onStart: () => console.log("Speech started"),
+
+            onDone: () => console.log("Speech finished"),
+                
+            
+        }       
+            
+            
+              Speech.speak(word, options)
+        
+        }
 
     useEffect(() => {
         if (kelimeler.length > 0 && soru < kelimeler.length) {
@@ -197,6 +218,7 @@ export default function OyunEkrani2(props) {
                 ]}
             >
                 <Text style={styles.answerText}>{item.ceviri}</Text>
+                
             </TouchableOpacity>
         );
     };
@@ -212,6 +234,10 @@ export default function OyunEkrani2(props) {
             <View style={styles.askContainer}>
                 <Image source={require("../assets/question.png")} style={styles.image} />  
                 {anaKelime && <Text style={styles.askText}>{anaKelime.value}</Text>}
+                <TouchableOpacity onPress={()=>speakWord(anaKelime.value)}>
+                    <Image source={require("../assets/microphone.png")} style={{height:40,width:40}}/>
+
+                </TouchableOpacity>
             </View>
             <FlatList
                 data={kelimeler}
@@ -235,23 +261,25 @@ export default function OyunEkrani2(props) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#e0f7fa", // Light Cyan
+        backgroundColor: "#f5f5f5", // Light Gray
         padding: 20,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 20,
     },
     questionCount: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#00796b', // Teal
+        color: '#0288d1', // Darker Blue
     },
     title: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#00796b', // Teal
+        color: '#0288d1', // Darker Blue
+        textTransform: 'uppercase',
     },
     askContainer: {
         marginTop: 20,
@@ -261,54 +289,61 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderRadius: 15,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
-        elevation: 5,
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 8,
         flexDirection: "row"
     },
     image: {
         height: 120,
         width: 120,
         marginHorizontal: 10,
+        resizeMode: 'contain',
     },
     askText: {
-        fontSize: 32,
+        fontSize: 34,
         fontWeight: "700",
-        color: "#000000", // Black
+        color: "#333333", // Dark Gray
+        textAlign: 'center',
+        marginHorizontal: 10,
     },
     answerContainer: {
-        marginTop: 20,
+        marginTop: 30,
         justifyContent: 'center',
         alignItems: 'center',
     },
     answerItem: {
         margin: 10,
         padding: 15,
-        backgroundColor: '#00bcd4', // Cyan
-        borderRadius: 10,
+        backgroundColor: '#80d8ff', // Lighter Blue
+        borderRadius: 12,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-        width: '40%',
+        shadowRadius: 6,
+        elevation: 5,
+        width: '45%',
         alignItems: 'center',
     },
     answerText: {
         fontSize: 18,
+        fontWeight: '600',
         color: '#ffffff', // White
     },
     correctAnswer: {
-        backgroundColor: '#4caf50', // Green
+        backgroundColor: '#66bb6a', // Green
+        shadowColor: "#388e3c",
     },
     incorrectAnswer: {
-        backgroundColor: '#f44336', // Red
+        backgroundColor: '#ef5350', // Red
+        shadowColor: "#d32f2f",
     },
     nextButton: {
-        height: 75,
-        width: 75,
-        left: 275,
-        bottom: 25
+        height: 70,
+        width: 70,
+        alignSelf: 'flex-end',
+        marginTop: 20,
     }
 });
+
