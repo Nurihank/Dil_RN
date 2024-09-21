@@ -56,13 +56,18 @@ export default function ProfileScreen() {
     const refreshAccessToken = async () => {
         try {
             const refreshToken = await AsyncStorage.getItem("refreshToken");
+            console.log("yeni acces token alma")
             if (!refreshToken) {
                 throw new Error("Refresh token not found");
             }
-            const response = await api.put('/kullanici/NewAccessToken', {
-                id: userId 
-            }); 
+            console.log("asdda")
 
+            const response = await api.put('/kullanici/NewAccessToken', {
+                id: userId ,
+                refreshToken: refreshToken
+            });  
+            console.log(response)
+          
             await AsyncStorage.setItem('accessToken', response.data.accessToken);
             getUserInfo(); 
         } catch (error) {

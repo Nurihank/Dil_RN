@@ -22,7 +22,6 @@ export default function SozlukEkrani() {
         const response = await api.get("/kullanici/SozluguGetir", {
           params: { KullaniciID: userId }
         });
-        console.log("API Response:", response.data.message); // API yanıtını kontrol edin
         setKelimeler(response.data.message || []);
         // Başlangıçta tüm kelimeler kapalı
         setGosterimDurumu(response.data.message.reduce((acc, kelime) => {
