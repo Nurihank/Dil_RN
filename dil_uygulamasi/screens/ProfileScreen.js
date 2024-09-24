@@ -45,32 +45,29 @@ export default function ProfileScreen() {
     };
 
     const handleTokenError = async (error) => {
-        console.log(error.response.data)
         if (error.response && error.response.data.message === "Token süresi dolmuş") {
             await refreshAccessToken();
         } else {
+          
             setUser(null);
         }
     };
  
     const refreshAccessToken = async () => {
         try {
-            const refreshToken = await AsyncStorage.getItem("refreshToken");
-            console.log("yeni acces token alma")
+            let refreshToken = await AsyncStorage.getItem("refreshToken");
+            refreshToken = refreshToken.replace(/^"|"$/g, '');
             if (!refreshToken) {
                 throw new Error("Refresh token not found");
             }
-            console.log("asdda")
-
             const response = await api.put('/kullanici/NewAccessToken', {
                 id: userId ,
                 refreshToken: refreshToken
-            });  
-            console.log(response)
-          
+            });            
             await AsyncStorage.setItem('accessToken', response.data.accessToken);
-            getUserInfo(); 
+            getUserInfo();  
         } catch (error) {
+            console.log("access Token alırken hata = "+error.response.data.message)
             setUser(null);
         }   
     };

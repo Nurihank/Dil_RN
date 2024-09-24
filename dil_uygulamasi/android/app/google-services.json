@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "655030977056",
+    "project_id": "dil-uygulamasi",
+    "storage_bucket": "dil-uygulamasi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655030977056:android:b6ecc7cf453a4c5884f245",
+        "android_client_info": {
+          "package_name": "com.anonymous.dil_uygulamasi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "655030977056-ri293j3794lt68qnmq2tvnp8kqadtj3p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDup470aij-d0zlphQCcpvhGZl5pqNn5lE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "655030977056-ri293j3794lt68qnmq2tvnp8kqadtj3p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

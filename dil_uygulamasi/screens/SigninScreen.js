@@ -5,8 +5,29 @@ import { FontAwesome } from '@expo/vector-icons'; // FontAwesome kullanarak ikon
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserModel from '../model/ModelUser';
+//import  GoogleSignin  from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
+
 
 export default function SigninScreen() { 
+   /* GoogleSignin.configure({
+        webClientId: 'AIzaSyCYecTBKxH9eihQvfGZcc1zWAxPVOiTT6o', // Firebase projesinden alınan Web Client ID
+    });*/
+    const googleLogin = async () => {
+        try {
+            // Kullanıcı Google ile oturum açar
+            await GoogleSignin.hasPlayServices();
+            const { idToken } = await GoogleSignin.signIn();
+
+            // Firebase'de oturum açılır
+            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+            await auth().signInWithCredential(googleCredential);
+            console.log('Giriş başarılı');
+        } catch (error) {
+            console.error('Google giriş hatası: ', error);
+        }
+    };
+
     const [kullaniciAdi, setKullaniciAdi] = useState("");
     const [sifre, setSifre] = useState("");
     const navigation = useNavigation();
