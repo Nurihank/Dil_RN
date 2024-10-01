@@ -1,32 +1,41 @@
 import { Alert, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons'; // FontAwesome kullanarak ikonlar ekliyoruz
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserModel from '../model/ModelUser';
-//import  GoogleSignin  from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import * as AuthSession from 'expo-auth-session';
+import * as Google from 'expo-auth-session/providers/google';
 
-
+ //android = 134181693185-gga5vjrt5lirsb5jjoamjs6nq2mstusa.apps.googleusercontent.com
+// web = 134181693185-c2dpu39ja1fiumfg3hfcdpk68vpfd7np.apps.googleusercontent.com
+//ios = 134181693185-c1t5u85i2hi5jd4412ptud3c1j72pm5n.apps.googleusercontent.com
 export default function SigninScreen() { 
-   /* GoogleSignin.configure({
-        webClientId: 'AIzaSyCYecTBKxH9eihQvfGZcc1zWAxPVOiTT6o', // Firebase projesinden alınan Web Client ID
-    });*/
-    const googleLogin = async () => {
-        try {
-            // Kullanıcı Google ile oturum açar
-            await GoogleSignin.hasPlayServices();
-            const { idToken } = await GoogleSignin.signIn();
+   
+    const webClientId = "134181693185-c2dpu39ja1fiumfg3hfcdpk68vpfd7np.apps.googleusercontent.com"
+    const androidClientId = "134181693185-gga5vjrt5lirsb5jjoamjs6nq2mstusa.apps.googleusercontent.com"
+    const iosClientId = "134181693185-c1t5u85i2hi5jd4412ptud3c1j72pm5n.apps.googleusercontent.com"
 
-            // Firebase'de oturum açılır
-            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-            await auth().signInWithCredential(googleCredential);
-            console.log('Giriş başarılı');
-        } catch (error) {
-            console.error('Google giriş hatası: ', error);
+    const config = {
+        webClientId,
+        iosClientId,
+        androidClientId
+    }
+    const [request, response, promptAsync] = Google.useAuthRequest(config)
+
+    const handleToken = ()=>{
+        if(response?.type === "success"){
+            const {authentication} = response
+            const token = authentication?.accessToken
+            console.log("token = "+token)
         }
-    };
+    }
+    useEffect(()=>{
+        handleToken()
+    },[response])
+    
 
     const [kullaniciAdi, setKullaniciAdi] = useState("");
     const [sifre, setSifre] = useState("");
@@ -88,7 +97,7 @@ export default function SigninScreen() {
                     onChangeText={(text) => setSifre(text)}
                 />
             </View>
-            <TouchableOpacity onPress={handleForgotPassword} style={styles.forgotContainer}>
+            <TouchableOpacity onPress={() => promptAsync()} style={styles.forgotContainer}>
                 <Text style={styles.forgotText}>Şifremi Unuttum</Text>
             </TouchableOpacity>
             <View style={styles.buttonContainer}>

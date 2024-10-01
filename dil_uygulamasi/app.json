@@ -27,6 +27,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1fd78ea3-a79d-492d-9b87-b67631a8a423"
+      }
+    },
+    "scheme":"dil_uygulamasi"
   }
 }
