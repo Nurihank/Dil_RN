@@ -5,45 +5,17 @@ import { FontAwesome } from '@expo/vector-icons'; // FontAwesome kullanarak ikon
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserModel from '../model/ModelUser';
-import auth from '@react-native-firebase/auth';
-import * as AuthSession from 'expo-auth-session';
-import * as Google from 'expo-auth-session/providers/google';
 
- //android = 134181693185-gga5vjrt5lirsb5jjoamjs6nq2mstusa.apps.googleusercontent.com
-// web = 134181693185-c2dpu39ja1fiumfg3hfcdpk68vpfd7np.apps.googleusercontent.com
-//ios = 134181693185-c1t5u85i2hi5jd4412ptud3c1j72pm5n.apps.googleusercontent.com
+
+
 export default function SigninScreen() { 
    
-    const webClientId = "134181693185-c2dpu39ja1fiumfg3hfcdpk68vpfd7np.apps.googleusercontent.com"
-    const androidClientId = "134181693185-gga5vjrt5lirsb5jjoamjs6nq2mstusa.apps.googleusercontent.com"
-    const iosClientId = "134181693185-c1t5u85i2hi5jd4412ptud3c1j72pm5n.apps.googleusercontent.com"
-
-    const config = {
-        webClientId,
-        iosClientId,
-        androidClientId
-    }
-    const [request, response, promptAsync] = Google.useAuthRequest(config)
-
-    const handleToken = ()=>{
-        if(response?.type === "success"){
-            const {authentication} = response
-            const token = authentication?.accessToken
-            console.log("token = "+token)
-        }
-    }
-    useEffect(()=>{
-        handleToken()
-    },[response])
-    
-
     const [kullaniciAdi, setKullaniciAdi] = useState("");
     const [sifre, setSifre] = useState("");
     const navigation = useNavigation();
 
     const handleSignin = async () => {
         try {
-            console.log("sad")
             const response = await api.get("/kullanici/signin", {
                 params: {
                     kullaniciAdi: kullaniciAdi,

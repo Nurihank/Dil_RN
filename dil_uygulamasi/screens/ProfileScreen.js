@@ -35,7 +35,7 @@ export default function ProfileScreen() {
                     id: id
                 }, 
             });
-
+            console.log("gelen kullanıcı = "+response)
             setUser(response.data.user[0]);
             setLoading(false);
 
@@ -45,6 +45,7 @@ export default function ProfileScreen() {
     };
 
     const handleTokenError = async (error) => {
+        console.log("gelen hata = "+error.response.data.message)
         if (error.response && error.response.data.message === "Token süresi dolmuş") {
             await refreshAccessToken();
         } else {
@@ -56,7 +57,9 @@ export default function ProfileScreen() {
     const refreshAccessToken = async () => {
         try {
             let refreshToken = await AsyncStorage.getItem("refreshToken");
+            console.log(refreshToken)
             refreshToken = refreshToken.replace(/^"|"$/g, '');
+            console.log(refreshToken)
             if (!refreshToken) {
                 throw new Error("Refresh token not found");
             }

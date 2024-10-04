@@ -19,21 +19,13 @@ export default function EgitimScreen(props) {
     };
     const speakWord = (word) => {
         const options = {
-                rate: 0.50,  // Adjust the speed (0.75 is slower than normal, where 1.0 is the default speed)
+                rate: 0.40,  // Adjust the speed (0.75 is slower than normal, where 1.0 is the default speed)
                 pitch: 1.0,  // Adjust the pitch (1.0 is the default pitch)
-       
-            language: 'en',  // You can set the language here (e.g., 'en' for English)
-             
+            language: 'en',  // You can set the language here (e.g., 'en' for English) 
             onStart: () => console.log("Speech started"),
-
             onDone: () => console.log("Speech finished"),
-                
-            
         }       
-            
-            
-              Speech.speak(word, options)
-        
+                      Speech.speak(word, options)
         }
     const KelimeleriGetir = async () => {
         try {

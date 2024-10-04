@@ -24,49 +24,78 @@ export default function OyunEkrani2(props) {
       };
 
     const DigerSoru = async (yanlisKelime) => {
-        console.log(yanlisKelime)
+
+        let yeniYanlisKelimeler = yanlisKelimeler;
         if (yanlisKelime) {
-            setYanlisKelimeler(prev => [...prev, yanlisKelime]);
+            yeniYanlisKelimeler = [...yanlisKelimeler, yanlisKelime];
+            setYanlisKelimeler(yeniYanlisKelimeler);  // Yanlış kelimeleri güncelle
         }
 
         if (soru >= 2) { 
-            Alert.alert(
-                "Tebrikler!",
-                "Testi bitirdin.",
-                [
-                  {
-                    text: "Devam Et", 
-                    onPress: () => {
-                        navigation.navigate("Bottom");
-                    },
-                    style: "default"
-                  }
-                ]
-            ); 
+            console.log(yeniYanlisKelimeler); // Yeni yanlış kelimeler listesini göster
+            if(yeniYanlisKelimeler.length > 1){
+                Alert.alert(
+                    "Maalesef!",
+                    "Bölümü Geçemediniz.",
+                    [
+                      {
+                        text: "Devam Et", 
+                        onPress: () => {
+                            navigation.navigate("Bottom");
+                        },
+                        style: "default"
+                      }
+                    ]
+                ); 
+            }else{
+                Alert.alert(
+                    "Tebrikler!",
+                    "Bölümü Başarıyla Geçtiniz",
+                    [
+                      {
+                        text: "Devam Et", 
+                        onPress: () => {
+                            BolumBasariylaBitti();
+                        },
+                        style: "default"
+                      }
+                    ]
+                ); 
+            }
+        }
+        else{
+            setSoru(soru + 1); 
+            setDevamEtButton(false); 
+            setSeciliSik(null); 
+            setCevapDurumu(null); 
+            const data = kelimeler;
+    
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]]; 
+                }
+                return array;
+            }
+    
+            if (data.length > 0) {
+                const shuffledData = shuffleArray([...data]); 
+                setKelimeler(shuffledData);
+            }
         }
         
-        setSoru(soru + 1); 
-        setDevamEtButton(false); 
-        setSeciliSik(null); 
-        setCevapDurumu(null); 
-        const data = kelimeler;
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]]; 
-            }
-            return array;
-        }
-
-        if (data.length > 0) {
-            const shuffledData = shuffleArray([...data]); 
-            setKelimeler(shuffledData);
-        }
     }
 
-    useEffect(() => {
-        console.log("awsd")
+    const BolumBasariylaBitti = async()=>{
+        const response = await api.post("/kullanici/GecilenBolumlerEkle",{
+            KullaniciID:userId,
+            BolumID:props.route.params.id
+        })
+
+        console.log(response.data.message)
+        navigation.navigate("Bottom");
+    }
+    useEffect(() => { //en son bittiğinde göstermesi için yaptım
         if (soru >= 2) {
             console.log("Yanlış Kelimeler:", yanlisKelimeler); // Yanlış kelimeleri burada yazdırın
         }
@@ -136,17 +165,7 @@ export default function OyunEkrani2(props) {
     const CevapDogruMu = (cevap) => {
         if (cevap === anaKelime.value) {
             if (soru >= 2) { 
-                Alert.alert(
-                    "Tebrikler!",
-                    "Testi bitirdin.",
-                    [
-                      {
-                        text: "Devam Et", 
-                        onPress: () => DigerSoru(),
-                        style: "default"
-                      }
-                    ]
-                ); 
+                DigerSoru() 
             } else {
                 setDevamEtButton(true);
             }
@@ -189,11 +208,7 @@ export default function OyunEkrani2(props) {
             onStart: () => console.log("Speech started"),
 
             onDone: () => console.log("Speech finished"),
-                
-            
         }       
-            
-            
               Speech.speak(word, options)
         
         }

@@ -20,8 +20,9 @@ export default function HomeScreen() {
   const [userId, setUserId] = useState(null);
   const [meslekID, setMeslekID] = useState();
   const [AnaDilID, setAnaDilID] = useState();
+  const [sezonID, setSezonID] = useState();
   const [HangiDilID, setHangiDilID] = useState();
-
+  const [gecilenBolumler,setGecilenBolumler] = useState([]);
   const setUserID = async () => {
     const id = await AsyncStorage.getItem("id");
     setUserId(id);
@@ -37,6 +38,7 @@ export default function HomeScreen() {
   const Oyun = (id) => {
     navigation.navigate("OyunEkrani", { id: id });
   };
+
 
   useFocusEffect(
     useCallback(() => {
@@ -94,6 +96,21 @@ export default function HomeScreen() {
       console.log("Bölümleri getirirken hata oluştu:", error);
     }
   };
+  
+  useEffect(()=>{
+    const GecilenBolumlerGetir = async()=>{
+      const response = await api.get("/kullanici/GecilenBolumler",{
+        params:{
+          KullaniciID:userId,
+          SezonID:sezonID
+        }
+      })
+      setGecilenBolumler(response.data.message)
+      console.log(response.data.message)
+    }
+    GecilenBolumlerGetir()
+
+  },[sezonID])
 
   const renderAccordionHeader = (section) => {
     return (
@@ -103,25 +120,59 @@ export default function HomeScreen() {
     );
   };
 
+
   const renderAccordionContent = (section) => {
+    // Ensure gecilenBolumler is an array or fallback to an empty array
+    const gecilenBolumlerArray = Array.isArray(gecilenBolumler) ? gecilenBolumler : [];
+    
     return (
       <View style={styles.accordionContent}>
-        {bolumler.map((bolum, index) => (
-          <View key={index} style={styles.bolumContainer}>
-            <Text style={styles.bolumText}>{bolum.Ceviri}</Text>
-            <TouchableOpacity style={styles.iconContainer} onPress={() => Oyun(bolum.BolumID)}>
-              <FontAwesome name="gamepad" size={24} color="#3498db" />
-            </TouchableOpacity>
-          </View>
-        ))}
+        {bolumler.map((bolum, index) => {
+          // Check if the section is completed
+          const isCompleted = gecilenBolumlerArray.some(
+            (completedBolum) => completedBolum.BolumID === bolum.BolumID
+          );
+  
+          // Open the next section in line (after the last completed section)
+          const nextBolumToOpen = gecilenBolumlerArray.find(
+            (completedBolum) => completedBolum.Order == (parseInt(bolum.Order) - 1)
+          );
+  
+          // Check if the current section should be open
+          // If gecilenBolumlerArray is empty, open the first section
+          const shouldOpen = isCompleted || 
+                             (nextBolumToOpen && bolum.Order == (parseInt(nextBolumToOpen.Order) + 1)) || 
+                             (gecilenBolumlerArray.length === 0 && index === 0);
+  
+          return (
+            <View key={index} style={styles.bolumContainer}>
+          
+              {shouldOpen ? (
+                <>
+                  <Text style={styles.bolumText}>{bolum.Ceviri}</Text>
+                  <TouchableOpacity style={styles.iconContainer} onPress={() => Oyun(bolum.BolumID)}>
+                    <FontAwesome name="gamepad" size={24} color="#3498db" />
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <Text style={styles.lockedText}>Kilitli</Text> 
+              )}
+            </View>
+          );
+        })}
       </View>
     );
   };
-
+  
+  
+  
+  
   const updateSections = (activeSections) => {
     setActiveSections(activeSections);
     if (activeSections.length > 0) {
       const selectedSezonID = sezonlar[activeSections[0]].SezonID;
+      setSezonID(selectedSezonID);
+      
       BolumleriGetir(selectedSezonID);
     }
   };
