@@ -87,14 +87,21 @@ export default function OyunEkrani2(props) {
     }
 
     const BolumBasariylaBitti = async()=>{
-        const response = await api.post("/kullanici/GecilenBolumlerEkle",{
+        await api.post("/kullanici/GecilenBolumlerEkle",{
             KullaniciID:userId,
             BolumID:props.route.params.id
         })
-
+       
+        const response = await api.post("/kullanici/GecilenBolumler",{
+            KullaniciID:userId,
+            SezonID:props.route.params.SezonID
+        })
         console.log(response.data.message)
+        
         navigation.navigate("Bottom");
     }
+
+
     useEffect(() => { //en son bittiğinde göstermesi için yaptım
         if (soru >= 2) {
             console.log("Yanlış Kelimeler:", yanlisKelimeler); // Yanlış kelimeleri burada yazdırın

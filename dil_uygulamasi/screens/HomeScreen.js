@@ -23,6 +23,8 @@ export default function HomeScreen() {
   const [sezonID, setSezonID] = useState(null);
   const [HangiDilID, setHangiDilID] = useState();
   const [gecilenBolumler,setGecilenBolumler] = useState([]);
+  const [gecilenSezonlar,setGecilenSezonlar] = useState([]);
+
   const setUserID = async () => {
     const id = await AsyncStorage.getItem("id");
     setUserId(id);
@@ -35,8 +37,8 @@ export default function HomeScreen() {
     setAnaDilID(user[0].SectigiDilID);
   };
 
-  const Oyun = (id) => {
-    navigation.navigate("OyunEkrani", { id: id });
+  const Oyun = (BolumID,SezonID) => {
+    navigation.navigate("OyunEkrani", { id: BolumID ,SezonID:SezonID});
   };
 
 
@@ -59,14 +61,11 @@ export default function HomeScreen() {
         };
         await SeviyeGetir();
       };
-
       fetchData();
-
-
     }, [])
   );
 
-  useEffect(() => {
+  useEffect(() => {  //sezonarı getirir
     if (selectedSeviyeID && HangiDilID) {
       const SezonlariGetir = async () => {
         try {
@@ -85,7 +84,7 @@ export default function HomeScreen() {
     }
   }, [selectedSeviyeID, HangiDilID]);
 
-  const BolumleriGetir = async (sezonID) => {
+  const BolumleriGetir = async (sezonID) => { //bölümleri getirir
     try {
       const response = await api.get("/kullanici/Bolum", {
         params: {
@@ -99,8 +98,29 @@ export default function HomeScreen() {
     }
   };
   
-  useEffect(()=>{
-    console.log("" + sezonID)
+  useEffect(() => {  //gecilen sezonları getirir
+    const GecilenSezonlarGetir = async () => {
+      try {
+        const response = await api.get("/kullanici/GecilenSezonlar", {
+          params: {
+            KullaniciID: userId,
+            SeviyeID: selectedSeviyeID
+          }
+        });
+        console.log(response.data.message)
+        setGecilenSezonlar(response.data.message);
+      } catch (error) {
+        console.log("Sezonları getirirken hata oluştu:", error);
+      }
+    };
+
+    // Sadece userId ve selectedSeviyeID mevcut olduğunda çağır
+    if (userId && selectedSeviyeID) {
+      GecilenSezonlarGetir();
+    }
+  }, [userId, selectedSeviyeID]);
+
+  useEffect(()=>{ //gecilen bölümleri getirir
     const GecilenBolumlerGetir = async()=>{
       const response = await api.get("/kullanici/GecilenBolumler",{
         params:{
@@ -110,39 +130,18 @@ export default function HomeScreen() {
       })
       setGecilenBolumler(response.data.message)
     }
-
-    const gecilenBolumlerArray = Array.isArray(gecilenBolumler) ? gecilenBolumler : [];
-    const allBolumlerCompleted = bolumler.every((bolum) => // Tüm bölümler tamamlanmış mı kontrol et
-    gecilenBolumlerArray.some((completedBolum) => completedBolum.BolumID === bolum.BolumID)
-  );
-
-  console.log("bölümler geçilmiş mi "+allBolumlerCompleted)
-
-  if(allBolumlerCompleted){
-    const SezonEkle = async()=>{
-      if(userId && sezonID){
-        const response = await api.post("/kullanici/GecilenSezonEkle",{
-          KullaniciID:userId,
-          SezonID:sezonID
-        })
-        console.log("sezon ekleme "+response.data.message)
-      }
-     
-    }
-    SezonEkle()
-  }
-    
     GecilenBolumlerGetir()
-
   },[sezonID])
 
-  const renderAccordionHeader = (section) => {
+
+  const renderAccordionHeader =  (section) => {
+    console.log("a")
     return (
       <View style={styles.accordionHeader}>
         <Text style={styles.headerText}>{section.Ceviri}</Text>
       </View>
     );
-  };
+  }; 
 
   const renderAccordionContent = (section) => {
     const gecilenBolumlerArray = Array.isArray(gecilenBolumler) ? gecilenBolumler : [];
@@ -168,7 +167,7 @@ export default function HomeScreen() {
               {shouldOpen ? (
                 <>
                   <Text style={styles.bolumText}>{bolum.Ceviri}</Text>
-                  <TouchableOpacity style={styles.iconContainer} onPress={() => Oyun(bolum.BolumID)}>
+                  <TouchableOpacity style={styles.iconContainer} onPress={() => Oyun(bolum.BolumID,sezonID)}>
                     <FontAwesome name="gamepad" size={24} color="#3498db" />
                   </TouchableOpacity>
                 </>
