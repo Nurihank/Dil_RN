@@ -20,7 +20,7 @@ export default function HomeScreen() {
   const [userId, setUserId] = useState(null);
   const [meslekID, setMeslekID] = useState();
   const [AnaDilID, setAnaDilID] = useState();
-  const [sezonID, setSezonID] = useState();
+  const [sezonID, setSezonID] = useState(null);
   const [HangiDilID, setHangiDilID] = useState();
   const [gecilenBolumler,setGecilenBolumler] = useState([]);
   const setUserID = async () => {
@@ -61,6 +61,8 @@ export default function HomeScreen() {
       };
 
       fetchData();
+
+
     }, [])
   );
 
@@ -98,6 +100,7 @@ export default function HomeScreen() {
   };
   
   useEffect(()=>{
+    console.log("" + sezonID)
     const GecilenBolumlerGetir = async()=>{
       const response = await api.get("/kullanici/GecilenBolumler",{
         params:{
@@ -106,8 +109,29 @@ export default function HomeScreen() {
         }
       })
       setGecilenBolumler(response.data.message)
-      console.log(response.data.message)
     }
+
+    const gecilenBolumlerArray = Array.isArray(gecilenBolumler) ? gecilenBolumler : [];
+    const allBolumlerCompleted = bolumler.every((bolum) => // Tüm bölümler tamamlanmış mı kontrol et
+    gecilenBolumlerArray.some((completedBolum) => completedBolum.BolumID === bolum.BolumID)
+  );
+
+  console.log("bölümler geçilmiş mi "+allBolumlerCompleted)
+
+  if(allBolumlerCompleted){
+    const SezonEkle = async()=>{
+      if(userId && sezonID){
+        const response = await api.post("/kullanici/GecilenSezonEkle",{
+          KullaniciID:userId,
+          SezonID:sezonID
+        })
+        console.log("sezon ekleme "+response.data.message)
+      }
+     
+    }
+    SezonEkle()
+  }
+    
     GecilenBolumlerGetir()
 
   },[sezonID])
@@ -120,27 +144,21 @@ export default function HomeScreen() {
     );
   };
 
-
   const renderAccordionContent = (section) => {
-    // Ensure gecilenBolumler is an array or fallback to an empty array
     const gecilenBolumlerArray = Array.isArray(gecilenBolumler) ? gecilenBolumler : [];
-    
+
     return (
       <View style={styles.accordionContent}>
-        {bolumler.map((bolum, index) => {
-          // Check if the section is completed
-          const isCompleted = gecilenBolumlerArray.some(
+        {bolumler.map((bolum, index) => { //bolumler dizisinde değişiklikler yapar
+          const isCompleted = gecilenBolumlerArray.some( //some fonksiyonu içine belirli bir koşul yazıyosun true false eödndürüyor
             (completedBolum) => completedBolum.BolumID === bolum.BolumID
           );
   
-          // Open the next section in line (after the last completed section)
-          const nextBolumToOpen = gecilenBolumlerArray.find(
+          const nextBolumToOpen = gecilenBolumlerArray.find( //bir sonraki leveli buluyor
             (completedBolum) => completedBolum.Order == (parseInt(bolum.Order) - 1)
           );
   
-          // Check if the current section should be open
-          // If gecilenBolumlerArray is empty, open the first section
-          const shouldOpen = isCompleted || 
+          const shouldOpen = isCompleted ||  //bölüm açık mı değil diye kontrol ediyor
                              (nextBolumToOpen && bolum.Order == (parseInt(nextBolumToOpen.Order) + 1)) || 
                              (gecilenBolumlerArray.length === 0 && index === 0);
   
@@ -164,15 +182,11 @@ export default function HomeScreen() {
     );
   };
   
-  
-  
-  
   const updateSections = (activeSections) => {
     setActiveSections(activeSections);
     if (activeSections.length > 0) {
       const selectedSezonID = sezonlar[activeSections[0]].SezonID;
       setSezonID(selectedSezonID);
-      
       BolumleriGetir(selectedSezonID);
     }
   };
