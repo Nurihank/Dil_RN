@@ -32,7 +32,7 @@ export default function SigninScreen() {
                 await AsyncStorage.setItem('id', JSON.stringify(response.data.id));
 
                 await UserModel.setUser(response.data.id);
-                navigation.navigate("Welcome");
+                navigation.replace("Welcome");
             } else if (response.data.status === "FAILED") {
                 Alert.alert(response.data.message);
             }

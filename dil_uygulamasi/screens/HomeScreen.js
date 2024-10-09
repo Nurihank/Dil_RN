@@ -10,7 +10,7 @@ import Accordion from 'react-native-collapsible/Accordion';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFocusEffect } from '@react-navigation/native';
 
-export default function HomeScreen() {
+export default function HomeScreen({route}) {
   const navigation = useNavigation();
   const [Seviyeler, setSeviyeler] = useState([]);
   const [selectedSeviyeID, setSelectedSeviyeID] = useState(1);
@@ -38,7 +38,7 @@ export default function HomeScreen() {
   };
 
   const Oyun = (BolumID,SezonID) => {
-    navigation.navigate("OyunEkrani", { id: BolumID ,SezonID:SezonID});
+    navigation.replace("OyunEkrani", { BolumID: BolumID ,SezonID:SezonID});
   };
 
 
@@ -54,8 +54,8 @@ export default function HomeScreen() {
               label: item.SeviyeAdi || 'Default Label',
               value: item.SeviyeID || 'defaultValue'
             }));
-            setSeviyeler(formattedData);
-          } catch (error) {
+            setSeviyeler(formattedData); 
+          } catch (error) { 
             console.log("Seviyeleri getirirken hata oluştu:", error);
           }
         };
@@ -65,27 +65,27 @@ export default function HomeScreen() {
     }, [])
   );
 
-  useEffect(() => {  //sezonarı getirir
+  const SezonlariGetir = async () => {
+    try {
+      const response = await api.get("/kullanici/Sezon", {
+        params: {
+          SeviyeID: selectedSeviyeID,
+          HangiDilID: HangiDilID,
+        },
+      });
+      setSezonlar(response.data);
+    } catch (error) {
+      console.log("Sezonları getirirken hata oluştu:", error);
+    }
+  };
+
+  useEffect(() => {  //sezonarı getirir 
     if (selectedSeviyeID && HangiDilID) {
-      const SezonlariGetir = async () => {
-        try {
-          const response = await api.get("/kullanici/Sezon", {
-            params: {
-              SeviyeID: selectedSeviyeID,
-              HangiDilID: HangiDilID,
-            },
-          });
-          setSezonlar(response.data);
-        } catch (error) {
-          console.log("Sezonları getirirken hata oluştu:", error);
-        }
-      };
       SezonlariGetir();
     }
   }, [selectedSeviyeID, HangiDilID]);
 
   const BolumleriGetir = async (sezonID) => { //bölümleri getirir
-    console.log(sezonID)
     try {
       const response = await api.get("/kullanici/Bolum", {
         params: {
@@ -108,7 +108,6 @@ export default function HomeScreen() {
             SeviyeID: selectedSeviyeID
           }
         });
-        console.log(response.data.message)
         setGecilenSezonlar(response.data.message);
       } catch (error) {
         console.log("Sezonları getirirken hata oluştu:", error);
@@ -135,6 +134,9 @@ export default function HomeScreen() {
   },[sezonID])
 
 
+ /*  useEffect(()=>{
+
+  },[sezonBittiMi]) */
   const renderAccordionHeader = (section) => {
     // Geçilen sezonlar dizisini kontrol et, eğer yoksa boş bir dizi kullan
     const gecilenSezonlarArray = Array.isArray(gecilenSezonlar) ? gecilenSezonlar : [];
@@ -177,13 +179,8 @@ export default function HomeScreen() {
         )}
       </View>
     );
-  };
+  }; 
   
-  
-  
-  
-  
-
   const renderAccordionContent = (section) => {
     const gecilenBolumlerArray = Array.isArray(gecilenBolumler) ? gecilenBolumler : [];
 

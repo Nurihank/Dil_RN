@@ -87,18 +87,25 @@ export default function OyunEkrani2(props) {
     }
 
     const BolumBasariylaBitti = async()=>{
-        await api.post("/kullanici/GecilenBolumlerEkle",{
+        const response = await api.post("/kullanici/GecilenBolumlerEkle",{
             KullaniciID:userId,
-            BolumID:props.route.params.id
-        })
-       
-        const response = await api.post("/kullanici/GecilenBolumler",{
-            KullaniciID:userId,
-            SezonID:props.route.params.SezonID
+            BolumID:props.route.params.BolumID
         })
         console.log(response.data.message)
-        
-        navigation.navigate("Bottom");
+        if(response.data.message == "succes"){
+
+            const sezonunBolumleriniGetir = await api.get("/kullanici/SezonBittiMiKontrol",{
+                params:{
+                    KullaniciID:userId,
+                    SezonID:props.route.params.SezonID
+                }
+            })
+            console.log("asd = "+sezonunBolumleriniGetir.data.sezonBittiMi) //burda kaldın true dönerse sezon ekle bu kaddars
+
+
+            navigation.replace("HomeScreen");
+        }
+        navigation.replace("HomeScreen")
     }
 
 
@@ -118,7 +125,7 @@ export default function OyunEkrani2(props) {
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]]; 
+                [array[i], array[j]] = [array[j], array[i]];  
             }
             return array;
         }
@@ -133,7 +140,7 @@ export default function OyunEkrani2(props) {
         try {
             const response = await api.get("/kullanici/oyun", {
                 params: {
-                    BolumID: props.route.params.id
+                    BolumID: props.route.params.BolumID
                 }
             });
 
@@ -203,7 +210,7 @@ export default function OyunEkrani2(props) {
         React.useCallback(() => {
             KelimeleriGetir();
             getUserID()
-        }, [props.route.params.id])
+        }, [props.route.params.BolumID])
     );
     const speakWord = (word) => {
         const options = {
