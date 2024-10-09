@@ -85,6 +85,7 @@ export default function HomeScreen() {
   }, [selectedSeviyeID, HangiDilID]);
 
   const BolumleriGetir = async (sezonID) => { //bölümleri getirir
+    console.log(sezonID)
     try {
       const response = await api.get("/kullanici/Bolum", {
         params: {
@@ -134,14 +135,54 @@ export default function HomeScreen() {
   },[sezonID])
 
 
-  const renderAccordionHeader =  (section) => {
-    console.log("a")
+  const renderAccordionHeader = (section) => {
+    // Geçilen sezonlar dizisini kontrol et, eğer yoksa boş bir dizi kullan
+    const gecilenSezonlarArray = Array.isArray(gecilenSezonlar) ? gecilenSezonlar : [];
+  
+    // Bu sezona ait bilgileri al
+    const sezonID = section.SezonID; 
+    const sezonOrder = section.Order;
+  
+    // Bu sezonun tamamlanıp tamamlanmadığını kontrol et
+    const isCompletedSeason = gecilenSezonlarArray.some(
+      (completedSeason) => completedSeason.SezonID === sezonID
+    );
+  
+    // Geçilen sezonlar içinde en yüksek Order'a sahip son tamamlanmış sezonu bul
+    const lastCompletedSeason = gecilenSezonlarArray.reduce(
+      (prev, current) => (current.Order > prev.Order ? current : prev), 
+      { Order: 0 }
+    );
+  
+    // Bu sezonun açık olup olmadığını belirle
+    const shouldOpen = isCompletedSeason || 
+                       sezonOrder <= (parseInt(lastCompletedSeason.Order) + 1) || 
+                       (gecilenSezonlarArray.length === 0 && sezonOrder === 1); 
+  
     return (
       <View style={styles.accordionHeader}>
-        <Text style={styles.headerText}>{section.Ceviri}</Text>
+        {shouldOpen ? (
+          <View style={styles.headerContainer}>
+              {isCompletedSeason ? (
+                <View>
+                <FontAwesome name="check-circle" size={24} color="#2ecc71" />
+                <Text style={styles.headerText}>{section.Ceviri}</Text>
+                </View>
+              ) : (
+                <Text style={styles.headerText}>{section.Ceviri}</Text>
+              )}
+          </View>
+        ) : (
+            <Text style={styles.lockedText}>Kilitli</Text> 
+        )}
       </View>
     );
-  }; 
+  };
+  
+  
+  
+  
+  
 
   const renderAccordionContent = (section) => {
     const gecilenBolumlerArray = Array.isArray(gecilenBolumler) ? gecilenBolumler : [];
@@ -149,13 +190,13 @@ export default function HomeScreen() {
     return (
       <View style={styles.accordionContent}>
         {bolumler.map((bolum, index) => { //bolumler dizisinde değişiklikler yapar
-          const isCompleted = gecilenBolumlerArray.some( //some fonksiyonu içine belirli bir koşul yazıyosun true false eödndürüyor
+          const isCompleted = gecilenBolumlerArray.some( //some fonksiyonu içine belirli bir koşul yazıyosun true false eödndürüyor 
             (completedBolum) => completedBolum.BolumID === bolum.BolumID
           );
   
           const nextBolumToOpen = gecilenBolumlerArray.find( //bir sonraki leveli buluyor
             (completedBolum) => completedBolum.Order == (parseInt(bolum.Order) - 1)
-          );
+          ); 
   
           const shouldOpen = isCompleted ||  //bölüm açık mı değil diye kontrol ediyor
                              (nextBolumToOpen && bolum.Order == (parseInt(nextBolumToOpen.Order) + 1)) || 
@@ -229,6 +270,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f7f7f7',
     padding: 16,
+    justifyContent: 'center',
   },
   container: {
     flex: 1,
@@ -239,26 +281,28 @@ const styles = StyleSheet.create({
     marginVertical: 16,
   },
   pickerLabel: {
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 8,
+    color: '#34495e',
   },
   accordionHeader: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#2980b9', // Daha koyu mavi tonu
     padding: 15,
     marginVertical: 8,
-    borderRadius: 8,
-    elevation: 3,
+    borderRadius: 12,
+    elevation: 5,
     width: '100%',
   },
   headerText: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '700',
     color: '#ffffff',
   },
   accordionContent: {
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#ecf0f1', // Açık gri tonu
     padding: 15,
-    borderRadius: 8,
+    borderRadius: 12,
     marginBottom: 8,
     width: '100%',
   },
@@ -269,7 +313,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   bolumText: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#2c3e50',
     flex: 1,
   },
@@ -279,16 +323,23 @@ const styles = StyleSheet.create({
   eğitimButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3498db',
-    padding: 10,
-    borderRadius: 8,
+    backgroundColor: '#3498db', // Orijinal mavi tonu
+    padding: 12,
+    borderRadius: 10,
     marginTop: 10,
+    elevation: 3, // Butona hafif gölge eklemek için
   },
   eğitimText: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#ffffff',
     marginLeft: 8,
-  }
+    fontWeight: '500',
+  },
+  lockedText: {
+    fontSize: 16,
+    color: '#e74c3c', // Kilitli metin için kırmızı
+    fontStyle: 'italic',
+  },
 });
 
 const pickerSelectStyles = StyleSheet.create({
@@ -296,19 +347,20 @@ const pickerSelectStyles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    backgroundColor: '#fff',
+    borderColor: '#bdc3c7', // Gri border
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
     fontSize: 16,
     color: '#333',
+    elevation: 2, // Yükselti eklemek için
   },
   inputAndroid: {
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
-    backgroundColor: '#fff',
+    borderColor: '#bdc3c7',
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
     fontSize: 16,
     color: '#333',
   },

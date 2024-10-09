@@ -11,7 +11,6 @@ export default class UserModel {
         try {
             const response = await api.get(`/kullanici/user/${id}`);
             this.currentUser = response.data;
-            console.log("Kullanıcı verisi yüklendi:", response.data);
         } catch (error) {
             console.error("Kullanıcı verisi alınırken bir hata oluştu:", error);
         }
