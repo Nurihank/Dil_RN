@@ -15,7 +15,7 @@ export default function OyunEkrani2(props) {
     const [devamEtButton, setDevamEtButton] = useState(false);
     const [yanlisKelimeler, setYanlisKelimeler] = useState([]);
     const [dogruKelimeler, setDogruKelimeler] = useState([]);
-    const [dogruYüzdesi, setDogruYüzdesi] = useState(0.01);
+    const [dogruYüzdesi, setDogruYüzdesi] = useState(1);
     const [seciliSik, setSeciliSik] = useState(null);
     const [cevapDurumu, setCevapDurumu] = useState(null);
     const [userId, setUserId] = useState(null);
@@ -313,7 +313,7 @@ export default function OyunEkrani2(props) {
                             <Text style={styles.buttonText}>Ana Sayfaya Dön</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.button}>
+                        <TouchableOpacity style={styles.button} onPress={()=> navigation.replace("OyunEkrani2")}>
                             <Icon name="refresh" size={24} color="#fff" style={styles.icon} />
                             <Text style={styles.buttonText}>Tekrar Dene</Text>
                         </TouchableOpacity>
@@ -334,15 +334,13 @@ export default function OyunEkrani2(props) {
                                                     <View style={{ flexDirection: "row" }}>
                                                         <Icon name="close-circle" size={20} color="#e74c3c" style={styles.listIcon} />
                                                         <Text style={styles.listText}>{item.value}</Text>
-                                                        <TouchableOpacity>
-                                                            <FontAwesome name="check-circle" size={24} color="black" />
-                                                        </TouchableOpacity>
+                                                            <FontAwesome name="check-circle" size={24} color="black" />                                                       
                                                     </View>
                                                 ) : (
                                                     <View style={{ flexDirection: "row" }}>
                                                         <Icon name="close-circle" size={20} color="#e74c3c" style={styles.listIcon} />
                                                         <Text style={styles.listText}>{item.value}</Text>
-                                                        <TouchableOpacity>
+                                                        <TouchableOpacity onPress={()=>SozlugeEkle(item)}>
                                                                 <FontAwesome name="plus" size={24} color="green" />
                                                         </TouchableOpacity>
                                                     </View>
@@ -374,6 +372,7 @@ export default function OyunEkrani2(props) {
 
                         )}
                         <ProgressBar progress={dogruYüzdesi / 100} style={[styles.progressBar, { marginTop: 15 }]} />
+                        <Text>%{dogruYüzdesi} başarılı</Text>
                     </View>
 
                 </View>
