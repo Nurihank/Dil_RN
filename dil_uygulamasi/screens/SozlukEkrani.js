@@ -34,6 +34,20 @@ export default function SozlukEkrani() {
     }
   };
 
+  const SozluktenKelimeSilme = async (item) => {
+    try {
+      const response = await api.delete("/kullanici/SozluktenKelimeSilme", {
+        params: {
+          KullaniciID: userId,
+          KelimeID: item.AnaKelimelerID // item.AnaKelimelerID'nin doğru olup olmadığını kontrol edin
+        }
+      });
+      await KelimeleriGetir(userId)
+      } catch (error) {
+      console.error("Silme işleminde hata:", error);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
@@ -61,10 +75,19 @@ export default function SozlukEkrani() {
             [item.Value]: !prev[item.Value]
           }));
         }}>
-          <Image 
-            source={isVisible ? require("../assets/acikGoz.png") : require("../assets/kapaliGoz.png")}
-            style={styles.icon}
-          />
+          <View style={{ flexDirection: "row" }}>
+            <Image
+              source={isVisible ? require("../assets/acikGoz.png") : require("../assets/kapaliGoz.png")}
+              style={styles.icon}
+            />
+            <TouchableOpacity onPress={() => SozluktenKelimeSilme(item)}>
+              <Image
+                source={require("../assets/delete.png")}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+            
+          </View>
         </TouchableOpacity>
       </View>
     );
@@ -115,7 +138,8 @@ const styles = StyleSheet.create({
     color: '#666666',
   },
   icon: {
-    height: 40,
-    width: 40,
+    height: 35,
+    width: 35,
+    marginLeft: 10
   },
 });

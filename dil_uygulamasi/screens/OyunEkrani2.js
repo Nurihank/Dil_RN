@@ -22,6 +22,10 @@ export default function OyunEkrani2(props) {
     const [sozlugeEkliMi, setSozlugeEkliMi] = useState({});
     const [soruAlertModal, setSoruAlertModal] = useState(false);
     const [basarisizOyunSonuAlertModal, setBasarisizOyunSonuAlertModal] = useState(false);
+    const [basariliOyunSonuAlertModal, setBasariliOyunSonuAlertModal] = useState(false);
+    const [sozlugeEkleResponseModal, setSozlugeEkleResponseModal] = useState(false);
+    const [sozlugeEkleResponse, setSozlugeEkleResponse] = useState("");
+
     const navigation = useNavigation();
 
     const getUserID = async () => {
@@ -42,19 +46,7 @@ export default function OyunEkrani2(props) {
             if (yeniYanlisKelimeler.length > 1) {
                 setBasarisizOyunSonuAlertModal(true)
             } else {
-                Alert.alert(
-                    "Tebrikler!",
-                    "Bölümü Başarıyla Geçtiniz",
-                    [
-                        {
-                            text: "Devam Et",
-                            onPress: () => {
-                                BolumBasariylaBitti();
-                            },
-                            style: "default"
-                        }
-                    ]
-                );
+                setBasariliOyunSonuAlertModal(true)
             }
         }
         else {
@@ -101,10 +93,10 @@ export default function OyunEkrani2(props) {
 
             }
             console.log("sezon bitti mi  = " + sezonunBittiMi.data.sezonBittiMi)
-            navigation.replace("HomeScreen");
+            navigation.replace("Bottom");
         }
         //önceden oynadıysa ve leveli  geçtiyse buraya girecek
-        navigation.replace("HomeScreen")
+        navigation.replace("Bottom")
     }
 
 
@@ -148,11 +140,12 @@ export default function OyunEkrani2(props) {
             KullaniciID: userId,
             AnaKelimeID: Kelime.AnaKelimeID
         })
-        Alert.alert(response.data.message)
+        setSozlugeEkleResponse(response.data.message)
+        setSozlugeEkleResponseModal(true)
     }
 
-   
-   
+
+
     const CevapDogruMu = (cevap) => {
 
         let yeniDogruKelimeler = dogruKelimeler
@@ -238,6 +231,7 @@ export default function OyunEkrani2(props) {
 
         checkSozlugeEkliMi();
     }, [yanlisKelimeler]);
+
     return (
         <View style={styles.container}>
             <View style={styles.progressBarContainer}>
@@ -308,12 +302,12 @@ export default function OyunEkrani2(props) {
                     <View style={styles.modalContent}>
                         <Text style={styles.alertText}>Maalesef Bölümü Geçemediniz!</Text>
 
-                        <TouchableOpacity style={styles.button} onPress={() => navigation.replace("HomeScreen")}>
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.replace("Bottom")}>
                             <Icon name="home" size={24} color="#fff" style={styles.icon} />
                             <Text style={styles.buttonText}>Ana Sayfaya Dön</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.button} onPress={()=> navigation.replace("OyunEkrani2")}>
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.replace("OyunEkrani", { BolumID: props.route.params.BolumID, SezonID: props.route.params.SezonID })}>
                             <Icon name="refresh" size={24} color="#fff" style={styles.icon} />
                             <Text style={styles.buttonText}>Tekrar Dene</Text>
                         </TouchableOpacity>
@@ -334,14 +328,14 @@ export default function OyunEkrani2(props) {
                                                     <View style={{ flexDirection: "row" }}>
                                                         <Icon name="close-circle" size={20} color="#e74c3c" style={styles.listIcon} />
                                                         <Text style={styles.listText}>{item.value}</Text>
-                                                            <FontAwesome name="check-circle" size={24} color="black" />                                                       
+                                                        <FontAwesome name="check-circle" size={24} color="black" />
                                                     </View>
                                                 ) : (
                                                     <View style={{ flexDirection: "row" }}>
                                                         <Icon name="close-circle" size={20} color="#e74c3c" style={styles.listIcon} />
                                                         <Text style={styles.listText}>{item.value}</Text>
-                                                        <TouchableOpacity onPress={()=>SozlugeEkle(item)}>
-                                                                <FontAwesome name="plus" size={24} color="green" />
+                                                        <TouchableOpacity onPress={() => SozlugeEkle(item)}>
+                                                            <FontAwesome name="plus" size={24} color="green" />
                                                         </TouchableOpacity>
                                                     </View>
                                                 )}
@@ -376,7 +370,50 @@ export default function OyunEkrani2(props) {
                     </View>
 
                 </View>
+            </Modal>
 
+            <Modal   /* Bölüm basarili olunca */
+                visible={basariliOyunSonuAlertModal}
+                transparent={true}
+                animationType="slide"
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.alertText}>
+                            Tebriklerler Başarılısın
+                        </Text>
+                        <TouchableOpacity style={styles.button} onPress={() => BolumBasariylaBitti()}>
+                            <Icon name="home" size={24} color="#fff" style={styles.icon} />
+                            <Text style={styles.buttonText}>Ana Sayfaya Dön</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.replace("OyunEkrani", { BolumID: props.route.params.BolumID, SezonID: props.route.params.SezonID })}>
+                            <Icon name="refresh" size={24} color="#fff" style={styles.icon} />
+                            <Text style={styles.buttonText}>Tekrar Oyna</Text>
+                        </TouchableOpacity>
+                        <ProgressBar progress={dogruYüzdesi / 100} style={[styles.progressBar, { marginTop: 15 }]} />
+                        <Text>%{dogruYüzdesi} başarılı  </Text>
+                        <Text>Tebrik Ederim</Text>
+
+                    </View>
+                </View>
+            </Modal>
+            <Modal
+                visible={sozlugeEkleResponseModal}
+                transparent={true}
+                animationType="slide">
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={{ marginBottom: 15, fontWeight: "bold", fontSize: 17 }}>
+                            {sozlugeEkleResponse}
+                        </Text>
+                        <TouchableOpacity style={styles.button} onPress={() => setSozlugeEkleResponseModal(false)}>
+                            <Text style={styles.buttonText}>
+                                Tamam!
+                            </Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </View>
             </Modal>
         </View>
 
