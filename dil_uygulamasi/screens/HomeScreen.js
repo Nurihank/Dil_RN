@@ -9,6 +9,7 @@ import UserModel from '../model/ModelUser';
 import Accordion from 'react-native-collapsible/Accordion';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFocusEffect } from '@react-navigation/native';
+import GunlukGirisComponent from '../component/GunlukGirisComponent';
 
 export default function HomeScreen({route}) {
   const navigation = useNavigation();
@@ -41,6 +42,27 @@ export default function HomeScreen({route}) {
     navigation.replace("OyunEkrani", { BolumID: BolumID ,SezonID:SezonID});
   };
 
+  
+  const GunlukGiris = async()=>{
+    const currentDate = new Date();
+
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+
+  const formattedDate = `${year}-${month}-${day}`;
+    const response =  await api.post("/kullanici/GunlukGiris",{
+      KullaniciID:userId,
+      Date:formattedDate
+    })
+  }
+ 
+
+  useEffect(()=>{
+    if(userId){
+      GunlukGiris()  
+    }
+  },[userId])
 
   useFocusEffect(
     useCallback(() => {
@@ -52,13 +74,13 @@ export default function HomeScreen({route}) {
             const Seviye = await api.get("/kullanici/Seviye");
             const formattedData = Seviye.data.map(item => ({
               label: item.SeviyeAdi || 'Default Label',
-              value: item.SeviyeID || 'defaultValue'
+              value: item.SeviyeID || 'defaultValue' 
             }));
             setSeviyeler(formattedData); 
-          } catch (error) { 
+          } catch (error) {  
             console.log("Seviyeleri getirirken hata oluştu:", error);
-          }
-        };
+          } 
+        }; 
         await SeviyeGetir();
       };
       fetchData();
@@ -201,7 +223,6 @@ export default function HomeScreen({route}) {
   
           return (
             <View key={index} style={styles.bolumContainer}>
-          
               {shouldOpen ? (
                 <>
                   <Text style={styles.bolumText}>{bolum.Ceviri}</Text>
@@ -235,6 +256,7 @@ export default function HomeScreen({route}) {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
+        <GunlukGirisComponent/>
         <ProgressBars />
         <View style={styles.pickerContainer}>
           <Text style={styles.pickerLabel}>Seviye Seç:</Text>
@@ -283,18 +305,28 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#34495e',
   },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', // Vertically centers the items in the row
+    justifyContent: 'space-between', // Distribute space between text and icons
+    width: 350,
+  },
   accordionHeader: {
-    backgroundColor: '#2980b9', // Daha koyu mavi tonu
+    backgroundColor: '#2980b9', // Dark blue
     padding: 15,
     marginVertical: 8,
     borderRadius: 12,
     elevation: 5,
-    width: '100%',
+    height: 60, // Set a fixed height to prevent size change
+    justifyContent: 'center', // Ensures content is vertically centered
   },
   headerText: {
     fontSize: 20,
     fontWeight: '700',
     color: '#ffffff',
+    flexShrink: 1, // Ensures text doesn’t overflow beyond the container
+    numberOfLines: 1, // Truncate long text
+    ellipsizeMode: 'tail', // Add "..." at the end if text is too long
   },
   accordionContent: {
     backgroundColor: '#ecf0f1', // Açık gri tonu

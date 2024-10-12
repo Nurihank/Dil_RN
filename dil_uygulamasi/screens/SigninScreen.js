@@ -16,15 +16,15 @@ export default function SigninScreen() {
 
     const handleSignin = async () => {
         try {
-            const response = await api.get("/kullanici/signin", {
-                params: {
-                    kullaniciAdi: kullaniciAdi,
-                    sifre: sifre
-                }
-            });
-            console.log("sad")
-
-            console.log(response.data)
+           
+                const response = await api.get("/kullanici/signin", {
+                    params: {
+                        kullaniciAdi: kullaniciAdi,
+                        sifre: sifre
+                    }
+                });
+                console.log("API Yanıtı:", response.data); // Yanıtı burada kontrol edin
+            
             if (response.data.status === "SUCCES") {
                 await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
                 await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
@@ -37,7 +37,13 @@ export default function SigninScreen() {
                 Alert.alert(response.data.message);
             }
         } catch (error) {
-            console.log(error);
+            // Hata mesajını ve mevcut error objesini kontrol et
+            console.log("API Hatası:", error); 
+            if (error.response) {
+                console.log("Yanıt Hatası:", error.response.data); // Sunucudan gelen hatayı göster
+            } else {
+                console.log("Hata Mesajı:", error.message); // Hata mesajını göster
+            }
         }
     };
 
