@@ -30,6 +30,9 @@ export default function OgrenilecekDilSecimModal({ visible, OgrenilecekModalGeri
     const handleOnayla = async () => {
         const id = await AsyncStorage.getItem("id")
 
+        console.log(id)
+        console.log(selectedValue.DilID)
+
         if (!selectedValue) {
             alert("Bir Dil Seçmelisin");
         } else {
@@ -41,7 +44,7 @@ export default function OgrenilecekDilSecimModal({ visible, OgrenilecekModalGeri
                 OgrenilecekDilSecimOnayi(); 
             }
             catch (error) {
-                console.error("Dil seçimi kaydedilirken hata oluştu:", error);
+                console.error("Dil seçimi kaydedilirken hata oluştu: bb", error);
             }
         }
     };
@@ -69,8 +72,8 @@ export default function OgrenilecekDilSecimModal({ visible, OgrenilecekModalGeri
 
             <View style={styles.container}>
                 {!selectedValue ?
-                    <Text style = {styles.textStyle}>Seçilen Öğrenmek İstediğin Dil = </Text> :
-                    <Text style={styles.textStyle}>Seçilen Öğrenmek İstediğin Dil = {selectedValue.dil_adi}</Text>}
+                    <Text style = {styles.textStyle}>Öğrenmek İstediğin Dil = </Text> :
+                    <Text style={styles.textStyle}>Öğrenmek İstediğin Dil = {selectedValue.LocalName}</Text>}
                 <FlatList
                     data={ogrenilecekDiller} // FlatList'e gösterilecek veri
                     renderItem={renderItem}

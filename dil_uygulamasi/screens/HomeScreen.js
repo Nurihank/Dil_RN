@@ -31,9 +31,11 @@ export default function HomeScreen({route}) {
     setUserId(id);
   };
 
+  console.log(HangiDilID)
+
   const getUserInfo = async () => {
     const user = await UserModel.currentUser;
-    setMeslekID(user[0].MeslekID);
+    setMeslekID(user[0].MeslekID); 
     setHangiDilID(user[0].DilID);
     setAnaDilID(user[0].SectigiDilID);
   };

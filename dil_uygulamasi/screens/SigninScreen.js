@@ -28,7 +28,6 @@ export default function SigninScreen() {
             if (response.data.status === "SUCCES") {
                 await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
                 await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
-
                 await AsyncStorage.setItem('id', JSON.stringify(response.data.id));
 
                 await UserModel.setUser(response.data.id);

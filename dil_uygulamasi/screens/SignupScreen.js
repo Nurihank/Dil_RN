@@ -30,12 +30,19 @@ export default function SignupScreen() {
                 });
                 console.log(responseSignin.data.status)
                 if (responseSignin.data.status === "SUCCES") {
-                    await AsyncStorage.setItem('jwt_token', JSON.stringify(responseSignin.data.accessToken));
+                    console.log("token = "+responseSignin.data.refreshToken)
                     UserModel.setUser(responseSignin.data.id);
+                    await AsyncStorage.setItem('accessToken', JSON.stringify(responseSignin.data.accessToken));
+                    await AsyncStorage.setItem('refreshToken', JSON.stringify(responseSignin.data.refreshToken));
                     await AsyncStorage.setItem("id",JSON.stringify(responseSignin.data.id) )
-                    navigation.navigate("SecimEkrani", { name: kullaniciAdi });
+                    navigation.navigate("SecimEkrani",{id:responseSignin.data.id});
                 } else if (responseSignin.data.status === "FAILED") {
                     Alert.alert(responseSignin.data.message);
+                    /* await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
+                await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
+                await AsyncStorage.setItem('id', JSON.stringify(response.data.id));
+
+                await UserModel.setUser(response.data.id); */
                 }
             } else if (response.data.status === "FAILED") {
                 alert(response.data.message);

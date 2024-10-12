@@ -38,7 +38,7 @@ export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOna
         DilSecimiOnayi();  //DİL ONAYI YAPILACAK
       }
       catch (error) {
-        console.error("Dil seçimi kaydedilirken hata oluştu:", error);
+        console.error("Dil seçimi kaydedilirken hata oluştu: asdf", error);
       }
     }
   };
@@ -59,6 +59,7 @@ export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOna
     );
   };
 
+
   return (
     <Modal
       visible={visible}
@@ -67,8 +68,8 @@ export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOna
 
       <View style={styles.container}>
         {!selectedValue ?
-          <Text style={styles.textStyle}>Seçilen Dil = </Text> :
-          <Text style={styles.textStyle}>Seçilen Dil = {selectedValue.dil_adi}</Text>}
+          <Text style={styles.textStyle}>Ana Dil = </Text> :
+          <Text style={styles.textStyle}>Ana Dil = {selectedValue.LocalName}</Text>}
         <FlatList
           data={diller} // FlatList'e gösterilecek veri
           renderItem={renderItem}

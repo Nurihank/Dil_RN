@@ -6,8 +6,9 @@ import { AntDesign } from '@expo/vector-icons';
 import DilSeçimModal from '../component/DilSeçimModal';
 import OgrenilecekDilSecimModal from '../component/OgrenilecekDilSecimModal';
 import { useNavigation } from '@react-navigation/native';
+import UserModel from '../model/ModelUser';
 
-export default function SeçimEkrani() {
+export default function SeçimEkrani(props) {
 
     const [MeslekSecimModalVisible, setMeslekSecimModalVisible] = useState(false)
     const [DilSecimModalVisible, setDilSecimModalVisible] = useState(false)
@@ -40,7 +41,8 @@ export default function SeçimEkrani() {
   }
   const OgrenilecekDilSecimOnayi = ()=> {
     setOgrenilecekDilSecimModalVisible(false)
-    navigation.navigate("Bottom")
+    UserModel.setUser(props.route.params.id);
+    navigation.replace("Bottom")
   }
 
 
