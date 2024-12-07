@@ -7,6 +7,8 @@ import * as Speech from 'expo-speech';
 import { Button, ProgressBar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons'; // İkonlar için
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
+
 export default function OyunEkrani2(props) {
     const [soru, setSoru] = useState(0);
     const [kelimeler, setKelimeler] = useState([]);
@@ -23,10 +25,10 @@ export default function OyunEkrani2(props) {
     const [soruAlertModal, setSoruAlertModal] = useState(false);
     const [basarisizOyunSonuAlertModal, setBasarisizOyunSonuAlertModal] = useState(false);
     const [basariliOyunSonuAlertModal, setBasariliOyunSonuAlertModal] = useState(false);
-    const [sozlugeEkleResponseModal, setSozlugeEkleResponseModal] = useState(false);
     const [sozlugeEkleResponse, setSozlugeEkleResponse] = useState("");
 
     const navigation = useNavigation();
+
 
     const getUserID = async () => {
         const id = await AsyncStorage.getItem("id");
@@ -140,12 +142,27 @@ export default function OyunEkrani2(props) {
             KullaniciID: userId,
             AnaKelimeID: Kelime.AnaKelimeID
         })
+        showToast(response.data.message)
         setSozlugeEkleResponse(response.data.message)
-        setSozlugeEkleResponseModal(true)
     }
-
-
-
+    const showToast = (message) => {
+        showMessage({
+            message: 'Heyyy !!',
+            description:  message ,
+            type: 'danger', // success, danger, warning, info
+            position: 'top', // Mesaj pozisyonu
+            floating: true, // Sağ üst köşe için floating kullanılmalı
+            duration: 3000, // Mesajın görünme süresi (ms)
+            style: {
+                borderRadius: 10, // Köşe yuvarlama
+                marginTop: 20, // Ekranın üstünden boşluk
+                marginHorizontal: 10, // Yanlardan boşluk
+            },
+            textStyle: {
+                textAlign: 'center', // Metni ortalama
+            },
+        });
+    };
     const CevapDogruMu = (cevap) => {
 
         let yeniDogruKelimeler = dogruKelimeler
@@ -234,6 +251,7 @@ export default function OyunEkrani2(props) {
 
     return (
         <View style={styles.container}>
+            <FlashMessage position="top" />
             <View style={styles.progressBarContainer}>
                 <ProgressBar progress={dogruYüzdesi / 100} style={styles.progressBar} />
                 <View style={styles.progressMarker} />
@@ -276,7 +294,7 @@ export default function OyunEkrani2(props) {
                                 Yanlış Cevap
                             </Text>
                             <Text>
-                                {anaKelime.value}   kelimesi    {anaKelime.ceviri} demek
+                                {anaKelime.value}   kelimesi   {anaKelime.ceviri} demek
 
                             </Text>
                         </View>
@@ -397,7 +415,7 @@ export default function OyunEkrani2(props) {
                     </View>
                 </View>
             </Modal>
-            <Modal
+           {/*  <Modal
                 visible={sozlugeEkleResponseModal}
                 transparent={true}
                 animationType="slide">
@@ -414,7 +432,7 @@ export default function OyunEkrani2(props) {
 
                     </View>
                 </View>
-            </Modal>
+            </Modal> */}
         </View>
 
     );

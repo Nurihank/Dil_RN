@@ -10,8 +10,9 @@ import Accordion from 'react-native-collapsible/Accordion';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFocusEffect } from '@react-navigation/native';
 import GunlukGirisComponent from '../component/GunlukGirisComponent';
+import Fontisto from '@expo/vector-icons/Fontisto';
 
-export default function HomeScreen({route}) {
+export default function HomeScreen({ route }) {
   const navigation = useNavigation();
   const [Seviyeler, setSeviyeler] = useState([]);
   const [selectedSeviyeID, setSelectedSeviyeID] = useState(1);
@@ -23,48 +24,46 @@ export default function HomeScreen({route}) {
   const [AnaDilID, setAnaDilID] = useState();
   const [sezonID, setSezonID] = useState(null);
   const [HangiDilID, setHangiDilID] = useState();
-  const [gecilenBolumler,setGecilenBolumler] = useState([]);
-  const [gecilenSezonlar,setGecilenSezonlar] = useState([]);
+  const [gecilenBolumler, setGecilenBolumler] = useState([]);
+  const [gecilenSezonlar, setGecilenSezonlar] = useState([]);
 
   const setUserID = async () => {
     const id = await AsyncStorage.getItem("id");
     setUserId(id);
   };
 
-  console.log(HangiDilID)
-
   const getUserInfo = async () => {
     const user = await UserModel.currentUser;
-    setMeslekID(user[0].MeslekID); 
+    setMeslekID(user[0].MeslekID);
     setHangiDilID(user[0].DilID);
     setAnaDilID(user[0].SectigiDilID);
   };
 
-  const Oyun = (BolumID,SezonID) => {
-    navigation.replace("OyunEkrani", { BolumID: BolumID ,SezonID:SezonID});
+  const Oyun = (BolumID, SezonID) => {
+    navigation.replace("OyunEkrani", { BolumID: BolumID, SezonID: SezonID });
   };
 
-  
-  const GunlukGiris = async()=>{
+
+  const GunlukGiris = async () => {
     const currentDate = new Date();
 
-  const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const day = String(currentDate.getDate()).padStart(2, '0');
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
 
-  const formattedDate = `${year}-${month}-${day}`;
-    const response =  await api.post("/kullanici/GunlukGiris",{
-      KullaniciID:userId,
-      Date:formattedDate
+    const formattedDate = `${year}-${month}-${day}`;
+    const response = await api.post("/kullanici/GunlukGiris", {
+      KullaniciID: userId,
+      Date: formattedDate
     })
   }
- 
 
-  useEffect(()=>{
-    if(userId){
-      GunlukGiris()  
+
+  useEffect(() => {
+    if (userId) {
+      GunlukGiris()
     }
-  },[userId])
+  }, [userId])
 
   useFocusEffect(
     useCallback(() => {
@@ -76,13 +75,13 @@ export default function HomeScreen({route}) {
             const Seviye = await api.get("/kullanici/Seviye");
             const formattedData = Seviye.data.map(item => ({
               label: item.SeviyeAdi || 'Default Label',
-              value: item.SeviyeID || 'defaultValue' 
+              value: item.SeviyeID || 'defaultValue'
             }));
-            setSeviyeler(formattedData); 
-          } catch (error) {  
+            setSeviyeler(formattedData);
+          } catch (error) {
             console.log("Seviyeleri getirirken hata oluştu:", error);
-          } 
-        }; 
+          }
+        };
         await SeviyeGetir();
       };
       fetchData();
@@ -122,7 +121,7 @@ export default function HomeScreen({route}) {
       console.log("Bölümleri getirirken hata oluştu:", error);
     }
   };
-  
+
   useEffect(() => {  //gecilen sezonları getirir
     const GecilenSezonlarGetir = async () => {
       try {
@@ -144,67 +143,65 @@ export default function HomeScreen({route}) {
     }
   }, [userId, selectedSeviyeID]);
 
-  useEffect(()=>{ //gecilen bölümleri getirir
-    const GecilenBolumlerGetir = async()=>{
-      const response = await api.get("/kullanici/GecilenBolumler",{
-        params:{
-          KullaniciID:userId,
-          SezonID:sezonID
+  useEffect(() => { //gecilen bölümleri getirir
+    const GecilenBolumlerGetir = async () => {
+      const response = await api.get("/kullanici/GecilenBolumler", {
+        params: {
+          KullaniciID: userId,
+          SezonID: sezonID
         }
       })
       setGecilenBolumler(response.data.message)
     }
     GecilenBolumlerGetir()
-  },[sezonID])
+  }, [sezonID])
 
 
- /*  useEffect(()=>{
 
-  },[sezonBittiMi]) */
   const renderAccordionHeader = (section) => {
     // Geçilen sezonlar dizisini kontrol et, eğer yoksa boş bir dizi kullan
     const gecilenSezonlarArray = Array.isArray(gecilenSezonlar) ? gecilenSezonlar : [];
-  
+
     // Bu sezona ait bilgileri al
-    const sezonID = section.SezonID; 
+    const sezonID = section.SezonID;
     const sezonOrder = section.Order;
-  
+
     // Bu sezonun tamamlanıp tamamlanmadığını kontrol et
     const isCompletedSeason = gecilenSezonlarArray.some(
       (completedSeason) => completedSeason.SezonID === sezonID
     );
-  
+
     // Geçilen sezonlar içinde en yüksek Order'a sahip son tamamlanmış sezonu bul
     const lastCompletedSeason = gecilenSezonlarArray.reduce(
-      (prev, current) => (current.Order > prev.Order ? current : prev), 
+      (prev, current) => (current.Order > prev.Order ? current : prev),
       { Order: 0 }
     );
-  
+
     // Bu sezonun açık olup olmadığını belirle
-    const shouldOpen = isCompletedSeason || 
-                       sezonOrder <= (parseInt(lastCompletedSeason.Order) + 1) || 
-                       (gecilenSezonlarArray.length === 0 && sezonOrder === 1); 
-  
+    const shouldOpen = isCompletedSeason ||
+      sezonOrder <= (parseInt(lastCompletedSeason.Order) + 1) ||
+      (gecilenSezonlarArray.length === 0 && sezonOrder === 1);
+
     return (
       <View style={styles.accordionHeader}>
         {shouldOpen ? (
           <View style={styles.headerContainer}>
-              {isCompletedSeason ? (
-                <View>
+            {isCompletedSeason ? (
+              <View>
                 <FontAwesome name="check-circle" size={24} color="#2ecc71" />
                 <Text style={styles.headerText}>{section.Ceviri}</Text>
-                </View>
-              ) : (
-                <Text style={styles.headerText}>{section.Ceviri}</Text>
-              )}
+              </View>
+            ) : (
+              <Text style={styles.headerText}>{section.Ceviri}</Text>
+            )}
           </View>
         ) : (
-            <Text style={styles.lockedText}>Kilitli</Text> 
+          <Text style={styles.lockedText}>Kilitli</Text>
         )}
       </View>
     );
-  }; 
-  
+  };
+
   const renderAccordionContent = (section) => {
     const gecilenBolumlerArray = Array.isArray(gecilenBolumler) ? gecilenBolumler : [];
 
@@ -214,34 +211,38 @@ export default function HomeScreen({route}) {
           const isCompleted = gecilenBolumlerArray.some( //some fonksiyonu içine belirli bir koşul yazıyosun true false eödndürüyor 
             (completedBolum) => completedBolum.BolumID === bolum.BolumID
           );
-  
+
           const nextBolumToOpen = gecilenBolumlerArray.find( //bir sonraki leveli buluyor
             (completedBolum) => completedBolum.Order == (parseInt(bolum.Order) - 1)
-          ); 
-  
+          );
+
           const shouldOpen = isCompleted ||  //bölüm açık mı değil diye kontrol ediyor
-                             (nextBolumToOpen && bolum.Order == (parseInt(nextBolumToOpen.Order) + 1)) || 
-                             (gecilenBolumlerArray.length === 0 && index === 0);
-  
+            (nextBolumToOpen && bolum.Order == (parseInt(nextBolumToOpen.Order) + 1)) ||
+            (gecilenBolumlerArray.length === 0 && index === 0);
+
           return (
             <View key={index} style={styles.bolumContainer}>
               {shouldOpen ? (
                 <>
                   <Text style={styles.bolumText}>{bolum.Ceviri}</Text>
-                  <TouchableOpacity style={styles.iconContainer} onPress={() => Oyun(bolum.BolumID,sezonID)}>
+                  <TouchableOpacity style={styles.iconContainer} onPress={() => Oyun(bolum.BolumID, sezonID)}>
                     <FontAwesome name="gamepad" size={24} color="#3498db" />
                   </TouchableOpacity>
                 </>
               ) : (
-                <Text style={styles.lockedText}>Kilitli</Text> 
-              )}
+                <>
+                  <Text style={styles.bolumText}>{bolum.Ceviri}</Text>
+                  <TouchableOpacity style={styles.lockediconContainer} >
+                    <Fontisto name="locked" size={24} color="black" />
+                  </TouchableOpacity>
+                </>)}
             </View>
           );
         })}
       </View>
     );
   };
-  
+
   const updateSections = (activeSections) => {
     setActiveSections(activeSections);
     if (activeSections.length > 0) {
@@ -258,7 +259,7 @@ export default function HomeScreen({route}) {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
-        <GunlukGirisComponent/>
+        <GunlukGirisComponent />
         <ProgressBars />
         <View style={styles.pickerContainer}>
           <Text style={styles.pickerLabel}>Seviye Seç:</Text>
@@ -371,6 +372,9 @@ const styles = StyleSheet.create({
     color: '#e74c3c', // Kilitli metin için kırmızı
     fontStyle: 'italic',
   },
+  lockediconContainer: {
+
+  }
 });
 
 const pickerSelectStyles = StyleSheet.create({

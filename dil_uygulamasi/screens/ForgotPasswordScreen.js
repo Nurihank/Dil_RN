@@ -3,29 +3,22 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import api from '../api/api';
 
 export default function ForgotPasswordScreen() {
-    const [kullaniciAdi, setKullaniciAdi] = useState('');
     const [email, setEmail] = useState('');
 
     const handleSubmit = async () => {
-        const response = await api.get("/kullanici/forgetPasswordCode",{
-            params:{
-                kullaniciAdi:kullaniciAdi,
-                email:email
+        const response = await api.get("/kullanici/forgetPasswordCode", {
+            params: {
+                email: email
             }
         })
-        console.log(response)
+        console.log(response.data)
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Şifremi Unuttum</Text>
             <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Kullanıcı Adı"
-                    value={kullaniciAdi}
-                    onChangeText={(text) => setKullaniciAdi(text)}
-                />
+                
                 <TextInput
                     style={styles.input}
                     placeholder="E-posta"

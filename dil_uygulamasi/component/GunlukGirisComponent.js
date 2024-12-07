@@ -51,9 +51,9 @@ export default function GunlukGirisComponent() {
       for (let i = 0; i < benzersizGunler.length; i++) {
         const gün = new Date(benzersizGunler[i]);
         // Eğer ilk gün ise veya bir önceki gün ile aynı değilse gün sayısını artırıyoruz
-        if (i === 0 || (gün.getTime() === new Date(benzersizGunler[i - 1]).getTime() - 86400000)) {
+        if (i === 0 || (gün.getTime() === new Date(benzersizGunler[i - 1]).getTime() - 86400000)) { 
           ardışıkGunSayısı++;
-        } else {
+        } else { 
           break; // Eğer ardışık değilse döngüden çıkıyoruz
         }
       }

@@ -8,23 +8,23 @@ import UserModel from '../model/ModelUser';
 
 
 
-export default function SigninScreen() { 
-   
+export default function SigninScreen() {
+
     const [kullaniciAdi, setKullaniciAdi] = useState("");
     const [sifre, setSifre] = useState("");
     const navigation = useNavigation();
 
     const handleSignin = async () => {
         try {
-           
-                const response = await api.get("/kullanici/signin", {
-                    params: {
-                        kullaniciAdi: kullaniciAdi,
-                        sifre: sifre
-                    }
-                });
-                console.log("API Yanıtı:", response.data); // Yanıtı burada kontrol edin
-            
+
+            const response = await api.get("/kullanici/signin", {
+                params: {
+                    kullaniciAdi: kullaniciAdi,
+                    sifre: sifre
+                }
+            });
+            console.log("API Yanıtı:", response.data); // Yanıtı burada kontrol edin
+
             if (response.data.status === "SUCCES") {
                 await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
                 await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
@@ -37,7 +37,7 @@ export default function SigninScreen() {
             }
         } catch (error) {
             // Hata mesajını ve mevcut error objesini kontrol et
-            console.log("API Hatası:", error); 
+            console.log("API Hatası:", error);
             if (error.response) {
                 console.log("Yanıt Hatası:", error.response.data); // Sunucudan gelen hatayı göster
             } else {
@@ -49,8 +49,8 @@ export default function SigninScreen() {
     const handleSignup = () => {
         navigation.navigate("Signup");
     };
- 
-    const handleForgotPassword = ()=>{
+
+    const handleForgotPassword = () => {
         navigation.navigate("ForgotPassword")
     }
 
@@ -74,7 +74,7 @@ export default function SigninScreen() {
                     onChangeText={(text) => setSifre(text)}
                 />
             </View>
-            <TouchableOpacity onPress={() => promptAsync()} style={styles.forgotContainer}>
+            <TouchableOpacity onPress={() => handleForgotPassword()} style={styles.forgotContainer}>
                 <Text style={styles.forgotText}>Şifremi Unuttum</Text>
             </TouchableOpacity>
             <View style={styles.buttonContainer}>

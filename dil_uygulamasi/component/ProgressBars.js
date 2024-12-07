@@ -8,7 +8,7 @@ export default function ProgressBars() {
       <View style={styles.ImageContainer}>
         <Image source={require("../assets/turkey.png")} style={styles.image} />
         <View style={{ margin: 10, marginTop: 15 }}>
-          <ProgressBar progress={0.35} width={230} height={30} />
+          <ProgressBar progress={0.35} width={230} height={50} />
         </View>
         <Image source={require("../assets/eng.png")} style={styles.image} />
       </View>

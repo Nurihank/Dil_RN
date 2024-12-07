@@ -7,17 +7,38 @@ import { Calendar } from 'react-native-calendars';
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function ProfileScreen() {
+
     const [userId, setUserId] = useState(undefined);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null); // Başlangıçta null olarak ayarlandı
-    const [selectedDate, setSelectedDate] = useState('');
     const [markedDates, setMarkedDates] = useState({}); // State for marked dates
 
     const handleDayPress = (day) => {
         console.log(day.dateString);
-        setSelectedDate(day.dateString);
     };
 
+    const setMarkedDatesApi = async() => { /* günlük giriş yaptığımız günleri takvimde set etmek için  */
+        const response = await api.get("/kullanici/GunlukGiris",{
+            params:{ 
+                KullaniciID: userId
+            }
+        })
+        const data = response.data.message
+        const marked = data.reduce((acc, item) => {
+            const localDate = new Date(item.Tarih); // Tarihi Date objesine çevir
+            localDate.setDate(localDate.getDate() + 1); // UTC farkını düzelt
+
+            const dateKey = localDate.toISOString().split('T')[0]; // YYYY-MM-DD formatına getir
+            acc[dateKey] = {
+                marked: true,
+                dotColor: 'green', 
+            };
+            return acc;
+        }, {});
+        setMarkedDates(marked);
+        console.log(response.data.message)
+
+    }
     // Kullanıcı bilgilerini al
     const getUserInfo = async () => {
         const id = await AsyncStorage.getItem("id");
@@ -29,13 +50,13 @@ export default function ProfileScreen() {
             }
             const response = await api.get("/kullanici/KullaniciBilgileri", {
                 headers: {
-                    Authorization: `Bearer ${accessToken}` 
+                    Authorization: `Bearer ${accessToken}`
                 },
-                params: {  
+                params: {
                     id: id
-                }, 
+                },
             });
-            console.log("gelen kullanıcı = "+response)
+            console.log("gelen kullanıcı = " + response)
             setUser(response.data.user[0]);
             setLoading(false);
 
@@ -45,15 +66,15 @@ export default function ProfileScreen() {
     };
 
     const handleTokenError = async (error) => {
-        console.log("gelen hata = "+error.response.data.message)
+        console.log("gelen hata = " + error.response.data.message)
         if (error.response && error.response.data.message === "Token süresi dolmuş") {
             await refreshAccessToken();
         } else {
-          
+
             setUser(null);
         }
     };
- 
+
     const refreshAccessToken = async () => {
         try {
             let refreshToken = await AsyncStorage.getItem("refreshToken");
@@ -64,22 +85,23 @@ export default function ProfileScreen() {
                 throw new Error("Refresh token not found");
             }
             const response = await api.put('/kullanici/NewAccessToken', {
-                id: userId ,
+                id: userId,
                 refreshToken: refreshToken
-            });            
+            });
             await AsyncStorage.setItem('accessToken', response.data.accessToken);
-            getUserInfo();  
+            getUserInfo();
         } catch (error) {
-            console.log("access Token alırken hata = "+error.response.data.message)
+            console.log("access Token alırken hata = " + error.response.data.message)
             setUser(null);
-        }   
+        }
     };
 
     // useFocusEffect ile ekran odaklandığında veri yenileme
     useFocusEffect(
         useCallback(() => {
-            const fetchData = async ()=>{
+            const fetchData = async () => {
                 await getUserInfo();
+                await setMarkedDatesApi()
             }
             fetchData()
         }, [userId])
@@ -116,11 +138,6 @@ export default function ProfileScreen() {
                         markedDates={markedDates}
                         style={styles.calendar}
                     />
-                    {selectedDate ? (
-                        <Text style={styles.selectedDateText}>Seçilen Tarih: {selectedDate}</Text>
-                    ) : (
-                        <Text style={styles.selectedDateText}>Tarih Seçin</Text>
-                    )}
                 </>
             ) : (
                 <Text style={styles.errorText}>Kullanıcı bilgileri bulunamadı veya hata oluştu.</Text>
@@ -186,6 +203,6 @@ const styles = StyleSheet.create({
     selectedDateText: {
         marginTop: 20,
         fontSize: 18,
-        marginBottom: 65 
+        marginBottom: 65
     },
 });
