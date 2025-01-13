@@ -66,7 +66,7 @@ export default function ProfileScreen() {
     };
 
     const handleTokenError = async (error) => {
-        console.log("gelen hata = " + error.response.data.message)
+        console.log("gelen hata = " + error.response)
         if (error.response && error.response.data.message === "Token süresi dolmuş") {
             await refreshAccessToken();
         } else {
@@ -109,100 +109,106 @@ export default function ProfileScreen() {
 
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-            {loading ? (
-                <ActivityIndicator style={styles.loadingContainer} size="large" color="#0000ff" />
-            ) : userId && user ? ( // userId ve user kontrolü eklendi
-                <>
-                    <View style={styles.profileImageContainer}>
-                        <Image
-                            source={require("../assets/profile-default.jpg")}
-                            style={styles.imageStyle}
-                        />
-                    </View>
-                    <Text style={styles.username}>{user.kullaniciAdi}</Text>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoTitle}>Meslek</Text>
-                        <Text style={styles.infoText}>{user.meslek}</Text>
-                    </View>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoTitle}>Ana Dili</Text>
-                        <Text style={styles.infoText}>{user.dil}</Text>
-                    </View>
-                    <View style={styles.infoContainer}>
-                        <Text style={styles.infoTitle}>Öğrendiğin Dil</Text>
-                        <Text style={styles.infoText}>{user.OgrenilecekDil} Öğreniyor</Text>
-                    </View>
-                    <ProgressBars />
-                    <Calendar
-                        onDayPress={handleDayPress}
-                        markedDates={markedDates}
-                        style={styles.calendar}
-                    />
-                </>
-            ) : (
-                <Text style={styles.errorText}>Kullanıcı bilgileri bulunamadı veya hata oluştu.</Text>
-            )}
+          {loading ? (
+            <ActivityIndicator style={styles.loadingContainer} size="large" color="#3A8DFF" />
+          ) : userId && user ? (
+            <>
+              <View style={styles.profileImageContainer}>
+                <Image
+                  source={require("../assets/profile-default.jpg")}
+                  style={styles.imageStyle}
+                />
+              </View>
+              <Text style={styles.username}>{user.kullaniciAdi}</Text>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoTitle}>Meslek</Text>
+                <Text style={styles.infoText}>{user.meslek}</Text>
+              </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoTitle}>Ana Dili</Text>
+                <Text style={styles.infoText}>{user.dil}</Text>
+              </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoTitle}>Öğrendiğin Dil</Text>
+                <Text style={styles.infoText}>{user.OgrenilecekDil} Öğreniyor</Text>
+              </View>
+              <ProgressBars />
+              <Calendar
+                onDayPress={handleDayPress}
+                markedDates={markedDates}
+                style={styles.calendar}
+              />
+            </>
+          ) : (
+            <Text style={styles.errorText}>Kullanıcı bilgileri bulunamadı veya hata oluştu.</Text>
+          )}
         </ScrollView>
-    );
-}
-
-const styles = StyleSheet.create({
-    loadingContainer: {
+      );
+    }
+    
+    const styles = StyleSheet.create({
+      loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    container: {
+      },
+      container: {
         flexGrow: 1,
         padding: 20,
-        backgroundColor: '#fff'
-    },
-    profileImageContainer: {
+        backgroundColor: '#F4F4F4', // Yumuşak gri arka plan
+      },
+      profileImageContainer: {
         alignItems: 'center',
         marginVertical: 30,
-    },
-    imageStyle: {
+      },
+      imageStyle: {
         width: 120,
         height: 120,
         borderRadius: 60,
         borderWidth: 2,
-        borderColor: '#ddd',
-    },
-    username: {
+        borderColor: '#E0E0E0', // Soft border
+      },
+      username: {
         fontSize: 28,
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 20,
-    },
-    infoContainer: {
+        color: '#1E1E1E', // Koyu başlık rengi
+      },
+      infoContainer: {
         marginBottom: 15,
-    },
-    infoTitle: {
+      },
+      infoTitle: {
         fontSize: 17,
         fontWeight: 'bold',
         marginBottom: 5,
-    },
-    infoText: {
+        color: '#1E1E1E', // Koyu renk başlık
+      },
+      infoText: {
         fontSize: 18,
-        color: '#333',
+        color: '#555555', // Daha yumuşak metin rengi
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#E0E0E0', // Soft border for info text
         padding: 10,
-    },
-    errorText: {
+        borderRadius: 8,
+        backgroundColor: '#FFFFFF', // Beyaz arka plan
+      },
+      errorText: {
         textAlign: 'center',
         fontSize: 18,
-        color: 'red',
-    },
-    calendar: {
+        color: '#FF6347', // Kırmızı hata mesajı
+      },
+      calendar: {
         width: '100%',
         borderWidth: 1,
-        borderColor: 'gray',
-        marginTop: 25
-    },
-    selectedDateText: {
+        borderColor: '#E0E0E0', // Soft border for calendar
+        marginTop: 25,
+        borderRadius: 8,
+        backgroundColor: '#FFFFFF', // Beyaz arka plan
+      },
+      selectedDateText: {
         marginTop: 20,
         fontSize: 18,
-        marginBottom: 65
-    },
-});
+        marginBottom: 65,
+      },
+    });

@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.15,
         shadowRadius: 10,
         elevation: 8,
-        flexDirection: "row",
+        flexDirection: "column",  // İkon ve metin dikey hizalama
         position: 'relative',
     },
     image: {
@@ -552,6 +552,7 @@ const styles = StyleSheet.create({
         color: "#333333",
         textAlign: 'center',
         marginHorizontal: 10,
+        maxWidth: '90%', // Ekranda taşmayı önlemek için genişlik sınırı
     },
     sozlukButton: {
         position: 'absolute',

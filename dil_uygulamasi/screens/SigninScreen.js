@@ -17,11 +17,10 @@ export default function SigninScreen() {
     const handleSignin = async () => {
         try {
 
-            const response = await api.get("/kullanici/signin", {
-                params: {
+            const response = await api.post("/kullanici/signin", {
                     kullaniciAdi: kullaniciAdi,
                     sifre: sifre
-                }
+            
             });
             console.log("API Yanıtı:", response.data); // Yanıtı burada kontrol edin
 

@@ -42,7 +42,7 @@ export default function EgitimScreen(props) {
                     [array[i], array[j]] = [array[j], array[i]];
                 }
                 return array;
-            }
+            } 
 
             if (data.length > 0) {
                 const shuffledData = shuffleArray([...data]);

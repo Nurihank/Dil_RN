@@ -1,15 +1,50 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect,useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import api from '../api/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function WelcomeScreen() {
+    const [userId, setUserId] = useState(null);
 
     const navigation = useNavigation();
 
+    useFocusEffect(
+        useCallback(() => {
+            const fetchId = async()=>{
+                await setUserID();
+            }
+            fetchId()
+        }, [])
+      );
+
+    const setUserID = async () => {
+        const id = await AsyncStorage.getItem("id");
+        setUserId(id);
+      };
     const AnaSayfayaGecis = () => {
         navigation.navigate("Bottom");
     };
+    const GunlukGiris = async () => {
+        const currentDate = new Date();
+    
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+    
+        const formattedDate = `${year}-${month}-${day}`;
+        const response = await api.post("/kullanici/GunlukGiris", {
+          KullaniciID: userId,
+          Date: formattedDate
+        })
+      }
+      
+  useEffect(() => {
+    if (userId) {
+      GunlukGiris()
+    }
+  }, [userId])
 
     return (
         <View style={styles.container}>

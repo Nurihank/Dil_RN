@@ -3,9 +3,6 @@ import api from "../api/api"
 export default class UserModel {
 
     static currentUser
-    static MeslekId
-    static DilID
-    static SectigiDilId
 
     static setUser = async (id) => {
         try {

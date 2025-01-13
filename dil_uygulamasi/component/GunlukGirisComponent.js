@@ -24,6 +24,7 @@ export default function GunlukGirisComponent() {
 
   useEffect(() => {
     if (userId) {
+      console.log("çalıştı")
       GunlukGirisiGetir();
     }
   }, [userId]);
@@ -39,80 +40,72 @@ export default function GunlukGirisComponent() {
   
       const gunlukVerileri = response.data.message;
   
-      // Günleri tarih formatında saklayacağız 
       const gunler = gunlukVerileri.map(entry => new Date(entry.Tarih).toISOString().split('T')[0]);
   
-      // Günleri benzersiz ve sıralı hale getiriyoruz
       const benzersizGunler = [...new Set(gunler)].sort((a, b) => new Date(b) - new Date(a));
   
-      // Ardışık günleri saymak için bir değişken tanımlıyoruz
       let ardışıkGunSayısı = 0;
   
       for (let i = 0; i < benzersizGunler.length; i++) {
         const gün = new Date(benzersizGunler[i]);
-        // Eğer ilk gün ise veya bir önceki gün ile aynı değilse gün sayısını artırıyoruz
         if (i === 0 || (gün.getTime() === new Date(benzersizGunler[i - 1]).getTime() - 86400000)) { 
           ardışıkGunSayısı++;
         } else { 
-          break; // Eğer ardışık değilse döngüden çıkıyoruz
+          break;
         }
       }
    
-      // Sonuçları state'e kaydediyoruz 
       setGunSerisi(ardışıkGunSayısı);
     } catch (error) { 
       console.error("Hata:", error);
     }  
   };
-  
 
   return (
     <View style={styles.container}>
+    <Text style={styles.title}>Gün Serisi</Text>
       <View style={styles.iconContainer}>
         <Image style={styles.icon} source={require("../assets/fire.png")} />
         <Text style={styles.count}>{gunSerisi}</Text> 
       </View>
-        <Text style={styles.title}>Gün Serisi</Text>
+      
     </View>
   );
 }
- 
+
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
     padding: 20,
     backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderRadius: 15,
+    elevation: 10,
+    margin: 15,
     alignItems: 'center',
-    margin: 10,
-    flexDirection: "row", // Yönlendirme sütun olarak ayarlandı
+    justifyContent: 'center',
   },
   iconContainer: {
+    position: 'relative',
+    marginRight: 15,
+    justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative', // Pozisyon ayarı ile yazıyı ikon üzerine yerleştiriyoruz
   },
   icon: {
-    height: 40,
-    width: 40,
+    height: 50,
+    width: 50,
+    marginBottom: 10,
   },
   count: {
-    position: 'absolute', // Pozisyonu mutlak olarak ayarlıyoruz
-    fontSize: 24,
+    position: 'absolute',
+    fontSize: 30,
     fontWeight: 'bold',
-    color: '#FF4500',
-    top: 8, // İkonun üst kısmına konumlandırıyoruz
+    color: 'red',
+    top: 5,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '600',
     color: '#333',
-    marginTop: 10, // Başlık için biraz boşluk veriyoruz
+    marginTop: 5,
   },
 });

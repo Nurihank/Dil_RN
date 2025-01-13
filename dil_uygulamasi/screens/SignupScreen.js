@@ -19,18 +19,13 @@ export default function SignupScreen() {
                 email: email,
                 sifre: sifre
             });
-            console.log(response.data)
             if (response.data.status === "SUCCES") {
                 Alert.alert(response.data.message);
-                const responseSignin = await api.get("/kullanici/signin", {
-                    params: {
+                const responseSignin = await api.post("/kullanici/signin", {
                         kullaniciAdi: kullaniciAdi,
                         sifre: sifre
-                    }
                 });
-                console.log(responseSignin.data.status)
                 if (responseSignin.data.status === "SUCCES") {
-                    console.log("token = "+responseSignin.data.refreshToken)
                     UserModel.setUser(responseSignin.data.id);
                     await AsyncStorage.setItem('accessToken', JSON.stringify(responseSignin.data.accessToken));
                     await AsyncStorage.setItem('refreshToken', JSON.stringify(responseSignin.data.refreshToken));
