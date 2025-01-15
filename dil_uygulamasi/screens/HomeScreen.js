@@ -93,7 +93,8 @@ export default function HomeScreen({ route }) {
       const response = await api.get("/kullanici/Bolum", {
         params: {
           SezonID: sezonID,
-          HangiDilID: HangiDilID
+          HangiDilID: HangiDilID,
+          MeslekID:meslekID
         },
       });
       setBolumler(response.data);

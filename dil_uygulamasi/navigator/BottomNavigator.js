@@ -7,7 +7,7 @@ import { BlurView } from 'expo-blur';
 import { StyleSheet, View, Image } from 'react-native';
 import SozlukEkrani from '../screens/SozlukEkrani.js';
 import MagazaScreen from '../screens/MagazaScreen.js';
-import Ayarlar from '../screens/Ayarlar.js';
+import TemelEgitimScreen from '../screens/TemelEgitimScreen.js';
 
 const Tab = createBottomTabNavigator();
 
@@ -61,13 +61,13 @@ export default function BottomNavigator() {
                             )}
                         </View>
                     );
-                } else if (route.name === 'Ayarlar') {
+                } else if (route.name === 'Temel') {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Image source={require("../assets/settingsOpen.png")} style={{ width: 31, height: 31 }} />
+                                <Image source={require("../assets/exerciseO.png")} style={{ width: 35, height: 31 }} />
                             ) : (
-                                <Image source={require("../assets/settings.png")} style={{ width: 27, height: 27 }} />
+                                <Image source={require("../assets/exercise.png")} style={{ width: 30, height: 27 }} />
                             )}
                         </View>
                     );
@@ -83,7 +83,7 @@ export default function BottomNavigator() {
             <Tab.Screen name="Profil" component={ProfileScreen} />
             <Tab.Screen name="Sozluk" component={SozlukEkrani} />
             <Tab.Screen name="Magaza" component={MagazaScreen} />
-            <Tab.Screen name="Ayarlar" component={Ayarlar} />
+            <Tab.Screen name="Temel" component={TemelEgitimScreen} />
         </Tab.Navigator>
     );
 }

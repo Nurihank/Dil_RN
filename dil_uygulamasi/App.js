@@ -17,12 +17,14 @@ import SozlukEkrani from './screens/SozlukEkrani';
 import OyunEkrani from './screens/OyunEkrani';
 import OyunEkrani2 from './screens/OyunEkrani2';
 import EgitimScreen from './screens/EgitimScreen';
+import TemelEgitimScreen from './screens/TemelEgitimScreen';
+import TemelEgitimOyunScreen from './screens/TemelEgitimOyunScreen';
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      
+
         <Stack.Screen name="Signin" component={SigninScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
@@ -35,6 +37,7 @@ export default function App() {
         <Stack.Screen name="Sozluk" component={SozlukEkrani} options={{ headerShown: false }} />
         <Stack.Screen name="OyunEkrani" component={OyunEkrani2} options={{ headerShown: false }} />
         <Stack.Screen name="Egitim" component={EgitimScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="TemelEgitimOyun" component={TemelEgitimOyunScreen} options={{ headerShown: false }} />
 
       </Stack.Navigator>
     </NavigationContainer>
