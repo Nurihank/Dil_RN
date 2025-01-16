@@ -7,6 +7,7 @@ import api from '../api/api';
 
 export default function TemelEgitimScreen() {
     const navigation = useNavigation();
+    const [gecilenBolumler, setGecilenBolumler] = useState([]);
     const [userId, setUserId] = useState();
     const [HangiDilID, setHangiDilID] = useState();
     const [AnaDilID, setAnaDilID] = useState();
@@ -23,8 +24,8 @@ export default function TemelEgitimScreen() {
         setAnaDilID(user[0].SectigiDilID);
     };
 
-    const OyunGecis = (bolumId) => {
-        navigation.navigate("TemelEgitimOyun", { BolumID: bolumId, UserID :userId,AnaDilID:AnaDilID,HangiDilID:HangiDilID })
+    const OyunGecis = (bolumId, KategoriID) => {
+        navigation.navigate("TemelEgitimOyun", { BolumID: bolumId, UserID: userId, AnaDilID: AnaDilID, HangiDilID: HangiDilID, KategoriID: KategoriID })
     }
 
     useFocusEffect(
@@ -45,14 +46,29 @@ export default function TemelEgitimScreen() {
                     HangiDilID: HangiDilID,
                 },
             });
-            console.log(response.data.message);
             setTemelKategoriler(response.data.message);
             fetchAllBolumler(response.data.message);
-
         } catch (error) {
             console.error(error);
         }
     };
+
+    useFocusEffect(
+        useCallback(() => {
+            const gecilenBolumler = async () => {
+                const response = await api.get("/kullanici/temelGecilenBolum", {
+                    params: {
+                        KullaniciID: userId
+                    }
+                })
+                setGecilenBolumler(response.data.message)
+            }
+            if (userId) {
+                gecilenBolumler()
+            }
+        }, [userId])
+    )
+
 
     const fetchAllBolumler = async (kategoriler) => {
         const bolumPromises = kategoriler.map(async (kategori) => { /* map fonks kullanılmış */
@@ -64,6 +80,8 @@ export default function TemelEgitimScreen() {
                         KategoriID: kategori.id,
                     },
                 });
+                console.log(response.data)
+
                 return { kategoriId: kategori.id, bolumler: response.data.message };
             } catch (error) {
                 console.error(error);
@@ -78,6 +96,21 @@ export default function TemelEgitimScreen() {
         });
         setKategoriBolumleri(bolumMap);
     };
+
+    const isBolumAcik = (kategoriId, bolumOrder) => {
+
+        if (bolumOrder === 1) {
+            return true;
+        }
+
+        const gecilen = gecilenBolumler.filter(
+            (bolum) => bolum.KategoriID === kategoriId
+        );
+        const sonuc = gecilen.some((bolum) => bolum.Order + 1 === bolumOrder);
+
+        return sonuc;
+    }; 
+
 
     useEffect(() => {
         if (HangiDilID && AnaDilID) {
@@ -97,12 +130,22 @@ export default function TemelEgitimScreen() {
                             data={kategoriBolumleri[item.id] || []}
                             keyExtractor={(bolum) => bolum.id.toString()}
                             renderItem={({ item: bolum }) => (
-                                <TouchableOpacity onPress={() => OyunGecis(bolum.id)}>
+                                isBolumAcik(item.id, bolum.Order) ? (
+                                    <TouchableOpacity onPress={() => OyunGecis(bolum.id, item.id)}>
+                                        <View style={styles.bolumContainer}>
+                                            <Image source={{ uri: bolum.Image }} style={styles.icon} />
+                                            <Text style={styles.bolumText}>{bolum.ceviri}</Text>  
+                                        </View>
+                                    </TouchableOpacity>
+                                ) : (
                                     <View style={styles.bolumContainer}>
-                                        <Image source={require("../assets/apple.png")} style={{ width: 30, height: 30 }} />
-                                        <Text style={styles.bolumText}>{bolum.ceviri}</Text>
+                                        <Image
+                                            source={require("../assets/lock.png")}
+                                            style={{ width: 30, height: 30 }}
+                                        />
+                                        <Text style={styles.bolumTextKapali}>Kilitli</Text>
                                     </View>
-                                </TouchableOpacity>
+                                )
                             )}
                             horizontal
                             showsHorizontalScrollIndicator={false}
@@ -143,7 +186,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 15,
         width: 130,
-        height: 75
+        height: 90
     },
     bolumText: {
         fontSize: 18,
@@ -152,5 +195,7 @@ const styles = StyleSheet.create({
     },
     icon: {
         color: '#00cec9',
+        height:50,
+        width:50
     },
 });

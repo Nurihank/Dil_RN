@@ -48,6 +48,7 @@ export default function OyunEkrani2(props) {
             if (yeniYanlisKelimeler.length > 1) {
                 setBasarisizOyunSonuAlertModal(true)
             } else {
+                BolumBasariylaBitti()
                 setBasariliOyunSonuAlertModal(true)
             }
         }
@@ -95,10 +96,7 @@ export default function OyunEkrani2(props) {
 
             }
             console.log("sezon bitti mi  = " + sezonunBittiMi.data.sezonBittiMi)
-            navigation.replace("Bottom");
-        }
-        //önceden oynadıysa ve leveli  geçtiyse buraya girecek
-        navigation.replace("Bottom")
+        }     
     }
 
 
@@ -172,7 +170,6 @@ export default function OyunEkrani2(props) {
                 yeniDogruKelimeler = [...dogruKelimeler, cevap];
                 setDogruKelimeler(yeniDogruKelimeler);  // Yanlış kelimeleri güncelle
             }
-            console.log(yeniDogruKelimeler)
             if (soru >= 2) {
                 DigerSoru()
             } else {
@@ -400,7 +397,7 @@ export default function OyunEkrani2(props) {
                         <Text style={styles.alertText}>
                             Tebriklerler Başarılısın
                         </Text>
-                        <TouchableOpacity style={styles.button} onPress={() => BolumBasariylaBitti()}>
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.replace("Bottom")}>
                             <Icon name="home" size={24} color="#fff" style={styles.icon} />
                             <Text style={styles.buttonText}>Ana Sayfaya Dön</Text>
                         </TouchableOpacity>
@@ -415,24 +412,7 @@ export default function OyunEkrani2(props) {
                     </View>
                 </View>
             </Modal>
-           {/*  <Modal
-                visible={sozlugeEkleResponseModal}
-                transparent={true}
-                animationType="slide">
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={{ marginBottom: 15, fontWeight: "bold", fontSize: 17 }}>
-                            {sozlugeEkleResponse}
-                        </Text>
-                        <TouchableOpacity style={styles.button} onPress={() => setSozlugeEkleResponseModal(false)}>
-                            <Text style={styles.buttonText}>
-                                Tamam!
-                            </Text>
-                        </TouchableOpacity>
 
-                    </View>
-                </View>
-            </Modal> */}
         </View>
 
     );

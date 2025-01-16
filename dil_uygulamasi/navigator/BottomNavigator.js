@@ -8,6 +8,7 @@ import { StyleSheet, View, Image } from 'react-native';
 import SozlukEkrani from '../screens/SozlukEkrani.js';
 import MagazaScreen from '../screens/MagazaScreen.js';
 import TemelEgitimScreen from '../screens/TemelEgitimScreen.js';
+import TemelEgitimOyunScreen from '../screens/TemelEgitimOyunScreen.js';
 
 const Tab = createBottomTabNavigator();
 
@@ -84,6 +85,7 @@ export default function BottomNavigator() {
             <Tab.Screen name="Sozluk" component={SozlukEkrani} />
             <Tab.Screen name="Magaza" component={MagazaScreen} />
             <Tab.Screen name="Temel" component={TemelEgitimScreen} />
+
         </Tab.Navigator>
     );
 }

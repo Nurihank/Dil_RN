@@ -20,7 +20,9 @@ import EgitimScreen from './screens/EgitimScreen';
 import TemelEgitimScreen from './screens/TemelEgitimScreen';
 import TemelEgitimOyunScreen from './screens/TemelEgitimOyunScreen';
 export default function App() {
+  
   const Stack = createNativeStackNavigator();
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -38,6 +40,7 @@ export default function App() {
         <Stack.Screen name="OyunEkrani" component={OyunEkrani2} options={{ headerShown: false }} />
         <Stack.Screen name="Egitim" component={EgitimScreen} options={{ headerShown: false }} />
         <Stack.Screen name="TemelEgitimOyun" component={TemelEgitimOyunScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="TemelEgitim" component={TemelEgitimScreen} options={{ headerShown: false }} />
 
       </Stack.Navigator>
     </NavigationContainer>
