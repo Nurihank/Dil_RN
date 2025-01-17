@@ -4,6 +4,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserModel from '../model/ModelUser';
 import api from '../api/api';
+import { Modal, ProgressBar } from 'react-native-paper';
 
 export default function TemelEgitimScreen() {
     const navigation = useNavigation();
@@ -13,11 +14,24 @@ export default function TemelEgitimScreen() {
     const [AnaDilID, setAnaDilID] = useState();
     const [temelKategoriler, setTemelKategoriler] = useState([]);
     const [kategoriBolumleri, setKategoriBolumleri] = useState({}); // Bölümleri kategorilere göre saklamak için
+    const [sozlukModal, setSozlukModal] = useState(false)
+    const [sozlukKelimeler,setSozlukKelimeleri] = useState()
+    const [gosterimDurumu, setGosterimDurumu] = useState({});
+    
     const setUserID = async () => {
         const id = await AsyncStorage.getItem("id");
         setUserId(id);
     };
-
+    const SozluktenKelimeSilme = async(item)=>{
+        console.log(item)
+        const response = await api.delete("/kullanici/temelSozluk",{
+            params:{
+                KullaniciID:userId,
+                KelimeID:item.id
+            }
+        }) 
+        sozlukKelimeleriGetir()
+    }
     const getUserInfo = async () => {
         const user = await UserModel.currentUser;
         setHangiDilID(user[0].DilID);
@@ -69,6 +83,10 @@ export default function TemelEgitimScreen() {
         }, [userId])
     )
 
+    const SozlukModali = ()=>{
+        sozlukKelimeleriGetir()
+        setSozlukModal(!sozlukModal)
+    }
 
     const fetchAllBolumler = async (kategoriler) => {
         const bolumPromises = kategoriler.map(async (kategori) => { /* map fonks kullanılmış */
@@ -80,8 +98,6 @@ export default function TemelEgitimScreen() {
                         KategoriID: kategori.id,
                     },
                 });
-                console.log(response.data)
-
                 return { kategoriId: kategori.id, bolumler: response.data.message };
             } catch (error) {
                 console.error(error);
@@ -111,6 +127,57 @@ export default function TemelEgitimScreen() {
         return sonuc;
     }; 
 
+    const renderItem = ({ item }) => {
+  const isVisible = gosterimDurumu[item.value];
+
+  return (
+    <View style={styles.itemContainer}>
+      <View style={styles.textContainer}>
+        <Text style={styles.itemText}>
+          {isVisible ? item.Ceviri : item.value}
+        </Text>
+      </View>
+
+      <View style={styles.iconContainer}>
+        <TouchableOpacity
+          onPress={() =>
+            setGosterimDurumu((prev) => ({
+              ...prev,
+              [item.value]: !prev[item.value],
+            }))
+          }
+        >
+          <Image
+            source={
+              isVisible
+                ? require("../assets/acikGoz.png")
+                : require("../assets/kapaliGoz.png")
+            }
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => SozluktenKelimeSilme(item)}>
+          <Image
+            source={require("../assets/delete.png")}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+    const sozlukKelimeleriGetir =async ()=>{
+        console.log(userId)
+        const response = await api.get("/kullanici/temelSozluk",{
+            params:{
+                KullaniciID:userId
+            }
+        })
+        console.log(response.data.message)
+        setSozlukKelimeleri(response.data.message)
+    }
 
     useEffect(() => {
         if (HangiDilID && AnaDilID) {
@@ -120,13 +187,26 @@ export default function TemelEgitimScreen() {
 
     return (
         <View style={styles.container}>
+            <View style={{flexDirection:"row",paddingHorizontal:15}}>
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.button} onPress={()=>SozlukModali()}>
+                    <Image source={require("../assets/temelSozluk.png")} style={{height:75,width:75}} />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.progressBarContainer}>
+                <Text>%35 İlerleme</Text>
+                <ProgressBar progress={0.35} width={230} height={50} color={'#6c5ce7'} />
+            </View>
+        </View>
+       
+
             <FlatList
                 data={temelKategoriler}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <View style={styles.item}>
                         <Text style={styles.text}>{item.Ceviri}</Text>
-                        <FlatList
+                        <FlatList 
                             data={kategoriBolumleri[item.id] || []}
                             keyExtractor={(bolum) => bolum.id.toString()}
                             renderItem={({ item: bolum }) => (
@@ -154,7 +234,35 @@ export default function TemelEgitimScreen() {
                     </View>
                 )}
             />
+             <Modal
+    visible={sozlukModal}
+    animationType="slide"
+    transparent={true}
+  >
+    <View style={styles.modalContainer}>
+      <View style={styles.modalContent}>
+        <TouchableOpacity onPress={SozlukModali} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>X</Text>
+        </TouchableOpacity>
+        <Text style={styles.modalTitle}>Sözlük Kelimeleri</Text>
+
+        {sozlukKelimeler && sozlukKelimeler.length > 0 ? (
+          <FlatList
+            data={sozlukKelimeler}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        ) : (
+          <Text style={styles.emptyText}>Gösterilecek kelime yok.</Text>
+        )}
+      </View>
+    </View>
+
+    </Modal>
+        
+        
         </View>
+        
     );
 }
 
@@ -170,8 +278,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowOffset: { width: 0, height: 4 },
         shadowRadius: 6,
-        borderBottomWidth: 2, // İnce bir çizgi ekler
-        borderBottomColor: '#ccc', // Çizginin rengi (gri ton)
+        borderBottomWidth: 2,
+        borderBottomColor: '#ccc',
     },
     text: {
         fontSize: 24,
@@ -186,16 +294,82 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 15,
         width: 130,
-        height: 90
+        height: 90,
     },
     bolumText: {
         fontSize: 18,
         color: '#6c5ce7',
         marginLeft: 10,
     },
-    icon: {
-        color: '#00cec9',
-        height:50,
-        width:50
+    header: {
+        flexDirection: 'column',
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 13,
+        borderRadius: 10,
+        width: 75,
+        height: 75,
+        marginRight: 35,
+        marginTop: 15,
     },
+    button: {
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    buttonText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#ff6f61',
+        marginBottom: 5,
+    },
+    icon: {
+        width: 50,
+        height: 50,
+    },
+    progressBarContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+        marginTop: "7%",
+    },
+    progressBar: {
+        borderRadius: 10,
+    },
+
+    modalContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        width: 300,
+        padding: 20,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalText: {
+        fontSize: 18,
+        color: '#333',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: '#ff6f61',
+        borderRadius: 20,
+        padding: 10,
+    },
+    closeButtonText: {
+        fontSize: 18,
+        color: '#fff',
+        fontWeight: 'bold',
+    },itemContainer:{
+        flexDirection:"row"
+    },iconContainer:{
+        flexDirection:"row"
+
+    }
 });

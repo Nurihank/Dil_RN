@@ -51,7 +51,7 @@ export default function DilSeçimModal({ visible, DilModalGeriTusu, DilSecimiOna
         onPress={() => setSelectedValue(item)}
       >
         <Image
-          source={{uri: item.dilPathImage}} // Replace with your image URI
+          source={{uri: item.dilPathImage}}
           style={styles.image}
         />
         <Text style={styles.textStyle}>{item.LocalName}</Text>

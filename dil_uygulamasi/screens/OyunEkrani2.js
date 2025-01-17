@@ -317,7 +317,8 @@ export default function OyunEkrani2(props) {
                     <View style={styles.modalContent}>
                         <Text style={styles.alertText}>Maalesef Bölümü Geçemediniz!</Text>
 
-                        <TouchableOpacity style={styles.button} onPress={() => navigation.replace("Bottom")}>
+                        <TouchableOpacity style={styles.button}                                    onPress={() => navigation.navigate("Bottom")}
+                        >
                             <Icon name="home" size={24} color="#fff" style={styles.icon} />
                             <Text style={styles.buttonText}>Ana Sayfaya Dön</Text>
                         </TouchableOpacity>
@@ -329,7 +330,7 @@ export default function OyunEkrani2(props) {
 
                         {yanlisKelimeler.length > 0 && (
                             <View>
-                                <Text>
+                                <Text> 
                                     Yanlis Kelimeler
                                 </Text>
                                 <FlatList
@@ -386,7 +387,6 @@ export default function OyunEkrani2(props) {
 
                 </View>
             </Modal>
-
             <Modal   /* Bölüm basarili olunca */
                 visible={basariliOyunSonuAlertModal}
                 transparent={true}
@@ -397,7 +397,7 @@ export default function OyunEkrani2(props) {
                         <Text style={styles.alertText}>
                             Tebriklerler Başarılısın
                         </Text>
-                        <TouchableOpacity style={styles.button} onPress={() => navigation.replace("Bottom")}>
+                        <TouchableOpacity style={styles.button}  onPress={() => navigation.navigate("Bottom")}                        >
                             <Icon name="home" size={24} color="#fff" style={styles.icon} />
                             <Text style={styles.buttonText}>Ana Sayfaya Dön</Text>
                         </TouchableOpacity>

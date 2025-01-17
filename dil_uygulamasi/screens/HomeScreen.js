@@ -40,7 +40,7 @@ export default function HomeScreen({ route }) {
   };
 
   const Oyun = (BolumID, SezonID) => {
-    navigation.replace("OyunEkrani", { BolumID: BolumID, SezonID: SezonID });
+    navigation.navigate("OyunEkrani", { BolumID: BolumID, SezonID: SezonID });
   };
 
 
@@ -56,7 +56,7 @@ export default function HomeScreen({ route }) {
             const formattedData = Seviye.data.map(item => ({
               label: item.SeviyeAdi || 'Default Label',
               value: item.SeviyeID || 'defaultValue'
-            }));
+            })); 
             setSeviyeler(formattedData);
           } catch (error) {
             console.log("Seviyeleri getirirken hata oluştu:", error);
@@ -103,40 +103,46 @@ export default function HomeScreen({ route }) {
     }
   };
 
-  useEffect(() => {  //gecilen sezonları getirir
-    const GecilenSezonlarGetir = async () => {
-      try {
-        const response = await api.get("/kullanici/GecilenSezonlar", {
+
+  useFocusEffect(   //gecilen sezonları getirir
+    useCallback(()=>{
+      const GecilenSezonlarGetir = async () => {
+        try { 
+          const response = await api.get("/kullanici/GecilenSezonlar", {
+            params: {
+              KullaniciID: userId,
+              SeviyeID: selectedSeviyeID
+            }
+          });
+          setGecilenSezonlar(response.data.message);
+        } catch (error) {
+          console.log("Sezonları getirirken hata oluştu:", error);
+        }
+      };
+  
+      // Sadece userId ve selectedSeviyeID mevcut olduğunda çağır
+      if (userId && selectedSeviyeID) {
+        GecilenSezonlarGetir();
+      }
+    },[userId, selectedSeviyeID])
+  )
+
+  useFocusEffect(   //gecilen bölümleri getirir
+    useCallback(()=>{
+      const GecilenBolumlerGetir = async () => {
+        const response = await api.get("/kullanici/GecilenBolumler", {
           params: {
             KullaniciID: userId,
-            SeviyeID: selectedSeviyeID
+            SezonID: sezonID
           }
-        });
-        setGecilenSezonlar(response.data.message);
-      } catch (error) {
-        console.log("Sezonları getirirken hata oluştu:", error);
+        })
+        setGecilenBolumler(response.data.message)
       }
-    };
+      GecilenBolumlerGetir()
+    },[sezonID])
+  )
 
-    // Sadece userId ve selectedSeviyeID mevcut olduğunda çağır
-    if (userId && selectedSeviyeID) {
-      GecilenSezonlarGetir();
-    }
-  }, [userId, selectedSeviyeID]);
-
-  useEffect(() => { //gecilen bölümleri getirir
-    const GecilenBolumlerGetir = async () => {
-      const response = await api.get("/kullanici/GecilenBolumler", {
-        params: {
-          KullaniciID: userId,
-          SezonID: sezonID
-        }
-      })
-      setGecilenBolumler(response.data.message)
-    }
-    GecilenBolumlerGetir()
-  }, [sezonID])
-
+ 
 
 
   const renderAccordionHeader = (section) => {

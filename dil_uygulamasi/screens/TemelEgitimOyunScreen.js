@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
+import {Animated, StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import api from '../api/api';
 import { useNavigation } from '@react-navigation/native';
@@ -106,6 +106,7 @@ export default function TemelEgitimOyunScreen(route) {
     const cevapDogruMu = (cevap) => {
         if (anaKelime.value === cevap.value) {
             setCevapDurumu('correct');
+            speakWord(cevap)
             if (soruIndex >= 2) {
                 digerSoru();
             } else {
@@ -137,6 +138,14 @@ export default function TemelEgitimOyunScreen(route) {
         );
     }
 
+    const SozlugeKelimeEkleme = async(KelimeID,KullaniciID)=>{
+        const response = await api.post("/kullanici/temelSozluk",{
+            KullaniciID:KullaniciID,
+            KelimeID:KelimeID
+        })
+
+        alert(response.data.message)
+    }
     return (
         <View style={styles.container}>
             {anaKelime ? (
@@ -146,7 +155,7 @@ export default function TemelEgitimOyunScreen(route) {
                             Yeni bir kelime öğrenelim
                         </Text>
                         <Text style={styles.word}>"{anaKelime.ceviri}"</Text>
-                        <TouchableOpacity style={styles.addToDictionaryButton}>
+                        <TouchableOpacity  onPress={()=>SozlugeKelimeEkleme(anaKelime.id,route.route.params.UserID)}>
                             <Text style={styles.addToDictionaryText}>Sözlüğe Ekle</Text>
                         </TouchableOpacity>
                         <Image source={{ uri: anaKelime.Image }} style={styles.image} />
@@ -211,7 +220,7 @@ export default function TemelEgitimOyunScreen(route) {
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Bölümü Başarıyla Tamamladın</Text>
                         <View style={styles.modalActions}>
-                            <TouchableOpacity onPress={() => navigation.replace("TemelEgitim")} style={styles.button}>
+                            <TouchableOpacity onPress={() => navigation.navigate("Bottom")} style={styles.button}>
                                 <Text style={styles.buttonText}>Ana Sayfaya Dön</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.button, styles.retryButton]} onPress={() => navigation.replace("TemelEgitimOyun", { BolumID: route.route.params.BolumID, AnaDilID: route.route.params.AnaDilID, HangiDilID: route.route.params.HangiDilID, KategoriID: route.route.params.KategoriID, UserID: route.route.params.UserID })}>
@@ -243,8 +252,8 @@ export default function TemelEgitimOyunScreen(route) {
                         />
                         <View style={styles.modalActions}>
                             <TouchableOpacity
-                                onPress={() => navigation.replace("TemelEgitim")}
-                                style={[styles.button, styles.homeButton]}
+                                    onPress={() => navigation.navigate("Bottom")}
+                                    style={[styles.button, styles.homeButton]}
                             >
                                 <Text style={styles.buttonText}>Ana Sayfaya Dön</Text>
                             </TouchableOpacity>
