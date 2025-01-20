@@ -4,7 +4,6 @@ import { Modal } from 'react-native-paper';
 import api from '../api/api';
 import { Ionicons } from '@expo/vector-icons'; // İleri gitme simgesi için ekledik
 import { AntDesign } from '@expo/vector-icons'; // Geri dönme simgesi için ekledik
-import UserModel from '../model/ModelUser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MeslekSeçimModal({ visible, MeslekModalGeriTusu, MeslekSecimiOnayi }) {

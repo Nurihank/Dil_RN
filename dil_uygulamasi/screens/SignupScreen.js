@@ -13,31 +13,26 @@ export default function SignupScreen() {
     const navigation = useNavigation();
 
     const handleSignup = async () => {
-        try {  
+        try {
             const response = await api.post("/kullanici/signup", {
                 kullaniciAdi: kullaniciAdi,
-                email: email,
+                eposta: email,
                 sifre: sifre
             });
             if (response.data.status === "SUCCES") {
                 Alert.alert(response.data.message);
                 const responseSignin = await api.post("/kullanici/signin", {
-                        kullaniciAdi: kullaniciAdi,
-                        sifre: sifre
+                    eposta: email,
+                    sifre: sifre
                 });
                 if (responseSignin.data.status === "SUCCES") {
                     UserModel.setUser(responseSignin.data.id);
                     await AsyncStorage.setItem('accessToken', JSON.stringify(responseSignin.data.accessToken));
                     await AsyncStorage.setItem('refreshToken', JSON.stringify(responseSignin.data.refreshToken));
-                    await AsyncStorage.setItem("id",JSON.stringify(responseSignin.data.id) )
-                    navigation.navigate("SecimEkrani",{id:responseSignin.data.id});
+                    await AsyncStorage.setItem("id", JSON.stringify(responseSignin.data.id))
+                    navigation.navigate("SecimEkrani", { id: responseSignin.data.id });
                 } else if (responseSignin.data.status === "FAILED") {
                     Alert.alert(responseSignin.data.message);
-                    /* await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
-                await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
-                await AsyncStorage.setItem('id', JSON.stringify(response.data.id));
-
-                await UserModel.setUser(response.data.id); */
                 }
             } else if (response.data.status === "FAILED") {
                 alert(response.data.message);

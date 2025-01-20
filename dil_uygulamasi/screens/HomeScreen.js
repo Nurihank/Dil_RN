@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ProgressBars from '../component/ProgressBars';
 import api from '../api/api';
@@ -21,7 +21,6 @@ export default function HomeScreen({ route }) {
   const [activeSections, setActiveSections] = useState([]);
   const [userId, setUserId] = useState(null);
   const [meslekID, setMeslekID] = useState();
-  const [AnaDilID, setAnaDilID] = useState();
   const [sezonID, setSezonID] = useState(null);
   const [HangiDilID, setHangiDilID] = useState();
   const [gecilenBolumler, setGecilenBolumler] = useState([]);
@@ -36,7 +35,6 @@ export default function HomeScreen({ route }) {
     const user = await UserModel.currentUser;
     setMeslekID(user[0].MeslekID);
     setHangiDilID(user[0].DilID);
-    setAnaDilID(user[0].SectigiDilID);
   };
 
   const Oyun = (BolumID, SezonID) => {
@@ -56,7 +54,7 @@ export default function HomeScreen({ route }) {
             const formattedData = Seviye.data.map(item => ({
               label: item.SeviyeAdi || 'Default Label',
               value: item.SeviyeID || 'defaultValue'
-            })); 
+            }));
             setSeviyeler(formattedData);
           } catch (error) {
             console.log("Seviyeleri getirirken hata oluştu:", error);
@@ -65,7 +63,7 @@ export default function HomeScreen({ route }) {
         await SeviyeGetir();
       };
       fetchData();
-    }, [])
+    }, [userId])
   );
 
   const SezonlariGetir = async () => {
@@ -94,7 +92,7 @@ export default function HomeScreen({ route }) {
         params: {
           SezonID: sezonID,
           HangiDilID: HangiDilID,
-          MeslekID:meslekID
+          MeslekID: meslekID
         },
       });
       setBolumler(response.data);
@@ -105,9 +103,9 @@ export default function HomeScreen({ route }) {
 
 
   useFocusEffect(   //gecilen sezonları getirir
-    useCallback(()=>{
+    useCallback(() => {
       const GecilenSezonlarGetir = async () => {
-        try { 
+        try {
           const response = await api.get("/kullanici/GecilenSezonlar", {
             params: {
               KullaniciID: userId,
@@ -119,16 +117,16 @@ export default function HomeScreen({ route }) {
           console.log("Sezonları getirirken hata oluştu:", error);
         }
       };
-  
+
       // Sadece userId ve selectedSeviyeID mevcut olduğunda çağır
       if (userId && selectedSeviyeID) {
         GecilenSezonlarGetir();
       }
-    },[userId, selectedSeviyeID])
+    }, [userId, selectedSeviyeID])
   )
 
   useFocusEffect(   //gecilen bölümleri getirir
-    useCallback(()=>{
+    useCallback(() => {
       const GecilenBolumlerGetir = async () => {
         const response = await api.get("/kullanici/GecilenBolumler", {
           params: {
@@ -139,10 +137,10 @@ export default function HomeScreen({ route }) {
         setGecilenBolumler(response.data.message)
       }
       GecilenBolumlerGetir()
-    },[sezonID])
+    }, [sezonID])
   )
 
- 
+
 
 
   const renderAccordionHeader = (section) => {
@@ -246,10 +244,16 @@ export default function HomeScreen({ route }) {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.container}>
-    
+
         <ProgressBars />
         <View style={styles.pickerContainer}>
-        <GunlukGirisComponent />
+          <View style={{ flexDirection: "row" }}>
+            <GunlukGirisComponent />
+            <TouchableOpacity onPress={()=>navigation.navigate("premium")}>
+              <Image source={require("../assets/premium.png")} style={{ height: 50, width: 50 }} />
+            </TouchableOpacity>
+          </View>
+
 
           <Text style={styles.pickerLabel}>Seviye Seç:</Text>
           <RNPickerSelect

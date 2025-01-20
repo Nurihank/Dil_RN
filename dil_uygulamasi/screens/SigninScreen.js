@@ -10,16 +10,16 @@ import UserModel from '../model/ModelUser';
 
 export default function SigninScreen() {
 
-    const [kullaniciAdi, setKullaniciAdi] = useState("");
+    const [eposta, setEposta] = useState("");
     const [sifre, setSifre] = useState("");
     const navigation = useNavigation();
 
     const handleSignin = async () => {
         try {
 
-            const response = await api.post("/kullanici/signin", { 
-                    kullaniciAdi: kullaniciAdi,
-                    sifre: sifre
+            const response = await api.post("/kullanici/signin", {
+                eposta: eposta,
+                sifre: sifre
             });
             console.log("API Yanıtı:", response.data); // Yanıtı burada kontrol edin
 
@@ -60,9 +60,9 @@ export default function SigninScreen() {
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
-                    placeholder='Kullanıcı Adı Girin'
-                    value={kullaniciAdi}
-                    onChangeText={(text) => setKullaniciAdi(text)}
+                    placeholder='Eposta Girin'
+                    value={eposta}
+                    onChangeText={(text) => setEposta(text)}
                 />
                 <TextInput
                     style={styles.input}

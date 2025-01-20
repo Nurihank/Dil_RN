@@ -43,8 +43,22 @@ export default function OyunEkrani2(props) {
             setYanlisKelimeler(yeniYanlisKelimeler);  // Yanlış kelimeleri güncelle
         }
 
+        const yanlisKelimeleriKaydetme = (kelimeler)=>{
+            console.log(kelimeler)
+             kelimeler.forEach(kelime => {
+                const kaydet = async()=>{
+                    const response = await api.post("/kullanici/yanlisBilinenKelime",{
+                        KelimeID:kelime.AnaKelimeID,
+                        KullaniciID:userId,
+                        TemelMi:0
+                    })
+                }
+                kaydet()
+            });
+        }
         setSoruAlertModal(false)
         if (soru >= 2) {
+            yanlisKelimeleriKaydetme(yeniYanlisKelimeler)
             if (yeniYanlisKelimeler.length > 1) {
                 setBasarisizOyunSonuAlertModal(true)
             } else {

@@ -6,9 +6,8 @@ import React from 'react';
 import { BlurView } from 'expo-blur';
 import { StyleSheet, View, Image } from 'react-native';
 import SozlukEkrani from '../screens/SozlukEkrani.js';
-import MagazaScreen from '../screens/MagazaScreen.js';
-import TemelEgitimScreen from '../screens/TemelEgitimScreen.js';
-import TemelEgitimOyunScreen from '../screens/TemelEgitimOyunScreen.js';
+import TemelEgitimScreen from '../screens/TemelEgitim/TemelEgitimScreen.js';
+import EgzersizScreen from '../screens/Egzersiz/EgzersizScreen.js';
 
 const Tab = createBottomTabNavigator();
 
@@ -52,13 +51,13 @@ export default function BottomNavigator() {
                             )}
                         </View>
                     );
-                } else if (route.name === 'Magaza') {
+                } else if (route.name === 'Egzersiz') {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Image source={require("../assets/carts.png")} style={{ width: 35, height: 35 }} />
+                                <Image source={require("../assets/exerciseO.png")} style={{ width: 35, height: 35 }} />
                             ) : (
-                                <Image source={require("../assets/shopping-cart.png")} style={{ width: 30, height: 30 }} />
+                                    <Image source={require("../assets/exercise.png")} style={{ width: 30, height: 30 }} />
                             )}
                         </View>
                     );
@@ -66,9 +65,9 @@ export default function BottomNavigator() {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Image source={require("../assets/exerciseO.png")} style={{ width: 35, height: 31 }} />
+                                <Image source={require("../assets/basisO.png")} style={{ width: 35, height: 35 }} />
                             ) : (
-                                <Image source={require("../assets/exercise.png")} style={{ width: 30, height: 27 }} />
+                                    <Image source={require("../assets/basisC.png")} style={{ width: 30, height: 30 }} />
                             )}
                         </View>
                     );
@@ -83,7 +82,7 @@ export default function BottomNavigator() {
             <Tab.Screen name="Ana Sayfa" component={HomeScreen} />
             <Tab.Screen name="Profil" component={ProfileScreen} />
             <Tab.Screen name="Sozluk" component={SozlukEkrani} />
-            <Tab.Screen name="Magaza" component={MagazaScreen} />
+            <Tab.Screen name="Egzersiz" component={EgzersizScreen} />
             <Tab.Screen name="Temel" component={TemelEgitimScreen} />
 
         </Tab.Navigator>

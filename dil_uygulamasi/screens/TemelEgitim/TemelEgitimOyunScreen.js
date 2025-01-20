@@ -1,6 +1,6 @@
 import {Animated, StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import api from '../api/api';
+import api from '../../api/api';
 import { useNavigation } from '@react-navigation/native';
 import { Modal } from 'react-native-paper';
 import * as Speech from 'expo-speech';
@@ -18,7 +18,7 @@ export default function TemelEgitimOyunScreen(route) {
     const [yanlisCevapModal, setYanlisCevapModal] = useState(false)
     const [oyunBasariliBittiModal, setOyunBasariliBittiModal] = useState(false)
     const [oyunBasarisizBittiModal, setOyunBasarisizBittiModal] = useState(false)
-
+    const [sonHakkin, setSonHakkin] = useState(false)
     const digerSoru = (yanlisKelime) => {
         let yeniYanlisKelimeler = yanlisKelimeler;
         if (yanlisKelime) {
@@ -32,6 +32,7 @@ export default function TemelEgitimOyunScreen(route) {
         setSoruIndex(soruIndex + 1);
 
         if (soruIndex >= 2) {
+            yanlisKelimeleriKaydetme(yeniYanlisKelimeler)
             if (yeniYanlisKelimeler.length > 1) {
                 setOyunBasarisizBittiModal(true)
             } else {
@@ -53,15 +54,29 @@ export default function TemelEgitimOyunScreen(route) {
         }
     }
 
+    const yanlisKelimeleriKaydetme = (kelimeler) => {
+        console.log(kelimeler)
+        kelimeler.forEach(kelime => {
+            const kaydet = async () => {
+                const response = await api.post("/kullanici/yanlisBilinenKelime", {
+                    KelimeID: kelime.id,
+                    KullaniciID: route.route.params.UserID,
+                    TemelMi: 1
+                })
+                console.log(response.data.message)
+            }
+            kaydet()
+        });
+    }
+
     const BolumBasarili = async () => {
-        console.log("asd")
         const response = await api.post("/kullanici/temelGecilenBolumEkle", {
             KullaniciID: route.route.params.UserID,
             BolumID: route.route.params.BolumID,
             KategoriID: route.route.params.KategoriID
         })
-        console.log(response.data.message)
     }
+
     const kelimeleriGetir = async () => {
         const response = await api.get("/kullanici/temelKelimeler", {
             params: {
@@ -77,7 +92,6 @@ export default function TemelEgitimOyunScreen(route) {
         }
         const karisikKelimeler = response.data.message.sort(() => Math.random() - 0.5);
         setKelimeler(karisikKelimeler);
-
     };
 
     const speakWord = (kelime) => {
@@ -93,6 +107,7 @@ export default function TemelEgitimOyunScreen(route) {
         }
         Speech.speak(kelime.value, options)
     }
+
     useEffect(() => {
         kelimeleriGetir();
     }, []);
@@ -138,9 +153,9 @@ export default function TemelEgitimOyunScreen(route) {
         );
     }
 
-    const SozlugeKelimeEkleme = async(KelimeID,KullaniciID)=>{
+    const SozlugeKelimeEkleme = async(KelimeID)=>{
         const response = await api.post("/kullanici/temelSozluk",{
-            KullaniciID:KullaniciID,
+            KullaniciID: route.route.params.UserID,
             KelimeID:KelimeID
         })
 
@@ -155,7 +170,7 @@ export default function TemelEgitimOyunScreen(route) {
                             Yeni bir kelime öğrenelim
                         </Text>
                         <Text style={styles.word}>"{anaKelime.ceviri}"</Text>
-                        <TouchableOpacity  onPress={()=>SozlugeKelimeEkleme(anaKelime.id,route.route.params.UserID)}>
+                        <TouchableOpacity  onPress={()=>SozlugeKelimeEkleme(anaKelime.id)}>
                             <Text style={styles.addToDictionaryText}>Sözlüğe Ekle</Text>
                         </TouchableOpacity>
                         <Image source={{ uri: anaKelime.Image }} style={styles.image} />
@@ -163,7 +178,7 @@ export default function TemelEgitimOyunScreen(route) {
                     <View style={styles.microphoneContainer}>
 
                         <TouchableOpacity onPress={() => speakWord(anaKelime)}>
-                            <Image source={require("../assets/microphone.png")} style={styles.microphoneIcon} />
+                            <Image source={require("../../assets/microphone.png")} style={styles.microphoneIcon} />
                         </TouchableOpacity>
 
                     </View>
@@ -172,7 +187,7 @@ export default function TemelEgitimOyunScreen(route) {
                             <TouchableOpacity onPress={() => digerSoru()} style={styles.nextButtonContainer}>
                                 <Text style={styles.successText}>Çok Başarılısın </Text>
                                 <Text style={styles.successText}>Devam Et </Text>
-                                <Image source={require("../assets/nextButton.png")} style={styles.nextButtonImage} />
+                                <Image source={require("../../assets/nextButton.png")} style={styles.nextButtonImage} />
                             </TouchableOpacity>
                         ) : (
                             <FlatList
@@ -182,7 +197,9 @@ export default function TemelEgitimOyunScreen(route) {
                             />
                         )}
                     </View>
+                    
                 </>
+                
             ) : (
                 <Text style={styles.loadingText}>Yükleniyor...</Text>
             )}
@@ -204,7 +221,7 @@ export default function TemelEgitimOyunScreen(route) {
                             <TouchableOpacity onPress={() => digerSoru(anaKelime)} style={styles.button}>
                                 <Text style={styles.buttonText}>Devam Et</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button}>
+                            <TouchableOpacity style={styles.button} onPress={() => SozlugeKelimeEkleme(anaKelime.id)}>
                                 <Text style={styles.buttonText}>Sözlüğe Ekle</Text>
                             </TouchableOpacity>
                         </View>
@@ -264,7 +281,6 @@ export default function TemelEgitimOyunScreen(route) {
                     </View>
                 </View>
             </Modal>
-
         </View >
     );
 }
@@ -274,10 +290,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#e0f7fa',
         justifyContent: 'center',
+        
     },
     contentContainer: {
         flex: 1,
         justifyContent: 'center',
+        
     },
     title: {
         fontSize: 28,

@@ -2,8 +2,8 @@ import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import UserModel from '../model/ModelUser';
-import api from '../api/api';
+import UserModel from '../../model/ModelUser';
+import api from '../../api/api';
 import { Modal, ProgressBar } from 'react-native-paper';
 
 export default function TemelEgitimScreen() {
@@ -15,21 +15,20 @@ export default function TemelEgitimScreen() {
     const [temelKategoriler, setTemelKategoriler] = useState([]);
     const [kategoriBolumleri, setKategoriBolumleri] = useState({}); // Bölümleri kategorilere göre saklamak için
     const [sozlukModal, setSozlukModal] = useState(false)
-    const [sozlukKelimeler,setSozlukKelimeleri] = useState()
+    const [sozlukKelimeler, setSozlukKelimeleri] = useState()
     const [gosterimDurumu, setGosterimDurumu] = useState({});
-    
+    const [ilerlemeYuzdesi, setIlerlemeYuzdesi] = useState(0)
     const setUserID = async () => {
         const id = await AsyncStorage.getItem("id");
         setUserId(id);
     };
-    const SozluktenKelimeSilme = async(item)=>{
-        console.log(item)
-        const response = await api.delete("/kullanici/temelSozluk",{
-            params:{
-                KullaniciID:userId,
-                KelimeID:item.id
+    const SozluktenKelimeSilme = async (item) => {
+        const response = await api.delete("/kullanici/temelSozluk", {
+            params: {
+                KullaniciID: userId,
+                KelimeID: item.id
             }
-        }) 
+        })
         sozlukKelimeleriGetir()
     }
     const getUserInfo = async () => {
@@ -51,6 +50,33 @@ export default function TemelEgitimScreen() {
             fetchData();
         }, [])
     );
+
+    useEffect(() => {
+        const ilerleme = async () => {
+            try {
+                const response = await api.get("/kullanici/temelIlerleme", {
+                    params: {
+                        id: userId
+                    }
+                });
+
+                const bolumSayisi = response.data.bolumSayisi;
+                const gecilenBolumSayisi = response.data.gecilenBolumSayisi;
+
+                if (bolumSayisi > 0) {
+                    const yuzde = (gecilenBolumSayisi / bolumSayisi) * 100;
+                    setIlerlemeYuzdesi(yuzde.toFixed(0)); // Yüzdelik değeri virgülden sonra 0 basamakla ayarlıyoruz
+                } else {
+                    setIlerlemeYuzdesi(0); // Bölüm sayısı sıfırsa ilerleme yüzdesini sıfır olarak ayarlıyoruz
+                }
+            } catch (error) {
+                console.error("İlerleme verisi alınırken hata oluştu:", error);
+            }
+        };
+
+        ilerleme();
+    }, [gecilenBolumler]);
+
 
     const temelKategorileriGetir = async () => {
         try {
@@ -83,7 +109,7 @@ export default function TemelEgitimScreen() {
         }, [userId])
     )
 
-    const SozlukModali = ()=>{
+    const SozlukModali = () => {
         sozlukKelimeleriGetir()
         setSozlukModal(!sozlukModal)
     }
@@ -125,57 +151,55 @@ export default function TemelEgitimScreen() {
         const sonuc = gecilen.some((bolum) => bolum.Order + 1 === bolumOrder);
 
         return sonuc;
-    }; 
+    };
 
     const renderItem = ({ item }) => {
-  const isVisible = gosterimDurumu[item.value];
+        const isVisible = gosterimDurumu[item.value];
 
-  return (
-    <View style={styles.itemContainer}>
-      <View style={styles.textContainer}>
-        <Text style={styles.itemText}>
-          {isVisible ? item.Ceviri : item.value}
-        </Text>
-      </View>
+        return (
+            <View style={styles.itemContainer}>
+                <View style={styles.textContainer}>
+                    <Text style={styles.itemText}>
+                        {isVisible ? item.Ceviri : item.value}
+                    </Text>
+                </View>
 
-      <View style={styles.iconContainer}>
-        <TouchableOpacity
-          onPress={() =>
-            setGosterimDurumu((prev) => ({
-              ...prev,
-              [item.value]: !prev[item.value],
-            }))
-          }
-        >
-          <Image
-            source={
-              isVisible
-                ? require("../assets/acikGoz.png")
-                : require("../assets/kapaliGoz.png")
-            }
-            style={styles.icon}
-          />
-        </TouchableOpacity>
+                <View style={styles.iconContainer}>
+                    <TouchableOpacity
+                        onPress={() =>
+                            setGosterimDurumu((prev) => ({
+                                ...prev,
+                                [item.value]: !prev[item.value],
+                            }))
+                        }
+                    >
+                        <Image
+                            source={
+                                isVisible
+                                    ? require("../../assets/acikGoz.png")
+                                    : require("../../assets/kapaliGoz.png")
+                            }
+                            style={styles.icon}
+                        />
+                    </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => SozluktenKelimeSilme(item)}>
-          <Image
-            source={require("../assets/delete.png")}
-            style={styles.icon}
-          />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
+                    <TouchableOpacity onPress={() => SozluktenKelimeSilme(item)}>
+                        <Image
+                            source={require("../../assets/delete.png")}
+                            style={styles.icon}
+                        />
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    };
 
-    const sozlukKelimeleriGetir =async ()=>{
-        console.log(userId)
-        const response = await api.get("/kullanici/temelSozluk",{
-            params:{
-                KullaniciID:userId
+    const sozlukKelimeleriGetir = async () => {
+        const response = await api.get("/kullanici/temelSozluk", {
+            params: {
+                KullaniciID: userId
             }
         })
-        console.log(response.data.message)
         setSozlukKelimeleri(response.data.message)
     }
 
@@ -187,18 +211,18 @@ export default function TemelEgitimScreen() {
 
     return (
         <View style={styles.container}>
-            <View style={{flexDirection:"row",paddingHorizontal:15}}>
-            <View style={styles.header}>
-                <TouchableOpacity style={styles.button} onPress={()=>SozlukModali()}>
-                    <Image source={require("../assets/temelSozluk.png")} style={{height:75,width:75}} />
-                </TouchableOpacity>
+            <View style={{ flexDirection: "row", paddingHorizontal: 15 }}>
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.button} onPress={() => SozlukModali()}>
+                        <Image source={require("../../assets/temelSozluk.png")} style={{ height: 75, width: 75 }} />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.progressBarContainer}>
+                    <Text>%{ilerlemeYuzdesi} İlerleme</Text>
+                    <ProgressBar progress={ilerlemeYuzdesi/100} width={230} height={50} color={'#6c5ce7'} />
+                </View>
             </View>
-            <View style={styles.progressBarContainer}>
-                <Text>%35 İlerleme</Text>
-                <ProgressBar progress={0.35} width={230} height={50} color={'#6c5ce7'} />
-            </View>
-        </View>
-       
+
 
             <FlatList
                 data={temelKategoriler}
@@ -206,7 +230,7 @@ export default function TemelEgitimScreen() {
                 renderItem={({ item }) => (
                     <View style={styles.item}>
                         <Text style={styles.text}>{item.Ceviri}</Text>
-                        <FlatList 
+                        <FlatList
                             data={kategoriBolumleri[item.id] || []}
                             keyExtractor={(bolum) => bolum.id.toString()}
                             renderItem={({ item: bolum }) => (
@@ -214,13 +238,13 @@ export default function TemelEgitimScreen() {
                                     <TouchableOpacity onPress={() => OyunGecis(bolum.id, item.id)}>
                                         <View style={styles.bolumContainer}>
                                             <Image source={{ uri: bolum.Image }} style={styles.icon} />
-                                            <Text style={styles.bolumText}>{bolum.ceviri}</Text>  
+                                            <Text style={styles.bolumText}>{bolum.ceviri}</Text>
                                         </View>
                                     </TouchableOpacity>
                                 ) : (
                                     <View style={styles.bolumContainer}>
                                         <Image
-                                            source={require("../assets/lock.png")}
+                                                source={require("../../assets/lock.png")}
                                             style={{ width: 30, height: 30 }}
                                         />
                                         <Text style={styles.bolumTextKapali}>Kilitli</Text>
@@ -234,35 +258,35 @@ export default function TemelEgitimScreen() {
                     </View>
                 )}
             />
-             <Modal
-    visible={sozlukModal}
-    animationType="slide"
-    transparent={true}
-  >
-    <View style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-        <TouchableOpacity onPress={SozlukModali} style={styles.closeButton}>
-          <Text style={styles.closeButtonText}>X</Text>
-        </TouchableOpacity>
-        <Text style={styles.modalTitle}>Sözlük Kelimeleri</Text>
+            <Modal
+                visible={sozlukModal}
+                animationType="slide"
+                transparent={true}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <TouchableOpacity onPress={SozlukModali} style={styles.closeButton}>
+                            <Text style={styles.closeButtonText}>X</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.modalTitle}>Sözlük Kelimeleri</Text>
 
-        {sozlukKelimeler && sozlukKelimeler.length > 0 ? (
-          <FlatList
-            data={sozlukKelimeler}
-            renderItem={renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        ) : (
-          <Text style={styles.emptyText}>Gösterilecek kelime yok.</Text>
-        )}
-      </View>
-    </View>
+                        {sozlukKelimeler && sozlukKelimeler.length > 0 ? (
+                            <FlatList
+                                data={sozlukKelimeler}
+                                renderItem={renderItem}
+                                keyExtractor={(item, index) => index.toString()}
+                            />
+                        ) : (
+                            <Text style={styles.emptyText}>Gösterilecek kelime yok.</Text>
+                        )}
+                    </View>
+                </View>
 
-    </Modal>
-        
-        
+            </Modal>
+
+
         </View>
-        
+
     );
 }
 
@@ -366,10 +390,10 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#fff',
         fontWeight: 'bold',
-    },itemContainer:{
-        flexDirection:"row"
-    },iconContainer:{
-        flexDirection:"row"
+    }, itemContainer: {
+        flexDirection: "row"
+    }, iconContainer: {
+        flexDirection: "row"
 
     }
 });
