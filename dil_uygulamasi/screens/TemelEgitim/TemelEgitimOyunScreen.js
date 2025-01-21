@@ -18,7 +18,7 @@ export default function TemelEgitimOyunScreen(route) {
     const [yanlisCevapModal, setYanlisCevapModal] = useState(false)
     const [oyunBasariliBittiModal, setOyunBasariliBittiModal] = useState(false)
     const [oyunBasarisizBittiModal, setOyunBasarisizBittiModal] = useState(false)
-    const [sonHakkin, setSonHakkin] = useState(false)
+
     const digerSoru = (yanlisKelime) => {
         let yeniYanlisKelimeler = yanlisKelimeler;
         if (yanlisKelime) {

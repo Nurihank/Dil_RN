@@ -18,6 +18,7 @@ import TemelEgitimScreen from './screens/TemelEgitim/TemelEgitimScreen.js'
 import TemelEgitimOyunScreen from './screens/TemelEgitim/TemelEgitimOyunScreen';
 import PremiumScreen from './screens/MagazaScreen';
 import HatalarScreen from './screens/Egzersiz/Egzersizler/HatalarScreen';
+import EgzersizScreen from './screens/Egzersiz/EgzersizScreen';
 
 export default function App() {
 

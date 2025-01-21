@@ -24,7 +24,11 @@ export default function EgzersizScreen() {
 
   const EgzersizeGecis = (egzersizTuru) => {
     if (oyunID == 1) {
-      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru })
+      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru , id:userId})
+    }else if(oyunID == 0){
+      console.log("buras")
+      console.log(egzersizTuru)
+      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru, id: userId })
     }
   }
 
@@ -59,6 +63,7 @@ export default function EgzersizScreen() {
 
   return (
     <View style={styles.container}>
+      
       <FlatList
         data={egzersizler} // Veriyi burada kullanıyoruz
         renderItem={renderEgzersiz}
