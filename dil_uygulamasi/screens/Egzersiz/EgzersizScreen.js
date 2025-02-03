@@ -23,13 +23,17 @@ export default function EgzersizScreen() {
   }
 
   const EgzersizeGecis = (egzersizTuru) => {
+    setTercihModal(false)
+    console.log(oyunID)
     if (oyunID == 1) {
       navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru , id:userId})
-    }else if(oyunID == 0){
-      console.log("buras")
-      console.log(egzersizTuru)
-      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru, id: userId })
-    }
+    }else if(oyunID == 2){
+       /* dinleme */
+    }else if(oyunID == 3){
+      /* görsel */
+   }else if(oyunID == 4){
+    /* cümle çeviri */
+ }
   }
 
   const egzersizleriGetir = async () => {
@@ -43,6 +47,7 @@ export default function EgzersizScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      setTercihModal(false)
       const fetchData = async () => {
         await setUserID();
         await egzersizleriGetir();
@@ -109,7 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   modalOverlay: {
-    flex: 1,
+    flex:1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Arka plan transparan

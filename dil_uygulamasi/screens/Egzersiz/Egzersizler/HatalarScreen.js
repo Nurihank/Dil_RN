@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { FlatList, StyleSheet, Text, View, TouchableOpacity, Image, Modal } from 'react-native';
 import React, { useState } from 'react';
 import api from '../../../api/api';
 import * as Speech from 'expo-speech';
@@ -6,11 +6,26 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function HatalarScreen(route) {
   const [kelimeler, setKelimeler] = useState();
+  const [gozdenGecirModal,setGozdenGecirModal] =  useState(false)
+  const [gozdenGecirilenKelime, setGozdenGecirilenKelime] = useState(null)
 
   const navigation = useNavigation()
 
+  const Ogrendim =async(kelime)=>{ /* burad gözden geçir ekranından çıkartıyor */
+    
+    const response = await api.put("/kullanici/yanlisBilinenKelime",{
+          KullaniciID: route.route.params.id,
+          temelMi: route.route.params.egzersizTuru,
+          KelimeID:kelime.KelimeID
+    })
+    setGozdenGecirModal(false)
+    kelimeleriGetir()
+    console.log(response.data)
+  }
+
   const GozdenGecir = (kelime)=>{
-    /* burda gözden geçir diyince kelime silinecek */
+    setGozdenGecirilenKelime(kelime)
+    setGozdenGecirModal(true)
   }
 
   const kelimeleriGetir = async () => {
@@ -59,9 +74,7 @@ export default function HatalarScreen(route) {
         <View style={{ flexDirection:"row" }}>
           {route.route.params.egzersizTuru == 1 ? <Text style={{ color: "gray", fontSize: 18, marginLeft: 10 }}>{item.value}</Text> : <Text style={{ color: "gray", fontSize: 18, marginLeft: 10 }}>{item.Value}</Text>}
           
-          <TouchableOpacity onPress={()=>speakWord(item)}>
-            <Image source={require("../../../assets/microphone.png")} style={{ height: 30, width: 30, marginLeft: 10, marginTop: 3 }} />
-          </TouchableOpacity>
+
         </View>
       </View>
       <TouchableOpacity style={styles.button} onPress={()=>GozdenGecir(item)}>
@@ -72,7 +85,7 @@ export default function HatalarScreen(route) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate("Bottom")}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
         <Text>
           KAPAT
         </Text>
@@ -80,7 +93,6 @@ export default function HatalarScreen(route) {
       
       <View style={{ alignItems: "center", marginTop: 25 }} >
         <Text style={styles.headerText}>Hata Yaptığın Kelimeler</Text>
-
       </View>
       <FlatList
         data={kelimeler}
@@ -88,6 +100,38 @@ export default function HatalarScreen(route) {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.listContainer}
       />
+      <Modal visible={gozdenGecirModal} transparent animationType="slide">
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <TouchableOpacity onPress={() => setGozdenGecirModal(false)} style={styles.closeButton}>
+        <Text style={styles.closeButtonText}>X</Text>
+      </TouchableOpacity>
+
+      {gozdenGecirilenKelime && (
+        <>
+        {route.route.params.egzersizTuru == 0 ?
+          <Text style={styles.modalWord}>{gozdenGecirilenKelime.Value}</Text>
+ : 
+ <Text style={styles.modalWord}>{gozdenGecirilenKelime.value}</Text>
+        }
+          <Text style={styles.modalTranslation}>{gozdenGecirilenKelime.Ceviri}</Text>
+
+          <TouchableOpacity onPress={() => speakWord(gozdenGecirilenKelime)} style={styles.speakerButton}>
+            <Image source={require("../../../assets/microphone.png")} style={styles.speakerIcon} />
+          </TouchableOpacity>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.learnedButton} onPress={() => Ogrendim(gozdenGecirilenKelime)}>
+              <Text style={styles.buttonText}>Öğrendim</Text>
+            </TouchableOpacity>
+            
+          </View>
+        </>
+      )}
+    </View>
+  </View>
+</Modal>
+
     </View>
   );
 }
@@ -133,6 +177,80 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#007BFF',
     marginBottom: 16,
-  }
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Arka planı bulanıklaştırıyor
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#555",
+  },
+  modalWord: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 10,
+  },
+  modalTranslation: {
+    fontSize: 20,
+    color: "#666",
+    marginBottom: 20,
+  },
+  speakerButton: {
+    backgroundColor: "#eee",
+    padding: 10,
+    borderRadius: 50,
+    marginBottom: 20,
+  },
+  speakerIcon: {
+    width: 30,
+    height: 30,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  learnedButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 8,
+    flex: 1,
+    alignItems: "center",
+    marginRight: 5,
+  },
+  remindButton: {
+    backgroundColor: "#FFA500",
+    padding: 10,
+    borderRadius: 8,
+    flex: 1,
+    alignItems: "center",
+    marginLeft: 5,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
 });
 
