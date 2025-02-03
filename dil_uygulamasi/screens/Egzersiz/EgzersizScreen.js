@@ -24,16 +24,16 @@ export default function EgzersizScreen() {
 
   const EgzersizeGecis = (egzersizTuru) => {
     setTercihModal(false)
-    console.log(oyunID)
+    console.log(egzersizTuru)
     if (oyunID == 1) {
-      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru , id:userId})
-    }else if(oyunID == 2){
-       /* dinleme */
-    }else if(oyunID == 3){
+      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru, id: userId })
+    } else if (oyunID == 2) {
+      navigation.navigate("DinlemeEgzersiz", { egzersizTuru: egzersizTuru, id: userId })
+    } else if (oyunID == 3) {
       /* görsel */
-   }else if(oyunID == 4){
-    /* cümle çeviri */
- }
+    } else if (oyunID == 4) {
+      /* cümle çeviri */
+    }
   }
 
   const egzersizleriGetir = async () => {
@@ -68,7 +68,7 @@ export default function EgzersizScreen() {
 
   return (
     <View style={styles.container}>
-      
+
       <FlatList
         data={egzersizler} // Veriyi burada kullanıyoruz
         renderItem={renderEgzersiz}
@@ -84,10 +84,10 @@ export default function EgzersizScreen() {
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Egzersiz Tercih Edin</Text>
             <TouchableOpacity style={styles.button} onPress={() => EgzersizeGecis(0)}>
-              <Text style={styles.buttonText}>Mesleki Kelime Hataları</Text>
+              <Text style={styles.buttonText}>Mesleki Kelimeler</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={() => EgzersizeGecis(1)}>
-              <Text style={styles.buttonText}>Temel Eğitim Hataları</Text>
+              <Text style={styles.buttonText}>Temel Kelimeler</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.closeButton} onPress={() => setTercihModal(false)}>
               <Text style={styles.closeButtonText}>Kapat</Text>
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   modalOverlay: {
-    flex:1,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Arka plan transparan

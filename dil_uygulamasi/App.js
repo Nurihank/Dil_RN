@@ -18,7 +18,7 @@ import TemelEgitimScreen from './screens/TemelEgitim/TemelEgitimScreen.js'
 import TemelEgitimOyunScreen from './screens/TemelEgitim/TemelEgitimOyunScreen';
 import PremiumScreen from './screens/MagazaScreen';
 import HatalarScreen from './screens/Egzersiz/Egzersizler/HatalarScreen';
-import EgzersizScreen from './screens/Egzersiz/EgzersizScreen';
+import DinlemeEgzersizScreen from './screens/Egzersiz/Egzersizler/DinlemeEgzersizScreen';
 
 export default function App() {
 
@@ -43,7 +43,9 @@ export default function App() {
         <Stack.Screen name="TemelEgitim" component={TemelEgitimScreen} options={{ headerShown: false }} />
         <Stack.Screen name="premium" component={PremiumScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HataScreen" component={HatalarScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="DinlemeEgzersiz" component={DinlemeEgzersizScreen} options={{ headerShown: false }} />
 
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
