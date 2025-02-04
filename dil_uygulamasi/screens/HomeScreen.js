@@ -265,7 +265,7 @@ export default function HomeScreen({ route }) {
           />
           <TouchableOpacity style={styles.eğitimButton} onPress={() => { navigation.navigate("Egitim", { id: selectedSeviyeID }) }}>
             <FontAwesome name="book" size={24} color="#ffffff" />
-            <Text style={styles.eğitimText}>Eğitim</Text>
+            <Text style={styles.eğitimText}> Eğitim</Text>
           </TouchableOpacity>
         </View>
         <Accordion
