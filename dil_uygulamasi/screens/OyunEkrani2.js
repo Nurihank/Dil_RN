@@ -44,13 +44,21 @@ export default function OyunEkrani2(props) {
         }
 
         const yanlisKelimeleriKaydetme = (kelimeler)=>{
-            console.log(kelimeler)
-             kelimeler.forEach(kelime => {
+            const currentDate = new Date();
+
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+        
+            const formattedDate = `${year}-${month}-${day}`;
+
+            kelimeler.forEach(kelime => {
                 const kaydet = async()=>{
                     const response = await api.post("/kullanici/yanlisBilinenKelime",{
                         KelimeID:kelime.AnaKelimeID,
                         KullaniciID:userId,
-                        TemelMi:0
+                        TemelMi:0,
+                        Date:formattedDate
                     })
                 }
                 kaydet()
@@ -86,13 +94,21 @@ export default function OyunEkrani2(props) {
                 setKelimeler(shuffledData);
             }
         }
-
     }
 
     const BolumBasariylaBitti = async () => {
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+    
+        const formattedDate = `${year}-${month}-${day}`;
+
         const response = await api.post("/kullanici/GecilenBolumlerEkle", {
             KullaniciID: userId,
-            BolumID: props.route.params.BolumID
+            BolumID: props.route.params.BolumID,
+            Date:formattedDate
         })
         if (response.data.message == "succes") {
             const sezonunBittiMi = await api.get("/kullanici/SezonBittiMiKontrol", {
@@ -104,7 +120,8 @@ export default function OyunEkrani2(props) {
             if (sezonunBittiMi.data.sezonBittiMi) {
                 const sezonEkle = await api.post("/kullanici/GecilenSezonEkle", {
                     KullaniciID: userId,
-                    SezonID: props.route.params.SezonID
+                    SezonID: props.route.params.SezonID,
+                    Date:formattedDate
                 })
                 console.log("sezon ekleme işi = " + sezonEkle.data)
 
@@ -149,11 +166,20 @@ export default function OyunEkrani2(props) {
     };
 
     const SozlugeEkle = async (Kelime) => {
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+    
+        const formattedDate = `${year}-${month}-${day}`;
 
         const response = await api.post("/kullanici/SozlugeKelimeEkleme", {
             KullaniciID: userId,
-            AnaKelimeID: Kelime.AnaKelimeID
+            AnaKelimeID: Kelime.AnaKelimeID,
+            Date:formattedDate
         })
+        
         showToast(response.data.message)
         setSozlugeEkleResponse(response.data.message)
     }

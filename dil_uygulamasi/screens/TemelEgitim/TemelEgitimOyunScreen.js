@@ -70,10 +70,19 @@ export default function TemelEgitimOyunScreen(route) {
     }
 
     const BolumBasarili = async () => {
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+    
+        const formattedDate = `${year}-${month}-${day}`;
+
         const response = await api.post("/kullanici/temelGecilenBolumEkle", {
             KullaniciID: route.route.params.UserID,
             BolumID: route.route.params.BolumID,
-            KategoriID: route.route.params.KategoriID
+            KategoriID: route.route.params.KategoriID,
+            Date:formattedDate
         })
     }
 
@@ -154,9 +163,18 @@ export default function TemelEgitimOyunScreen(route) {
     }
 
     const SozlugeKelimeEkleme = async(KelimeID)=>{
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+    
+        const formattedDate = `${year}-${month}-${day}`;
+
         const response = await api.post("/kullanici/temelSozluk",{
             KullaniciID: route.route.params.UserID,
-            KelimeID:KelimeID
+            KelimeID:KelimeID,
+            Date:formattedDate
         })
 
         alert(response.data.message)

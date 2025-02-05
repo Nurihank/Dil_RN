@@ -27,7 +27,8 @@ export default function SozlukEkrani() {
     const response = await api.post("/kullanici/GunlukSozlugeGiris",{
       KullaniciID:userId,
       Date:formattedDate,
-      SozlugeGiris:true
+      SozlugeGiris:true,
+      
     })
   }
 
