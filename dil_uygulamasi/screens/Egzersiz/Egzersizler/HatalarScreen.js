@@ -11,7 +11,7 @@ export default function HatalarScreen(route) {
 
   const navigation = useNavigation()
 
-  const Ogrendim =async(kelime)=>{ /* burad gözden geçir ekranından çıkartıyor */
+  const Ogrendim =async(kelime)=>{ 
     
     const response = await api.put("/kullanici/yanlisBilinenKelime",{
           KullaniciID: route.route.params.id,
@@ -20,7 +20,6 @@ export default function HatalarScreen(route) {
     })
     setGozdenGecirModal(false)
     kelimeleriGetir()
-    console.log(response.data)
   }
 
   const GozdenGecir = (kelime)=>{
@@ -28,9 +27,26 @@ export default function HatalarScreen(route) {
     setGozdenGecirModal(true)
   }
 
+  const GunlukGorevTamamlama =async ()=>{
+    const currentDate = new Date();
+    
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+    console.log("sad")
+    const response = await api.post("/kullanici/GunlukGorevHata",{
+      KullaniciID:route.route.params.id,
+      Date:formattedDate,
+    })
+
+    console.log(response.data)
+  }
+
   const kelimeleriGetir = async () => {
     try {
-      const response = await api.get('/kullanici/yanlisBilinenKelime', {
+      const response = await api.get('/kullanici/yanlisBilinenKelime', { 
         params: {
           KullaniciID: route.route.params.id,
           TemelMi: route.route.params.egzersizTuru,
@@ -65,7 +81,8 @@ export default function HatalarScreen(route) {
 
   useState(() => {
     kelimeleriGetir();
-  }, []);
+    GunlukGorevTamamlama()
+  }, [route.route.params.id]);
 
   const renderKelime = ({ item }) => (
     <View style={styles.itemContainer}>

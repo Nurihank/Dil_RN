@@ -15,7 +15,7 @@ export default function SozlukEkrani() {
     setUserId(id);
   };
 
-  const GunlukSozlugeGiris = async ()=>{
+  const sozlukTekrari=async()=>{ /* burda sözlük tekrarı yapan oyuna gidecek */
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
@@ -23,23 +23,15 @@ export default function SozlukEkrani() {
     const day = String(currentDate.getDate()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
-
-    const response = await api.post("/kullanici/GunlukSozlugeGiris",{
+    const response = await api.post("/kullanici/GunlukGorevSozluk",{
       KullaniciID:userId,
       Date:formattedDate,
-      SozlugeGiris:true,
-      
+      SozlugeGiris:true,  
     })
   }
 
-  const sozlukTekrari=()=>{ /* burda sözlük tekrarı yapan oyuna gidecek */
-    
-  }
 
-  useEffect(()=>{
-    GunlukSozlugeGiris() 
-  },[userId])
-  // Kullanıcının sözlüğünü API'den al 
+
   const KelimeleriGetir = async (userId) => {
     if (userId) {
       try {

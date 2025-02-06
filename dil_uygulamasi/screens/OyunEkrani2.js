@@ -68,9 +68,10 @@ export default function OyunEkrani2(props) {
         if (soru >= 2) {
             yanlisKelimeleriKaydetme(yeniYanlisKelimeler)
             if (yeniYanlisKelimeler.length > 1) {
+                BolumBitti(0)
                 setBasarisizOyunSonuAlertModal(true)
             } else {
-                BolumBasariylaBitti()
+                BolumBitti(1)
                 setBasariliOyunSonuAlertModal(true)
             }
         }
@@ -96,7 +97,7 @@ export default function OyunEkrani2(props) {
         }
     }
 
-    const BolumBasariylaBitti = async () => {
+    const BolumBitti = async (GectiMi) => {
         const currentDate = new Date();
 
         const year = currentDate.getFullYear();
@@ -105,28 +106,29 @@ export default function OyunEkrani2(props) {
     
         const formattedDate = `${year}-${month}-${day}`;
 
-        const response = await api.post("/kullanici/GecilenBolumlerEkle", {
+        const response = await api.post("/kullanici/OynananOyun", {
             KullaniciID: userId,
             BolumID: props.route.params.BolumID,
-            Date:formattedDate
+            Date:formattedDate,
+            GectiMi:GectiMi
         })
         if (response.data.message == "succes") {
+
             const sezonunBittiMi = await api.get("/kullanici/SezonBittiMiKontrol", {
                 params: {
                     KullaniciID: userId,
                     SezonID: props.route.params.SezonID
                 }
             })
+
             if (sezonunBittiMi.data.sezonBittiMi) {
                 const sezonEkle = await api.post("/kullanici/GecilenSezonEkle", {
                     KullaniciID: userId,
                     SezonID: props.route.params.SezonID,
                     Date:formattedDate
-                })
-                console.log("sezon ekleme işi = " + sezonEkle.data)
+                }) 
 
             }
-            console.log("sezon bitti mi  = " + sezonunBittiMi.data.sezonBittiMi)
         }     
     }
 

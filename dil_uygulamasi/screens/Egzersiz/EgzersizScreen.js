@@ -22,9 +22,13 @@ export default function EgzersizScreen() {
     setTercihModal(true)
   }
 
+  const EgzersizOynadi = ()=>{ /* her egzersiz sonunda bunu yapcak ama benim egzersizler bitmediği için oyuna giriş yapar yapmaz kontrol ediyorum */
+
+  }
+
   const EgzersizeGecis = (egzersizTuru) => {
     setTercihModal(false)
-    console.log(egzersizTuru)
+    EgzersizOynadi()
     if (oyunID == 1) {
       navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru, id: userId })
     } else if (oyunID == 2) {

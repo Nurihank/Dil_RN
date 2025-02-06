@@ -44,7 +44,7 @@ export default function HomeScreen({ route }) {
 
 
   useFocusEffect(
-    useCallback(() => {
+    useCallback(() => {  
       const fetchData = async () => {
         await setUserID();
         await getUserInfo();
@@ -112,6 +112,8 @@ export default function HomeScreen({ route }) {
               SeviyeID: selectedSeviyeID
             }
           });
+          console.log(response.data.message) 
+
           setGecilenSezonlar(response.data.message);
         } catch (error) {
           console.log("Sezonları getirirken hata oluştu:", error);
@@ -129,11 +131,12 @@ export default function HomeScreen({ route }) {
     useCallback(() => {
       const GecilenBolumlerGetir = async () => {
         const response = await api.get("/kullanici/GecilenBolumler", {
-          params: {
+          params: { 
             KullaniciID: userId,
             SezonID: sezonID
           }
         })
+        console.log(response.data.message)
         setGecilenBolumler(response.data.message)
       }
       GecilenBolumlerGetir()
@@ -198,7 +201,7 @@ export default function HomeScreen({ route }) {
           );
 
           const nextBolumToOpen = gecilenBolumlerArray.find( //bir sonraki leveli buluyor
-            (completedBolum) => completedBolum.Order == (parseInt(bolum.Order) - 1)
+            (completedBolum) => completedBolum.Order == (parseInt(bolum.Order) - 1)  
           );
 
           const shouldOpen = isCompleted ||  //bölüm açık mı değil diye kontrol ediyor
@@ -228,7 +231,7 @@ export default function HomeScreen({ route }) {
     );
   };
 
-  const updateSections = (activeSections) => {
+  const updateSections = (activeSections) => { 
     setActiveSections(activeSections);
     if (activeSections.length > 0) {
       const selectedSezonID = sezonlar[activeSections[0]].SezonID;

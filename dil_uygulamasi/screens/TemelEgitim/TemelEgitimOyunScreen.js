@@ -34,9 +34,10 @@ export default function TemelEgitimOyunScreen(route) {
         if (soruIndex >= 2) {
             yanlisKelimeleriKaydetme(yeniYanlisKelimeler)
             if (yeniYanlisKelimeler.length > 1) {
+                BolumBitti(0)
                 setOyunBasarisizBittiModal(true)
             } else {
-                BolumBasarili()
+                BolumBitti(1)
                 setOyunBasariliBittiModal(true)
             }
         } else {
@@ -69,7 +70,7 @@ export default function TemelEgitimOyunScreen(route) {
         });
     }
 
-    const BolumBasarili = async () => {
+    const BolumBitti = async (GectiMi) => {
         const currentDate = new Date();
 
         const year = currentDate.getFullYear();
@@ -78,11 +79,12 @@ export default function TemelEgitimOyunScreen(route) {
     
         const formattedDate = `${year}-${month}-${day}`;
 
-        const response = await api.post("/kullanici/temelGecilenBolumEkle", {
+        const response = await api.post("/kullanici/OynananTemelOyun", {
             KullaniciID: route.route.params.UserID,
             BolumID: route.route.params.BolumID,
             KategoriID: route.route.params.KategoriID,
-            Date:formattedDate
+            Date:formattedDate,
+            GectiMi:GectiMi
         })
     }
 
