@@ -32,6 +32,10 @@ export default function SozlukEkrani() {
     })
   }
 
+  const sozlukTekrari=()=>{ /* burda sözlük tekrarı yapan oyuna gidecek */
+    
+  }
+
   useEffect(()=>{
     GunlukSozlugeGiris() 
   },[userId])
@@ -114,7 +118,13 @@ export default function SozlukEkrani() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container}> 
+    <TouchableOpacity onPress={()=>sozlukTekrari()}>
+    <Text>
+      Sözlük Tekrarı
+    </Text>
+    </TouchableOpacity>
+   
       <FlatList
         data={kelimeler}  // Veriyi FlatList'e gönderin
         renderItem={renderItem}  // Her bir item için render fonksiyonu

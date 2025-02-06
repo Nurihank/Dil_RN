@@ -8,6 +8,7 @@ import { StyleSheet, View, Image } from 'react-native';
 import SozlukEkrani from '../screens/SozlukEkrani.js';
 import TemelEgitimScreen from '../screens/TemelEgitim/TemelEgitimScreen.js';
 import EgzersizScreen from '../screens/Egzersiz/EgzersizScreen.js';
+import Kesfet from '../screens/Kesfet.js';
 
 const Tab = createBottomTabNavigator();
 
@@ -72,13 +73,24 @@ export default function BottomNavigator() {
                         </View>
                     );
                 }
-
+                else if (route.name === 'Kesfet') {
+                    return (
+                        <View style={{ alignItems: 'center' }}>
+                            {focused ? (
+                                <Image source={require("../assets/compass.png")} style={{ width: 35, height: 35 }} />
+                            ) : (
+                                    <Image source={require("../assets/compass.png")} style={{ width: 30, height: 30 }} />
+                            )}
+                        </View>
+                    );
+                }
                 return <Ionicons name={iconName} size={size} color={color} />;
             },
             tabBarActiveTintColor: 'tomato',
             tabBarInactiveTintColor: 'gray',
             tabBarLabelStyle: { ...styles.tabBarLabel },
         })}>
+        <Tab.Screen name="Kesfet" component={Kesfet} />
             <Tab.Screen name="Ana Sayfa" component={HomeScreen} />
             <Tab.Screen name="Profil" component={ProfileScreen} />
             <Tab.Screen name="Sozluk" component={SozlukEkrani} />
