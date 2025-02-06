@@ -28,6 +28,7 @@ export default function SozlukEkrani() {
       Date:formattedDate,
       SozlugeGiris:true,  
     })
+    console.log(response.data)
   }
 
 

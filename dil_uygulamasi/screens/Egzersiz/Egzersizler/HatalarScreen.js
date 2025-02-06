@@ -6,47 +6,48 @@ import { useNavigation } from '@react-navigation/native';
 
 export default function HatalarScreen(route) {
   const [kelimeler, setKelimeler] = useState();
-  const [gozdenGecirModal,setGozdenGecirModal] =  useState(false)
+  const [gozdenGecirModal, setGozdenGecirModal] = useState(false)
   const [gozdenGecirilenKelime, setGozdenGecirilenKelime] = useState(null)
 
   const navigation = useNavigation()
 
-  const Ogrendim =async(kelime)=>{ 
-    
-    const response = await api.put("/kullanici/yanlisBilinenKelime",{
-          KullaniciID: route.route.params.id,
-          temelMi: route.route.params.egzersizTuru,
-          KelimeID:kelime.KelimeID
+  const Ogrendim = async (kelime) => {
+
+    const response = await api.put("/kullanici/yanlisBilinenKelime", {
+      KullaniciID: route.route.params.id,
+      temelMi: route.route.params.egzersizTuru,
+      KelimeID: kelime.KelimeID
     })
     setGozdenGecirModal(false)
     kelimeleriGetir()
   }
 
-  const GozdenGecir = (kelime)=>{
+  const GozdenGecir = (kelime) => {
     setGozdenGecirilenKelime(kelime)
     setGozdenGecirModal(true)
   }
 
-  const GunlukGorevTamamlama =async ()=>{
+  const GunlukGorevTamamlama = async () => {
     const currentDate = new Date();
-    
+
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const day = String(currentDate.getDate()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
     console.log("sad")
-    const response = await api.post("/kullanici/GunlukGorevHata",{
-      KullaniciID:route.route.params.id,
-      Date:formattedDate,
+    const response = await api.post("/kullanici/GunlukGorevHata", {
+      KullaniciID: route.route.params.id,
+      Date: formattedDate,
     })
 
     console.log(response.data)
+    alert("Gunluk görev tamam")
   }
 
   const kelimeleriGetir = async () => {
     try {
-      const response = await api.get('/kullanici/yanlisBilinenKelime', { 
+      const response = await api.get('/kullanici/yanlisBilinenKelime', {
         params: {
           KullaniciID: route.route.params.id,
           TemelMi: route.route.params.egzersizTuru,
@@ -70,10 +71,10 @@ export default function HatalarScreen(route) {
 
       onDone: () => console.log("Speech finished"),
     }
-    if (route.route.params.egzersizTuru == 0){
+    if (route.route.params.egzersizTuru == 0) {
       Speech.speak(kelime.Value, options)
 
-    }else{
+    } else {
       Speech.speak(kelime.value, options)
 
     }
@@ -88,13 +89,13 @@ export default function HatalarScreen(route) {
     <View style={styles.itemContainer}>
       <View>
         <Text style={styles.kelimeText}>{item.Ceviri}</Text>
-        <View style={{ flexDirection:"row" }}>
+        <View style={{ flexDirection: "row" }}>
           {route.route.params.egzersizTuru == 1 ? <Text style={{ color: "gray", fontSize: 18, marginLeft: 10 }}>{item.value}</Text> : <Text style={{ color: "gray", fontSize: 18, marginLeft: 10 }}>{item.Value}</Text>}
-          
+
 
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={()=>GozdenGecir(item)}>
+      <TouchableOpacity style={styles.button} onPress={() => GozdenGecir(item)}>
         <Text style={styles.buttonText}>Gözden Geçir</Text>
       </TouchableOpacity>
     </View>
@@ -107,7 +108,7 @@ export default function HatalarScreen(route) {
           KAPAT
         </Text>
       </TouchableOpacity>
-      
+
       <View style={{ alignItems: "center", marginTop: 25 }} >
         <Text style={styles.headerText}>Hata Yaptığın Kelimeler</Text>
       </View>
@@ -118,36 +119,36 @@ export default function HatalarScreen(route) {
         contentContainerStyle={styles.listContainer}
       />
       <Modal visible={gozdenGecirModal} transparent animationType="slide">
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <TouchableOpacity onPress={() => setGozdenGecirModal(false)} style={styles.closeButton}>
-        <Text style={styles.closeButtonText}>X</Text>
-      </TouchableOpacity>
-
-      {gozdenGecirilenKelime && (
-        <>
-        {route.route.params.egzersizTuru == 0 ?
-          <Text style={styles.modalWord}>{gozdenGecirilenKelime.Value}</Text>
- : 
- <Text style={styles.modalWord}>{gozdenGecirilenKelime.value}</Text>
-        }
-          <Text style={styles.modalTranslation}>{gozdenGecirilenKelime.Ceviri}</Text>
-
-          <TouchableOpacity onPress={() => speakWord(gozdenGecirilenKelime)} style={styles.speakerButton}>
-            <Image source={require("../../../assets/microphone.png")} style={styles.speakerIcon} />
-          </TouchableOpacity>
-
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.learnedButton} onPress={() => Ogrendim(gozdenGecirilenKelime)}>
-              <Text style={styles.buttonText}>Öğrendim</Text>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity onPress={() => setGozdenGecirModal(false)} style={styles.closeButton}>
+              <Text style={styles.closeButtonText}>X</Text>
             </TouchableOpacity>
-            
+
+            {gozdenGecirilenKelime && (
+              <>
+                {route.route.params.egzersizTuru == 0 ?
+                  <Text style={styles.modalWord}>{gozdenGecirilenKelime.Value}</Text>
+                  :
+                  <Text style={styles.modalWord}>{gozdenGecirilenKelime.value}</Text>
+                }
+                <Text style={styles.modalTranslation}>{gozdenGecirilenKelime.Ceviri}</Text>
+
+                <TouchableOpacity onPress={() => speakWord(gozdenGecirilenKelime)} style={styles.speakerButton}>
+                  <Image source={require("../../../assets/microphone.png")} style={styles.speakerIcon} />
+                </TouchableOpacity>
+
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.learnedButton} onPress={() => Ogrendim(gozdenGecirilenKelime)}>
+                    <Text style={styles.buttonText}>Öğrendim</Text>
+                  </TouchableOpacity>
+
+                </View>
+              </>
+            )}
           </View>
-        </>
-      )}
-    </View>
-  </View>
-</Modal>
+        </View>
+      </Modal>
 
     </View>
   );

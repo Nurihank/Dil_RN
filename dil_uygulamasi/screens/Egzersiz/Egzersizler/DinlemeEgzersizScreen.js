@@ -27,16 +27,21 @@ export default function DinlemeEgzersizScreen(route) {
         setAnaDilID(user[0].SectigiDilID);
     };
 
-    const GunlukGorevTamamlama = ()=>{
+    const GunlukGorevTamamlama = async () => { /* normalde oyun başarılı oulunca kaydetcek */
         const currentDate = new Date();
-    
+
         const year = currentDate.getFullYear();
         const month = String(currentDate.getMonth() + 1).padStart(2, '0');
         const day = String(currentDate.getDate()).padStart(2, '0');
-    
+
         const formattedDate = `${year}-${month}-${day}`;
 
-        
+        const response = await api.post("/kullanici/GunlukGorevEgzersiz", {
+            KullaniciID: route.route.params.id,
+            Date: formattedDate
+        })
+        console.log(response.data.message)
+        alert("Başarılı gunluk egzersiz")
     }
 
     useFocusEffect(
@@ -48,6 +53,7 @@ export default function DinlemeEgzersizScreen(route) {
     useEffect(() => {
         if (anaDilID && hangiDilID && meslekID) {
             KelimeleriGetir();
+            GunlukGorevTamamlama()
         }
     }, [anaDilID, hangiDilID, meslekID]);
 
@@ -93,7 +99,7 @@ export default function DinlemeEgzersizScreen(route) {
 
     const AnaKelimeSec = (kelimeler) => {
         if (kelimeler.length === 0) return;
-        
+
         let anaKelime = kelimeler[Math.floor(Math.random() * kelimeler.length)];
         setAnaKelime(anaKelime);
 
@@ -178,8 +184,8 @@ const DraggableWord = ({ kelime, setSecilenKelime, dropZoneY, dropZoneHeight }) 
             const dropZoneTop = dropZoneY.value; // Bırakma alanının üst sınırı
             const dropZoneCenterX = event.absoluteX; // X koordinatını almak için event.absoluteX kullandık
             const deneme = event.absoluteX; // Kelimenin bırakıldığı yerin Y konumu
-console.log(deneme)
-console.log(droppedY)
+            console.log(deneme)
+            console.log(droppedY)
 
             // Eğer bırakma alanı içinde bırakılmışsa
             if (droppedY >= dropZoneTop && droppedY <= dropZoneBottom) {
