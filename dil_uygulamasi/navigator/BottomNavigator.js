@@ -90,7 +90,10 @@ export default function BottomNavigator() {
             tabBarInactiveTintColor: 'gray',
             tabBarLabelStyle: { ...styles.tabBarLabel },
         })}>
-        <Tab.Screen name="Kesfet" component={Kesfet} />
+        <Tab.Screen name="Kesfet" component={Kesfet}  options={{
+            gestureEnabled: false, // Soldan kaydırmayı engeller
+              gestureDirection: 'horizontal'
+          }}/>
             <Tab.Screen name="Ana Sayfa" component={HomeScreen} />
             <Tab.Screen name="Profil" component={ProfileScreen} />
             <Tab.Screen name="Sozluk" component={SozlukEkrani} />

@@ -18,6 +18,7 @@ export default function TemelEgitimScreen() {
     const [sozlukKelimeler, setSozlukKelimeleri] = useState()
     const [gosterimDurumu, setGosterimDurumu] = useState({});
     const [ilerlemeYuzdesi, setIlerlemeYuzdesi] = useState(0)
+    
     const setUserID = async () => {
         const id = await AsyncStorage.getItem("id");
         setUserId(id);

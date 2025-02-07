@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, Modal, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, Modal, TouchableOpacity, StyleSheet, Image, FlatList,ScrollView } from "react-native";
 import LottieView from 'lottie-react-native';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import api from "../api/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import UserModel from "../model/ModelUser";
+import { asCalendarConsumer } from "react-native-calendars";
 
 const Kesfet = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -14,10 +16,66 @@ const Kesfet = () => {
   const [sozlukTekrari, setSozlukTekrari] = useState()
   const [hatalaraBakma, setHatalaraBakma] = useState()
   const [egzersiz, setEgzersiz] = useState()
+  const [HangiDilID, setHangiDilID] = useState();
+  const [AnaDilID, setAnaDilID] = useState();
+  const [temelKategoriler, setTemelKategoriler] = useState([]);
+  const [egzersizler, setEgzersizler] = useState([]); // Verileri depolamak için state
+
+     const getUserInfo = async () => {
+            const user = await UserModel.currentUser;
+            setHangiDilID(user[0].DilID);
+            setAnaDilID(user[0].SectigiDilID);
+    };
+
+    const gunlukGorevTamamlandi = async()=>{
+
+      const currentDate = new Date();
+
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
+    const day = String(currentDate.getDate()).padStart(2, '0');
+
+    const formattedDate = `${year}-${month}-${day}`;
+
+      const response = await api.post("/kullanici/GunlukGorevTamamlandi",{
+        KullaniciID:userID,
+        Date:formattedDate
+      })
+      console.log("Gunluk Gorev = "+response.data.message)
+    }
+    const egzersizleriGetir = async () => {
+        try {
+          const response = await api.get("/kullanici/egzersiz");
+          setEgzersizler(response.data.message); // Gelen veriyi state'e kaydediyoruz
+        } catch (error) {
+          console.error("Egzersiz verisi alınırken hata oluştu", error);
+        }
+      };
+
+   const temelKategorileriGetir = async () => {
+           try {
+               const response = await api.get("/kullanici/temelKategoriler", {
+                   params: {
+                       AnaDilID: AnaDilID,
+                       HangiDilID: HangiDilID,
+                   },
+               });
+               setTemelKategoriler(response.data.message);
+           } catch (error) {
+               console.error(error);
+           }
+    };
 
   useEffect(() => {
-    setModalVisible(false);
+    setModalVisible(true);
   }, []);
+
+  useEffect(() => {
+        if (HangiDilID && AnaDilID) {
+            temelKategorileriGetir();
+            egzersizleriGetir()
+        }
+    }, [AnaDilID, HangiDilID]);
 
   const setUserID = async () => {
     const id = await AsyncStorage.getItem("id");
@@ -30,6 +88,11 @@ const Kesfet = () => {
     }, [])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      getUserInfo()
+    }, [userID])
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -38,10 +101,20 @@ const Kesfet = () => {
       sozlukTekrariKontrol()
       hataTekrariKontrol()
       egzersizKontrol()
-    }, [userID])
+      if (
+        egzersiz === 1 &&
+        hatalaraBakma === 1 &&
+        sozlukTekrari === 1 &&
+        meslekiEgitim === 3 &&
+        temeliEgitim === 3
+      ){ 
+        gunlukGorevTamamlandi()
+      }else{ 
+      }
+    }, [userID,meslekiEgitim,temeliEgitim,sozlukTekrari,hatalaraBakma,egzersiz])
   );
 
-  const meslekiEgitimSayisi = async () => {
+  const meslekiEgitimSayisi = async () => { 
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
@@ -64,7 +137,7 @@ const Kesfet = () => {
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
     const day = String(currentDate.getDate()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
@@ -74,7 +147,7 @@ const Kesfet = () => {
         KullaniciID: userID,
         Date: formattedDate
       }
-    })
+    }) 
     setTemelEgitim(response.data.message)
   }
 
@@ -85,21 +158,18 @@ const Kesfet = () => {
     try {
         const response = await api.get("/kullanici/SozlukTekrariKontrol", {
             params: { KullaniciID: userID, Date: formattedDate }
-        });
+        }); 
 
-        console.log("API Yanıtı:", response.data); // Gelen veriyi kontrol edelim
-
-        const sozlukGiris = response.data?.message?.[0]?.SozlukGiris || 0;
-      console.log(sozlukGiris)
-
+        const sozlukGiris = response.data?.message || 0;
+ 
         setSozlukTekrari(sozlukGiris);
     } catch (error) {
         console.error("Hata:", error);
-    }
-};
+    } 
+};   
 
 
-  const hataTekrariKontrol = async () => {
+  const hataTekrariKontrol = async () => {  
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split("T")[0];
 
@@ -108,10 +178,8 @@ const Kesfet = () => {
         params: { KullaniciID: userID, Date: formattedDate }
       });
 
-      console.log("API Yanıtı (Hata Tekrarı):", response.data.message);
 
-      const hataEgzersiz = response.data?.message?.[0]?.HataEgzersiz || 0;
-      console.log(hataEgzersiz)
+      const hataEgzersiz = response.data?.message || 0;
       setHatalaraBakma(hataEgzersiz);
     } catch (error) {
       console.error("Hata:", error);
@@ -127,11 +195,8 @@ const Kesfet = () => {
       const response = await api.get("/kullanici/GunlukGorevEgzersizKontrol", {
         params: { KullaniciID: userID, Date: formattedDate }
       });
-
-      console.log("API Yanıtı (Egzersiz):", response.data);
-
-      const egzersiz = response.data?.message?.[0]?.Egzersiz || 0;
-      console.log(egzersiz)
+ 
+      const egzersiz = response.data?.message || 0;
 
       setEgzersiz(egzersiz);
     } catch (error) {
@@ -141,7 +206,7 @@ const Kesfet = () => {
 
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <TouchableOpacity onPress={() => navigation.navigate("premium")}>
         <View style={styles.premiumBanner}>
           <Text style={styles.bannerText}>🌟 Premium Üye Ol! Daha Fazla Özellik Keşfet 🌟</Text>
@@ -168,7 +233,7 @@ const Kesfet = () => {
               <Text style={styles.text}>Temel Eğitim {temeliEgitim}/3</Text>
             </View>
             <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Sözlük Tekrarı</Text>
+              <Text style={styles.text}>Sözlük Tekrarı</Text> 
               <Image
                 source={sozlukTekrari == 1 ? require('../assets/yes.png') : require('../assets/no.png')}
                 style={{ width: 30, height: 30 }}
@@ -190,9 +255,44 @@ const Kesfet = () => {
             </View>
           </View> 
         </View>
-
+        <View style={styles.area}>
+          <View style={{alignItems:"center"}}>
+            <Text style={styles.headerText}>Temel Kelimelerde Eksiğin Mi Var ?</Text>
+          </View>
+          <FlatList
+          data={temelKategoriler}
+          horizontal
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Image source={{ uri: item.Image }} style={styles.image} />
+              <Text style={styles.text}>{item.Ceviri}</Text>
+            </View>
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
+        </View>
+        <View style={styles.area}>
+        <View style={{alignItems:"center"}}>
+        <Text style={styles.headerText}>Egzersiz Yapmak İster Misin ?</Text>
       </View>
-      {/* Premium Mesajı için Modal */} 
+        <FlatList
+        data={egzersizler}
+        horizontal
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.text}>{item.EgzersizAdi}</Text>
+          </View>
+        )}
+        />
+        </View>
+       
+      </View>
+
+
+
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -214,13 +314,14 @@ const Kesfet = () => {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginBottom:80
   },
   premiumBanner: {
     width: "100%",
@@ -312,7 +413,24 @@ const styles = StyleSheet.create({
     color:"gray",
     fontWeight: "bold",
 
-  }
+  } ,card: {
+    width: 120,
+    height: 120,
+    backgroundColor: "#f8f8f8",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 15,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  }, image: {
+    width: 50,
+    height: 50,
+    borderRadius: 10,
+  },
 });
 
 export default Kesfet;

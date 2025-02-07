@@ -36,7 +36,7 @@ export default function EgzersizScreen() {
     } else if (oyunID == 3) {
       /* görsel */
     } else if (oyunID == 4) {
-      /* cümle çeviri */
+      /* cümle çeviri */ 
     }
   }
 
@@ -63,10 +63,15 @@ export default function EgzersizScreen() {
   const renderEgzersiz = ({ item }) => {
     return (
       <View style={styles.itemContainer}>
+      
+
+
+        
         <TouchableOpacity onPress={() => Tercih(item.id)}>
-          <Text style={styles.itemText}>{item.EgzersizAdi}</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.itemText}>{item.EgzersizAdi}</Text>
+    </TouchableOpacity>
+
+ </View>
     );
   };
 

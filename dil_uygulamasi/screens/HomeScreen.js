@@ -41,8 +41,6 @@ export default function HomeScreen({ route }) {
     navigation.navigate("OyunEkrani", { BolumID: BolumID, SezonID: SezonID });
   };
 
-
-
   useFocusEffect(
     useCallback(() => {  
       const fetchData = async () => {
@@ -111,7 +109,7 @@ export default function HomeScreen({ route }) {
               KullaniciID: userId,
               SeviyeID: selectedSeviyeID
             }
-          });
+          }); 
           console.log(response.data.message) 
 
           setGecilenSezonlar(response.data.message);

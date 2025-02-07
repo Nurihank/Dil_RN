@@ -5,7 +5,6 @@ import SigninScreen from './screens/SigninScreen';
 import SignupScreen from "./screens/SignupScreen"
 import 'react-native-gesture-handler';
 import HomeScreen from './screens/HomeScreen';
-import UserInfoScreen from './screens/UserInfoScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import SeçimEkrani from './screens/SeçimEkrani';
@@ -19,7 +18,7 @@ import TemelEgitimOyunScreen from './screens/TemelEgitim/TemelEgitimOyunScreen';
 import PremiumScreen from './screens/MagazaScreen';
 import HatalarScreen from './screens/Egzersiz/Egzersizler/HatalarScreen';
 import DinlemeEgzersizScreen from './screens/Egzersiz/Egzersizler/DinlemeEgzersizScreen';
-
+import Egzersiz from './screens/Egzersiz/EgzersizScreen.js';
 export default function App() {
 
   const Stack = createNativeStackNavigator();
@@ -30,7 +29,6 @@ export default function App() {
         <Stack.Screen name="Signin" component={SigninScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="UserInfo" component={UserInfoScreen} />
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="SecimEkrani" component={SeçimEkrani} options={{ headerShown: false }} />
@@ -44,6 +42,7 @@ export default function App() {
         <Stack.Screen name="premium" component={PremiumScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HataScreen" component={HatalarScreen} options={{ headerShown: false }} />
         <Stack.Screen name="DinlemeEgzersiz" component={DinlemeEgzersizScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Egzersiz" component={Egzersiz} options={{ headerShown: false }} />
 
         
       </Stack.Navigator>
