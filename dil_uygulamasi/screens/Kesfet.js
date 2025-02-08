@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, Modal, TouchableOpacity, StyleSheet, Image, FlatList,ScrollView } from "react-native";
+import { View, Text, Modal, TouchableOpacity, StyleSheet, Image, FlatList, ScrollView } from "react-native";
 import LottieView from 'lottie-react-native';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import api from "../api/api";
@@ -21,61 +21,61 @@ const Kesfet = () => {
   const [temelKategoriler, setTemelKategoriler] = useState([]);
   const [egzersizler, setEgzersizler] = useState([]); // Verileri depolamak için state
 
-     const getUserInfo = async () => {
-            const user = await UserModel.currentUser;
-            setHangiDilID(user[0].DilID);
-            setAnaDilID(user[0].SectigiDilID);
-    };
+  const getUserInfo = async () => {
+    const user = await UserModel.currentUser;
+    setHangiDilID(user[0].DilID);
+    setAnaDilID(user[0].SectigiDilID);
+  };
 
-    const gunlukGorevTamamlandi = async()=>{
+  const gunlukGorevTamamlandi = async () => {
 
-      const currentDate = new Date();
+    const currentDate = new Date();
 
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const day = String(currentDate.getDate()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
 
-      const response = await api.post("/kullanici/GunlukGorevTamamlandi",{
-        KullaniciID:userID,
-        Date:formattedDate
-      })
-      console.log("Gunluk Gorev = "+response.data.message)
+    const response = await api.post("/kullanici/GunlukGorevTamamlandi", {
+      KullaniciID: userID,
+      Date: formattedDate
+    })
+    console.log("Gunluk Gorev = " + response.data.message)
+  }
+  const egzersizleriGetir = async () => {
+    try {
+      const response = await api.get("/kullanici/egzersiz");
+      setEgzersizler(response.data.message); // Gelen veriyi state'e kaydediyoruz
+    } catch (error) {
+      console.error("Egzersiz verisi alınırken hata oluştu", error);
     }
-    const egzersizleriGetir = async () => {
-        try {
-          const response = await api.get("/kullanici/egzersiz");
-          setEgzersizler(response.data.message); // Gelen veriyi state'e kaydediyoruz
-        } catch (error) {
-          console.error("Egzersiz verisi alınırken hata oluştu", error);
-        }
-      };
+  };
 
-   const temelKategorileriGetir = async () => {
-           try {
-               const response = await api.get("/kullanici/temelKategoriler", {
-                   params: {
-                       AnaDilID: AnaDilID,
-                       HangiDilID: HangiDilID,
-                   },
-               });
-               setTemelKategoriler(response.data.message);
-           } catch (error) {
-               console.error(error);
-           }
-    };
+  const temelKategorileriGetir = async () => {
+    try {
+      const response = await api.get("/kullanici/temelKategoriler", {
+        params: {
+          AnaDilID: AnaDilID,
+          HangiDilID: HangiDilID,
+        },
+      });
+      setTemelKategoriler(response.data.message);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    setModalVisible(true);
+    setModalVisible(false);
   }, []);
 
   useEffect(() => {
-        if (HangiDilID && AnaDilID) {
-            temelKategorileriGetir();
-            egzersizleriGetir()
-        }
-    }, [AnaDilID, HangiDilID]);
+    if (HangiDilID && AnaDilID) {
+      temelKategorileriGetir();
+      egzersizleriGetir()
+    }
+  }, [AnaDilID, HangiDilID]);
 
   const setUserID = async () => {
     const id = await AsyncStorage.getItem("id");
@@ -107,14 +107,14 @@ const Kesfet = () => {
         sozlukTekrari === 1 &&
         meslekiEgitim === 3 &&
         temeliEgitim === 3
-      ){ 
+      ) {
         gunlukGorevTamamlandi()
-      }else{ 
+      } else {
       }
-    }, [userID,meslekiEgitim,temeliEgitim,sozlukTekrari,hatalaraBakma,egzersiz])
+    }, [userID, meslekiEgitim, temeliEgitim, sozlukTekrari, hatalaraBakma, egzersiz])
   );
 
-  const meslekiEgitimSayisi = async () => { 
+  const meslekiEgitimSayisi = async () => {
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
@@ -137,7 +137,7 @@ const Kesfet = () => {
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); 
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const day = String(currentDate.getDate()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
@@ -147,7 +147,7 @@ const Kesfet = () => {
         KullaniciID: userID,
         Date: formattedDate
       }
-    }) 
+    })
     setTemelEgitim(response.data.message)
   }
 
@@ -156,20 +156,20 @@ const Kesfet = () => {
     const formattedDate = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD formatı
 
     try {
-        const response = await api.get("/kullanici/SozlukTekrariKontrol", {
-            params: { KullaniciID: userID, Date: formattedDate }
-        }); 
+      const response = await api.get("/kullanici/SozlukTekrariKontrol", {
+        params: { KullaniciID: userID, Date: formattedDate }
+      });
 
-        const sozlukGiris = response.data?.message || 0;
- 
-        setSozlukTekrari(sozlukGiris);
+      const sozlukGiris = response.data?.message || 0;
+
+      setSozlukTekrari(sozlukGiris);
     } catch (error) {
-        console.error("Hata:", error);
-    } 
-};   
+      console.error("Hata:", error);
+    }
+  };
 
 
-  const hataTekrariKontrol = async () => {  
+  const hataTekrariKontrol = async () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toISOString().split("T")[0];
 
@@ -184,7 +184,7 @@ const Kesfet = () => {
     } catch (error) {
       console.error("Hata:", error);
     }
-  };   
+  };
 
 
   const egzersizKontrol = async () => {
@@ -195,12 +195,12 @@ const Kesfet = () => {
       const response = await api.get("/kullanici/GunlukGorevEgzersizKontrol", {
         params: { KullaniciID: userID, Date: formattedDate }
       });
- 
+
       const egzersiz = response.data?.message || 0;
 
       setEgzersiz(egzersiz);
     } catch (error) {
-      console.error("Hata:", error); 
+      console.error("Hata:", error);
     }
   };
 
@@ -218,76 +218,111 @@ const Kesfet = () => {
             source={require('../assets/animasyon/first.json')}
             style={styles.animation}
           />
-          <Text style={styles.first}>Bugüne Hazır Mısın?</Text>
+          <Text style={styles.first}>Bugüne Hazır Mısın? </Text>
         </View>
         <View style={styles.area}>
-          <View style={{alignItems:"center"}}>
+          <View style={{ alignItems: "center" }}>
             <Text style={styles.headerText}>Günlük Yapılması Gerekenler</Text>
 
           </View>
           <View>
             <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Mesleki Eğitim  {meslekiEgitim}/3</Text>
+              <Text style={styles.text}>Mesleki Eğitim {meslekiEgitim}/3 </Text>
+              {meslekiEgitim == 3 ?
+                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+                :
+                <TouchableOpacity onPress={() => navigation.navigate("Ana Sayfa")}>
+                  <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                </TouchableOpacity>
+
+              }
+
             </View>
             <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Temel Eğitim {temeliEgitim}/3</Text>
+              <Text style={styles.text}>Temel Eğitim {temeliEgitim}/3 </Text>
+              {temeliEgitim == 3 ?
+                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+                :
+                <TouchableOpacity onPress={() => navigation.navigate("Temel")}>
+                  <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                </TouchableOpacity>
+
+              }
             </View>
             <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Sözlük Tekrarı</Text> 
-              <Image
-                source={sozlukTekrari == 1 ? require('../assets/yes.png') : require('../assets/no.png')}
-                style={{ width: 30, height: 30 }}
-              />
+              <Text style={styles.text}>Sözlük Tekrarı </Text>
+              {sozlukTekrari === 1 ? (
+                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+              ) : (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Image source={require('../assets/no.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
+                    <TouchableOpacity onPress={() => navigation.navigate("Sozluk")}>
+                    <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
             <View style={styles.GorevAlani}>
               <Text style={styles.text}>Hatalara Bakma</Text>
-              <Image
-                source={hatalaraBakma == 1 ? require('../assets/yes.png') : require('../assets/no.png')}
-                style={{ width: 30, height: 30 }}
-              />
+              {hatalaraBakma === 1 ? (
+                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+              ) : (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Image source={require('../assets/no.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
+                    <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
+                    <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
             <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Günlük Egzersiz</Text>
-              <Image
-                source={egzersiz == 1 ? require('../assets/yes.png') : require('../assets/no.png')}
-                style={{ width: 30, height: 30, }}
-              />
+              <Text style={styles.text}>Günlük Egzersiz </Text>
+              {egzersiz === 1 ? (
+                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+              ) : (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Image source={require('../assets/no.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
+                    <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
+                    <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
-          </View> 
+          </View>
         </View>
         <View style={styles.area}>
-          <View style={{alignItems:"center"}}>
+          <View style={{ alignItems: "center" }}>
             <Text style={styles.headerText}>Temel Kelimelerde Eksiğin Mi Var ?</Text>
           </View>
           <FlatList
-          data={temelKategoriler}
-          horizontal
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Image source={{ uri: item.Image }} style={styles.image} />
-              <Text style={styles.text}>{item.Ceviri}</Text>
-            </View>
-          )}
-          showsHorizontalScrollIndicator={false}
-        />
+            data={temelKategoriler}
+            horizontal
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <Image source={{ uri: item.Image }} style={styles.image} />
+                <Text style={styles.text}>{item.Ceviri}</Text>
+              </View>
+            )}
+            showsHorizontalScrollIndicator={false}
+          />
         </View>
         <View style={styles.area}>
-        <View style={{alignItems:"center"}}>
-        <Text style={styles.headerText}>Egzersiz Yapmak İster Misin ?</Text>
-      </View>
-        <FlatList
-        data={egzersizler}
-        horizontal
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.text}>{item.EgzersizAdi}</Text>
+          <View style={{ alignItems: "center" }}>
+            <Text style={styles.headerText}>Egzersiz Yapmak İster Misin ?</Text>
           </View>
-        )}
-        />
+          <FlatList
+            data={egzersizler}
+            horizontal
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.card}>
+                <Text style={styles.text}>{item.EgzersizAdi}</Text>
+              </View>
+            )}
+          />
         </View>
-       
+
       </View>
 
 
@@ -321,7 +356,7 @@ const Kesfet = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom:80
+    marginBottom: 80
   },
   premiumBanner: {
     width: "100%",
@@ -383,7 +418,7 @@ const styles = StyleSheet.create({
   animation: {
     width: 200,
     height: 200,
-  }, 
+  },
   first: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -405,15 +440,15 @@ const styles = StyleSheet.create({
   },
   GorevAlani: {
     flexDirection: "row",
-    margin:5,
-    marginLeft:10,
+    margin: 5,
+    marginLeft: 10,
   },
-  text:{
-    fontSize:25,
-    color:"gray",
+  text: {
+    fontSize: 20,
+    color: "gray",
     fontWeight: "bold",
 
-  } ,card: {
+  }, card: {
     width: 120,
     height: 120,
     backgroundColor: "#f8f8f8",
@@ -427,8 +462,8 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   }, image: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 10,
   },
 });

@@ -19,6 +19,9 @@ import PremiumScreen from './screens/MagazaScreen';
 import HatalarScreen from './screens/Egzersiz/Egzersizler/HatalarScreen';
 import DinlemeEgzersizScreen from './screens/Egzersiz/Egzersizler/DinlemeEgzersizScreen';
 import Egzersiz from './screens/Egzersiz/EgzersizScreen.js';
+import StartScreen from './screens/StartScreen';
+import TestScreen from './screens/TestScreen';
+
 export default function App() {
 
   const Stack = createNativeStackNavigator();
@@ -26,9 +29,10 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+        <Stack.Screen name="StartScreen" component={StartScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Signin" component={SigninScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="HomeScreens" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="SecimEkrani" component={SeçimEkrani} options={{ headerShown: false }} />
@@ -43,8 +47,8 @@ export default function App() {
         <Stack.Screen name="HataScreen" component={HatalarScreen} options={{ headerShown: false }} />
         <Stack.Screen name="DinlemeEgzersiz" component={DinlemeEgzersizScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Egzersiz" component={Egzersiz} options={{ headerShown: false }} />
+        <Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false }} />
 
-        
       </Stack.Navigator>
     </NavigationContainer>
   );
