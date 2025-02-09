@@ -19,7 +19,38 @@ export default function TestScreen() {
     const [dilID, setDilID] = useState(null);
     const [dillerL, setDillerL] = useState([]);
     const [dilIDL, setDilIDL] = useState(null);
+    const [testSorulari, setTestSorulari] = useState([])
+    const [soruKelimesi, setSoruKelimesi] = useState()
+    const [siklar, setSiklar] = useState([])
+    const [soruIndex,setSoruIndex] = useState(0)
 
+    const Sorular = ()=>{
+        if(soruIndex < 12){
+            setSoruKelimesi[testSorulari[soruIndex]]
+            
+        }else{
+            console.log("Soru Bitti")
+        }
+    }
+
+    
+    useEffect(()=>{
+
+        const TestKelimeleri = async()=>{
+            const response = await api.get("/kullanici/test",{
+                params:{
+                    MeslekID:meslekID,
+                    DilID: dilIDL,
+                    OgrencegiDilID:dilID
+                }
+            })
+            console.log(response.data.message[0]) 
+            setTestSorulari(response.data.message[0])
+        } 
+        TestKelimeleri()
+    }, [dilIDL, meslekID, dilID])
+
+    
     useEffect(() => {
         const MeslekleriGetir = async () => {
             try {
@@ -28,17 +59,16 @@ export default function TestScreen() {
                     const formattedData = response.data.result.map(meslek => ({
                         label: meslek.meslek, // API'deki meslek adı alanı
                         value: meslek.idMeslek, // API'deki meslek ID alanı
-                    }));
+                    })); 
                     setMeslekler(formattedData);
                 }
             } catch (error) {
                 console.error("Meslekleri getirirken hata oluştu:", error);
-            }
+            } 
         };
         const DilleriGetir = async () => {
             try {
                 const response = await api.get("/kullanici/dil");
-                console.log(response.data.result)
 
                 if (response.data.result && Array.isArray(response.data.result)) {
                     const formattedDataL = response.data.result.map(dil => ({
@@ -71,14 +101,13 @@ export default function TestScreen() {
     };
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>TestScreen</Text>
+
 
             {/* Modal */}
             <Modal visible={modalVisible} animationType="slide" transparent={true}>
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Size nasıl hitap edelim?</Text>
-
                         {/* İsim Girişi */}
                         <TextInput
                             style={styles.input}
@@ -86,7 +115,6 @@ export default function TestScreen() {
                             value={name}
                             onChangeText={setName}
                         />
-
                         {/* Meslek Seçimi */}
                         <Text style={styles.label}>Mesleğinizi seçin:</Text>
                         <RNPickerSelect
