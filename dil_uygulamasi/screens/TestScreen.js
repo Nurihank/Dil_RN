@@ -6,9 +6,12 @@ import {
     Modal,
     TextInput,
     TouchableOpacity,
+    FlatList,
+    Image,
 } from "react-native";
 import RNPickerSelect from 'react-native-picker-select';
 import api from "../api/api";
+import { useNavigation } from "@react-navigation/native";
 
 export default function TestScreen() {
     const [modalVisible, setModalVisible] = useState(true);
@@ -19,46 +22,127 @@ export default function TestScreen() {
     const [dilID, setDilID] = useState(null);
     const [dillerL, setDillerL] = useState([]);
     const [dilIDL, setDilIDL] = useState(null);
-    const [testSorulari, setTestSorulari] = useState([])
-    const [soruKelimesi, setSoruKelimesi] = useState()
-    const [siklar, setSiklar] = useState([])
-    const [soruIndex,setSoruIndex] = useState(0)
+    const [testSorulari, setTestSorulari] = useState([]);
+    const [soruKelimesi, setSoruKelimesi] = useState();
+    const [siklar, setSiklar] = useState([]);
+    const [soruIndex, setSoruIndex] = useState(0);
+    const [dogruCevaplar, setDogruCevaplar] = useState([]);
+    const [yanlisCevaplar, setYanlisCevaplar] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null); 
+    const [testSonuModal, setTestSonuModal] = useState(false)
+    const [gelenID, setGelenID] = useState()
+    const navigation = useNavigation()
 
-    const Sorular = ()=>{
-        if(soruIndex < 12){
-            setSoruKelimesi[testSorulari[soruIndex]]
-            
-        }else{
-            console.log("Soru Bitti")
-        }
-    }
+    const Sorular = () => {
+        if (soruIndex < testSorulari.length || soruIndex < 12) {
+           
+            const soru = testSorulari[soruIndex]; // Mevcut soru
+            setSoruKelimesi(soru);
 
-    
-    useEffect(()=>{
+            const dogruCevap = soru;
 
-        const TestKelimeleri = async()=>{
-            const response = await api.get("/kullanici/test",{
-                params:{
-                    MeslekID:meslekID,
-                    DilID: dilIDL,
-                    OgrencegiDilID:dilID
-                }
-            })
-            console.log(response.data.message[0]) 
-            setTestSorulari(response.data.message[0])
+            // Yanlış cevapları rastgele seç (doğru cevap dışındaki 3 tanesini al)
+            let yanlisCevaplar = testSorulari
+                .filter(item => item !== dogruCevap) // Doğru cevabı çıkar
+                .sort(() => Math.random() - 0.5) // Karıştır
+                .slice(0, 3); // İlk 3 tanesini al   
+
+            // Doğru cevabı rastgele bir konuma yerleştir
+            const rastgeleIndex = Math.floor(Math.random() * 4); // 0 ile 3 arasında rastgele index seç       
+            let siklar = [...yanlisCevaplar];
+      
+            siklar.splice(rastgeleIndex, 0, dogruCevap); // Doğru cevabı rastgele bir konuma ekle
+     
+            setSiklar(siklar); // Şıkları state'e kaydet 
+            setSoruIndex(soruIndex + 1);
+        } else {  
+            testSonu()
         } 
-        TestKelimeleri()
-    }, [dilIDL, meslekID, dilID])
+    };
 
+    const testSonu = async()=>{
+        setTestSonuModal(true)
+        const responseID = await api.post("/kullanici/test",{ 
+            Name:name
+        })
+        setGelenID(responseID.data.id)
+    }
     
+
+    const dogruMuCevap = () => {
+        setSelectedOption(null)
+        Sorular()
+        if (soruKelimesi.Ceviri === selectedOption.Ceviri) {
+            setDogruCevaplar(prevState => [...prevState, selectedOption]);
+        } else {
+            setYanlisCevaplar(prevState => [...prevState, selectedOption]);
+        }
+    };
+
+    useEffect(() => {
+        console.log(gelenID)
+        console.log(dogruCevaplar)
+        console.log(yanlisCevaplar)
+        const Kaydet = async () => {
+            try {
+                for (let kelime of dogruCevaplar) {
+                    console.log(kelime.AnaKelimelerID)
+                    await api.post("/kullanici/TestSorulari", {
+                        TestID: gelenID,
+                        KelimeID: kelime.AnaKelimelerID, 
+                        dogruMu: 1
+                    });
+
+                }
+    
+                // Daha sonra yanlış cevapları kaydet
+                for (let kelime of yanlisCevaplar) {
+                    console.log("yanlislar "+kelime.AnaKelimelerID)
+                    await api.post("/kullanici/TestSorulari", {
+                        TestID: gelenID,
+                        KelimeID: kelime.AnaKelimelerID, 
+                        dogruMu: 0
+                    });
+
+                }
+    
+                console.log("Tüm kelimeler başarıyla kaydedildi.");
+            } catch (error) {
+                console.error("Kelimeleri kaydederken hata oluştu:", error);
+            }
+        };
+    
+        if (gelenID) {
+            console.log("asd")
+
+            Kaydet();
+        }
+    }, [gelenID]);
+    
+
+    useEffect(() => {
+        const TestKelimeleri = async () => {
+            const response = await api.get("/kullanici/test", {
+                params: {
+                    MeslekID: meslekID,
+                    DilID: dilIDL,
+                    OgrencegiDilID: dilID,
+                }
+            });
+            setTestSorulari(response.data.message[0]);
+        };
+        TestKelimeleri();
+    }, [dilIDL, meslekID, dilID]);
+
     useEffect(() => {
         const MeslekleriGetir = async () => {
             try {
                 const response = await api.get("/kullanici/meslek");
+
                 if (response.data.result && Array.isArray(response.data.result)) {
                     const formattedData = response.data.result.map(meslek => ({
-                        label: meslek.meslek, // API'deki meslek adı alanı
-                        value: meslek.idMeslek, // API'deki meslek ID alanı
+                        label: meslek.meslek, 
+                        value: meslek.idMeslek, 
                     })); 
                     setMeslekler(formattedData);
                 }
@@ -66,48 +150,87 @@ export default function TestScreen() {
                 console.error("Meslekleri getirirken hata oluştu:", error);
             } 
         };
+
         const DilleriGetir = async () => {
             try {
                 const response = await api.get("/kullanici/dil");
 
                 if (response.data.result && Array.isArray(response.data.result)) {
                     const formattedDataL = response.data.result.map(dil => ({
-                        label: dil.LocalName, // API'deki meslek adı alanı
-                        value: dil.DilID, // API'deki meslek ID alanı
+                        label: dil.LocalName, 
+                        value: dil.DilID, 
                     }));
                     setDillerL(formattedDataL);
 
                     const formattedData = response.data.result.map(dil => ({
-                        label: dil.DilAdi, // API'deki meslek adı alanı
-                        value: dil.DilID, // API'deki meslek ID alanı
+                        label: dil.DilAdi, 
+                        value: dil.DilID, 
                     }));
                     setDiller(formattedData[0]);
                 }
             } catch (error) {
-                console.error("Meslekleri getirirken hata oluştu:", error);
+                console.error("Dilleri getirirken hata oluştu:", error);
             }
-        }
-        DilleriGetir()
+        };
+        DilleriGetir();
         MeslekleriGetir();
     }, []);
+
+    const handleModalClose = () => {
+        setModalVisible(false);  // Modalı kapat
+        Sorular();  // Soruları yükle
+    };
 
     const placeholder = {
         label: 'Meslek Seç',
         value: null,
     };
+
     const placeholderD = {
         label: 'Dil Seç',
-        value: null,
+        value: null,  
     };
+
+    const renderSiklar = ({ item }) => {
+
+        const isSelected = selectedOption && selectedOption.AnaKelimelerID === item.AnaKelimelerID; // id ile eşleşme kontrolü (id'yi öğeyle sağlamak gerekebilir)
+        return (
+            <TouchableOpacity onPress={() =>  setSelectedOption(item)}>
+                <View style={[styles.sikContainer, isSelected && styles.selectedOption]}>
+                    <Text style={[styles.sikText, isSelected && styles.selectedText]}>{item.Ceviri}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    };
+    
     return (
         <View style={styles.container}>
-
-
+        <Text>{soruIndex} / 12</Text>
+            {soruKelimesi && (
+                <View style={styles.soruContainer}> 
+                    <Text style={styles.soruText}>{soruKelimesi.Kelime}</Text>
+                    <FlatList
+                            data={siklar}
+                            renderItem={renderSiklar}
+                            keyExtractor={(item, index) => index.toString()}
+                        />
+                    {
+                        selectedOption ? 
+                        <TouchableOpacity onPress={()=>dogruMuCevap()}>
+                            <Image source={require("../assets/devam.png")} style={{height:50,width:50}}/>    
+                        </TouchableOpacity>
+                        :
+                        null
+                    }
+                </View>
+            )}
+    
             {/* Modal */}
             <Modal visible={modalVisible} animationType="slide" transparent={true}>
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
+                    <View style={styles.modalContent}> 
                         <Text style={styles.modalTitle}>Size nasıl hitap edelim?</Text>
+    
                         {/* İsim Girişi */}
                         <TextInput
                             style={styles.input}
@@ -115,6 +238,7 @@ export default function TestScreen() {
                             value={name}
                             onChangeText={setName}
                         />
+    
                         {/* Meslek Seçimi */}
                         <Text style={styles.label}>Mesleğinizi seçin:</Text>
                         <RNPickerSelect
@@ -124,6 +248,7 @@ export default function TestScreen() {
                             value={meslekID}
                             style={pickerSelectStyles}
                         />
+    
                         <Text style={styles.label}>Ana Dilinizi seçin:</Text>
                         <RNPickerSelect
                             placeholder={placeholderD}
@@ -132,6 +257,7 @@ export default function TestScreen() {
                             value={dilIDL}
                             style={pickerSelectStyles}
                         />
+    
                         <Text style={styles.label}>Öğrenmek İstediğiniz Dili seçin:</Text>
                         <RNPickerSelect
                             placeholder={placeholderD}
@@ -139,99 +265,167 @@ export default function TestScreen() {
                             onValueChange={(value) => setDilID(value)}
                             value={dilID}
                             style={pickerSelectStyles}
-                        />
+                        /> 
+    
                         {/* Buton */}
-                        <TouchableOpacity
-                            style={styles.button}
-                            onPress={() => setModalVisible(false)}
-                        >
+                        <TouchableOpacity style={styles.button} onPress={handleModalClose}>
                             <Text style={styles.buttonText}>Teste Hazırım</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
+
+            <Modal visible={testSonuModal} animationType="slide" transparent={true}>
+            <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Test Sonucu</Text>
+                    <Text style={{fontSize:17,color:"gray",fontWeight:"bold"}}>
+                        {name} Test sonucunu görmek için 
+                    </Text>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.replace("Signin")}>
+                        <Text style={styles.buttonText}>Giriş Yap</Text>
+                    </TouchableOpacity>
+        
+                    <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.replace("Signup")}>
+                        <Text style={styles.buttonText}>Kayıt Ol</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
+        
         </View>
     );
+    
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
+        backgroundColor: '#f9f9f9',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
+    soruContainer: {
+        width: '100%',
+        marginBottom: 30,
+        alignItems: 'center',
+    },
+    soruText: {
+        fontSize: 32,
+        fontWeight: '700',
+        color: '#333',
+        textAlign: 'center',
+        marginBottom: 30,
+        lineHeight: 40,
+    },
+    sikContainer: {
+        backgroundColor: '#ffffff',
+        borderRadius: 15,
+        paddingVertical: 18,
+        paddingHorizontal: 25,
+        marginBottom: 20,
+        width: '100%',
+        shadowColor: '#000',
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 5,
+        transform: [{ scale: 1.05 }],
+    }, selectedOption: {
+        backgroundColor: '#483d8b', // Yeşil renk
+    },
+    selectedText: {
+        color: '#fff',
+    },
+    sikText: {
+        fontSize: 20,
+        color: '#444',
+        fontWeight: '500',
+        textAlign: 'center',
+    },
+    nextButton: {
+        marginTop: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    nextImage: {
+        height: 60,
+        width: 60,
+        borderRadius: 30,
     },
     modalContainer: {
         flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     modalContent: {
-        backgroundColor: "#fff",
-        width: "80%",
-        padding: 20,
-        borderRadius: 10,
-        alignItems: "center",
+        backgroundColor: '#fff',
+        padding: 30,
+        borderRadius: 20,
+        width: '90%',
+        maxWidth: 450,
+        alignItems: 'center',
+        elevation: 10,
     },
     modalTitle: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginBottom: 15,
+        fontSize: 26,
+        fontWeight: '700',
+        color: '#333',
+        marginBottom: 25,
     },
     input: {
-        width: "100%",
+        width: '100%',
+        padding: 15,
+        marginBottom: 20,
         borderWidth: 1,
-        borderColor: "#ccc",
-        padding: 10,
-        borderRadius: 5,
-        marginBottom: 15,
+        borderColor: '#ddd',
+        borderRadius: 10,
+        backgroundColor: '#f1f1f1',
+        fontSize: 16,
+        color: '#333',
     },
     label: {
-        fontSize: 16,
-        alignSelf: "flex-start",
-        marginBottom: 5,
-    },
-    picker: {
-        width: "100%",
+        alignSelf: 'flex-start',
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#333',
         marginBottom: 15,
     },
     button: {
-        backgroundColor: "#007bff",
-        padding: 12,
-        borderRadius: 8,
-        width: "100%",
-        alignItems: "center",
+        backgroundColor: '#00bcd4',
+        padding: 18,
+        borderRadius: 12,
+        marginTop: 25,
+        width: '100%',
+        alignItems: 'center',
     },
     buttonText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "bold",
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '600',
+    },
+    pickerStyle: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        marginBottom: 20,
     },
 });
+
+
 const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-        paddingHorizontal: 10,
-        paddingVertical: 12,
-        borderWidth: 1,
-        borderColor: '#bdc3c7', // Gri border
+    pickerStyle: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#fafafa',
         borderRadius: 8,
-        backgroundColor: '#ffffff',
-        fontSize: 16,
-        color: '#333',
-        elevation: 2, // Yükselti eklemek için
-    },
-    inputAndroid: {
-        paddingHorizontal: 10,
-        paddingVertical: 8,
         borderWidth: 1,
-        borderColor: '#bdc3c7',
-        borderRadius: 8,
-        backgroundColor: '#ffffff',
-        fontSize: 16,
-        color: '#333',
+        borderColor: '#ddd',
+        marginBottom: 20,
     },
 });
