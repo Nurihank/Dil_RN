@@ -52,7 +52,7 @@ export default function HomeScreen({ route }) {
             const formattedData = Seviye.data.map(item => ({
               label: item.SeviyeAdi || 'Default Label',
               value: item.SeviyeID || 'defaultValue'
-            }));
+            })); 
             setSeviyeler(formattedData);
           } catch (error) {
             console.log("Seviyeleri getirirken hata oluştu:", error);
@@ -61,7 +61,7 @@ export default function HomeScreen({ route }) {
         await SeviyeGetir();
       };
       fetchData();
-    }, [userId])
+    }, [userId]) 
   );
 
   const SezonlariGetir = async () => {

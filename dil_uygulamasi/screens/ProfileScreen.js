@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProgressBars from '../component/ProgressBars'; // ProgressBars olarak import edildi
 import { Calendar } from 'react-native-calendars';
 import { useFocusEffect } from '@react-navigation/native';
-
+import TestSonucu from '../component/TestSonucu';
 export default function ProfileScreen() {
 
     const [userId, setUserId] = useState(undefined);
@@ -133,6 +133,8 @@ export default function ProfileScreen() {
                 <Text style={styles.infoText}>{user.OgrenilecekDil} Öğreniyor</Text>
               </View>
               <ProgressBars />
+              <TestSonucu KullaniciID ={userId}/>
+                
               <Calendar
                 onDayPress={handleDayPress}
                 markedDates={markedDates}

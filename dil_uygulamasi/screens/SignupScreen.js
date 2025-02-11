@@ -12,20 +12,44 @@ export default function SignupScreen() {
     const [sifre, setSifre] = useState("");
     const navigation = useNavigation();
 
+    const TestIDKaydet = async(userId,testId)=>{
+
+        await AsyncStorage.removeItem("testID"); //TESTİD'Yİ GÖNDERDİK SİLEBİLİRİZ
+
+        if(testId){
+            const response = await api.post("/kullanici/TestIDKaydet",{
+                TestID:testId,
+                KullaniciID: userId
+            })
+            console.log(response.data.message)
+        }else{
+            console.log("Test id yok")
+        }
+    }
+
     const handleSignup = async () => {
+
+        const testID = await AsyncStorage.getItem("testID")
+        console.log("testID "+testID)
+
         try {
             const response = await api.post("/kullanici/signup", {
                 kullaniciAdi: kullaniciAdi,
                 eposta: email,
                 sifre: sifre
             });
-            if (response.data.status === "SUCCES") {
-                Alert.alert(response.data.message);
+            console.log(response.data.status)
+            if (response.data.status === "SUCCESS") {
+                
+               TestIDKaydet(response.data.userId,testID)
+
                 const responseSignin = await api.post("/kullanici/signin", {
                     eposta: email,
                     sifre: sifre
                 });
+                console.log(responseSignin.data)
                 if (responseSignin.data.status === "SUCCES") {
+                    console.log("signupdaki = " + responseSignin.data.id)
                     UserModel.setUser(responseSignin.data.id);
                     await AsyncStorage.setItem('accessToken', JSON.stringify(responseSignin.data.accessToken));
                     await AsyncStorage.setItem('refreshToken', JSON.stringify(responseSignin.data.refreshToken));

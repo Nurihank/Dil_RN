@@ -1,9 +1,13 @@
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function StartScreen({ navigation }) {
     const [pressed, setPressed] = useState(false);
 
+    useEffect(()=>{
+        AsyncStorage.clear()
+    },[])
     return (
         <View style={styles.container}>
 

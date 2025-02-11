@@ -6,28 +6,40 @@ import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserModel from '../model/ModelUser';
 
-
-
 export default function SigninScreen() {
 
     const [eposta, setEposta] = useState("");
     const [sifre, setSifre] = useState("");
     const navigation = useNavigation();
 
-    const handleSignin = async () => {
-        try {
+    const TestIDKaydet = async (testId, userId) => {
+        await AsyncStorage.removeItem("testID"); //TESTİD'Yİ GÖNDERDİK SİLEBİLİRİZ
+        console.log("test id = " + testId)
+        if (testId) {
+            const response = await api.post("/kullanici/TestIDKaydet", {
+                TestID: testId,
+                KullaniciID: userId
+            })
+            console.log(response.data.message)
+        } else {
+            console.log("Test id yok")
+        }
+    }
 
+    const handleSignin = async () => {
+        const testID = await AsyncStorage.getItem("testID")
+        console.log("testID " + testID)
+        try {
             const response = await api.post("/kullanici/signin", {
                 eposta: eposta,
                 sifre: sifre
             });
-            console.log("API Yanıtı:", response.data); // Yanıtı burada kontrol edin
 
             if (response.data.status === "SUCCES") {
                 await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
                 await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
                 await AsyncStorage.setItem('id', JSON.stringify(response.data.id));
-
+                TestIDKaydet(testID, response.data.id)
                 await UserModel.setUser(response.data.id);
                 navigation.replace("Welcome");
             } else if (response.data.status === "FAILED") {

@@ -21,6 +21,7 @@ export default function TemelEgitimScreen() {
     
     const setUserID = async () => {
         const id = await AsyncStorage.getItem("id");
+        console.log(id)
         setUserId(id);
     };
     const SozluktenKelimeSilme = async (item) => {
@@ -34,6 +35,7 @@ export default function TemelEgitimScreen() {
     }
     const getUserInfo = async () => {
         const user = await UserModel.currentUser;
+        console.log("sa ="+user)
         setHangiDilID(user[0].DilID);
         setAnaDilID(user[0].SectigiDilID);
     };

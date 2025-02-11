@@ -12,6 +12,7 @@ import {
 import RNPickerSelect from 'react-native-picker-select';
 import api from "../api/api";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TestScreen() {
     const [modalVisible, setModalVisible] = useState(true);
@@ -28,14 +29,14 @@ export default function TestScreen() {
     const [soruIndex, setSoruIndex] = useState(0);
     const [dogruCevaplar, setDogruCevaplar] = useState([]);
     const [yanlisCevaplar, setYanlisCevaplar] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(null); 
+    const [selectedOption, setSelectedOption] = useState(null);
     const [testSonuModal, setTestSonuModal] = useState(false)
     const [gelenID, setGelenID] = useState()
     const navigation = useNavigation()
 
     const Sorular = () => {
         if (soruIndex < testSorulari.length || soruIndex < 12) {
-           
+
             const soru = testSorulari[soruIndex]; // Mevcut soru
             setSoruKelimesi(soru);
 
@@ -50,75 +51,86 @@ export default function TestScreen() {
             // Doğru cevabı rastgele bir konuma yerleştir
             const rastgeleIndex = Math.floor(Math.random() * 4); // 0 ile 3 arasında rastgele index seç       
             let siklar = [...yanlisCevaplar];
-      
+
             siklar.splice(rastgeleIndex, 0, dogruCevap); // Doğru cevabı rastgele bir konuma ekle
-     
+
             setSiklar(siklar); // Şıkları state'e kaydet 
             setSoruIndex(soruIndex + 1);
-        } else {  
+        } else {
             testSonu()
-        } 
+        }
     };
 
-    const testSonu = async()=>{
+    const testSonu = async () => {
+
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const hours = String(currentDate.getHours()).padStart(2, '0');
+        const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+        const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
         setTestSonuModal(true)
-        const responseID = await api.post("/kullanici/test",{ 
-            Name:name
+        const responseID = await api.post("/kullanici/test", {
+            Name: name,
+            Date: formattedDate
         })
         setGelenID(responseID.data.id)
+        const testID = JSON.stringify(responseID.data.id)
+        AsyncStorage.setItem("testID", testID)
+        console.log("TEST ID =" + testID)
     }
-    
+
 
     const dogruMuCevap = () => {
-        setSelectedOption(null)
         Sorular()
         if (soruKelimesi.Ceviri === selectedOption.Ceviri) {
-            setDogruCevaplar(prevState => [...prevState, selectedOption]);
+            setDogruCevaplar(prevState => [...prevState, soruKelimesi]);
+            setSelectedOption(null)
+
         } else {
-            setYanlisCevaplar(prevState => [...prevState, selectedOption]);
+            setYanlisCevaplar(prevState => [...prevState, soruKelimesi])
+            setSelectedOption(null)
+
         }
     };
 
     useEffect(() => {
-        console.log(gelenID)
-        console.log(dogruCevaplar)
-        console.log(yanlisCevaplar)
         const Kaydet = async () => {
             try {
                 for (let kelime of dogruCevaplar) {
-                    console.log(kelime.AnaKelimelerID)
                     await api.post("/kullanici/TestSorulari", {
                         TestID: gelenID,
-                        KelimeID: kelime.AnaKelimelerID, 
+                        KelimeID: kelime.AnaKelimelerID,
                         dogruMu: 1
                     });
 
                 }
-    
+
                 // Daha sonra yanlış cevapları kaydet
                 for (let kelime of yanlisCevaplar) {
-                    console.log("yanlislar "+kelime.AnaKelimelerID)
                     await api.post("/kullanici/TestSorulari", {
                         TestID: gelenID,
-                        KelimeID: kelime.AnaKelimelerID, 
+                        KelimeID: kelime.AnaKelimelerID,
                         dogruMu: 0
                     });
 
                 }
-    
                 console.log("Tüm kelimeler başarıyla kaydedildi.");
             } catch (error) {
                 console.error("Kelimeleri kaydederken hata oluştu:", error);
             }
         };
-    
-        if (gelenID) {
-            console.log("asd")
 
+        if (gelenID) {
             Kaydet();
         }
     }, [gelenID]);
-    
+
 
     useEffect(() => {
         const TestKelimeleri = async () => {
@@ -141,14 +153,14 @@ export default function TestScreen() {
 
                 if (response.data.result && Array.isArray(response.data.result)) {
                     const formattedData = response.data.result.map(meslek => ({
-                        label: meslek.meslek, 
-                        value: meslek.idMeslek, 
-                    })); 
+                        label: meslek.meslek,
+                        value: meslek.idMeslek,
+                    }));
                     setMeslekler(formattedData);
                 }
             } catch (error) {
                 console.error("Meslekleri getirirken hata oluştu:", error);
-            } 
+            }
         };
 
         const DilleriGetir = async () => {
@@ -157,14 +169,14 @@ export default function TestScreen() {
 
                 if (response.data.result && Array.isArray(response.data.result)) {
                     const formattedDataL = response.data.result.map(dil => ({
-                        label: dil.LocalName, 
-                        value: dil.DilID, 
+                        label: dil.LocalName,
+                        value: dil.DilID,
                     }));
                     setDillerL(formattedDataL);
 
                     const formattedData = response.data.result.map(dil => ({
-                        label: dil.DilAdi, 
-                        value: dil.DilID, 
+                        label: dil.DilAdi,
+                        value: dil.DilID,
                     }));
                     setDiller(formattedData[0]);
                 }
@@ -188,49 +200,49 @@ export default function TestScreen() {
 
     const placeholderD = {
         label: 'Dil Seç',
-        value: null,  
+        value: null,
     };
 
     const renderSiklar = ({ item }) => {
 
         const isSelected = selectedOption && selectedOption.AnaKelimelerID === item.AnaKelimelerID; // id ile eşleşme kontrolü (id'yi öğeyle sağlamak gerekebilir)
         return (
-            <TouchableOpacity onPress={() =>  setSelectedOption(item)}>
+            <TouchableOpacity onPress={() => setSelectedOption(item)}>
                 <View style={[styles.sikContainer, isSelected && styles.selectedOption]}>
                     <Text style={[styles.sikText, isSelected && styles.selectedText]}>{item.Ceviri}</Text>
                 </View>
             </TouchableOpacity>
         );
     };
-    
+
     return (
         <View style={styles.container}>
-        <Text>{soruIndex} / 12</Text>
+            <Text>{soruIndex} / 12</Text>
             {soruKelimesi && (
-                <View style={styles.soruContainer}> 
+                <View style={styles.soruContainer}>
                     <Text style={styles.soruText}>{soruKelimesi.Kelime}</Text>
                     <FlatList
-                            data={siklar}
-                            renderItem={renderSiklar}
-                            keyExtractor={(item, index) => index.toString()}
-                        />
+                        data={siklar}
+                        renderItem={renderSiklar}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
                     {
-                        selectedOption ? 
-                        <TouchableOpacity onPress={()=>dogruMuCevap()}>
-                            <Image source={require("../assets/devam.png")} style={{height:50,width:50}}/>    
-                        </TouchableOpacity>
-                        :
-                        null
+                        selectedOption ?
+                            <TouchableOpacity onPress={() => dogruMuCevap()}>
+                                <Image source={require("../assets/devam.png")} style={{ height: 50, width: 50 }} />
+                            </TouchableOpacity>
+                            :
+                            null
                     }
                 </View>
             )}
-    
+
             {/* Modal */}
             <Modal visible={modalVisible} animationType="slide" transparent={true}>
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}> 
+                    <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Size nasıl hitap edelim?</Text>
-    
+
                         {/* İsim Girişi */}
                         <TextInput
                             style={styles.input}
@@ -238,7 +250,7 @@ export default function TestScreen() {
                             value={name}
                             onChangeText={setName}
                         />
-    
+
                         {/* Meslek Seçimi */}
                         <Text style={styles.label}>Mesleğinizi seçin:</Text>
                         <RNPickerSelect
@@ -248,7 +260,7 @@ export default function TestScreen() {
                             value={meslekID}
                             style={pickerSelectStyles}
                         />
-    
+
                         <Text style={styles.label}>Ana Dilinizi seçin:</Text>
                         <RNPickerSelect
                             placeholder={placeholderD}
@@ -257,7 +269,7 @@ export default function TestScreen() {
                             value={dilIDL}
                             style={pickerSelectStyles}
                         />
-    
+
                         <Text style={styles.label}>Öğrenmek İstediğiniz Dili seçin:</Text>
                         <RNPickerSelect
                             placeholder={placeholderD}
@@ -265,8 +277,8 @@ export default function TestScreen() {
                             onValueChange={(value) => setDilID(value)}
                             value={dilID}
                             style={pickerSelectStyles}
-                        /> 
-    
+                        />
+
                         {/* Buton */}
                         <TouchableOpacity style={styles.button} onPress={handleModalClose}>
                             <Text style={styles.buttonText}>Teste Hazırım</Text>
@@ -276,26 +288,26 @@ export default function TestScreen() {
             </Modal>
 
             <Modal visible={testSonuModal} animationType="slide" transparent={true}>
-            <View style={styles.modalContainer}>
-                <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Test Sonucu</Text>
-                    <Text style={{fontSize:17,color:"gray",fontWeight:"bold"}}>
-                        {name} Test sonucunu görmek için 
-                    </Text>
-                    <TouchableOpacity style={styles.button} onPress={() => navigation.replace("Signin")}>
-                        <Text style={styles.buttonText}>Giriş Yap</Text>
-                    </TouchableOpacity>
-        
-                    <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.replace("Signup")}>
-                        <Text style={styles.buttonText}>Kayıt Ol</Text>
-                    </TouchableOpacity>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Test Sonucu</Text>
+                        <Text style={{ fontSize: 17, color: "gray", fontWeight: "bold" }}>
+                            {name} Test sonucunu görmek için
+                        </Text>
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.replace("Signin")}>
+                            <Text style={styles.buttonText}>Giriş Yap</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={[styles.button, styles.registerButton]} onPress={() => navigation.replace("Signup")}>
+                            <Text style={styles.buttonText}>Kayıt Ol</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-        </Modal>
-        
+            </Modal>
+
         </View>
     );
-    
+
 }
 
 const styles = StyleSheet.create({
