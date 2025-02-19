@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from 'react-native';
 import LottieView from 'lottie-react-native';
 import * as Speech from 'expo-speech';
 import api from '../../../api/api';
 import UserModel from '../../../model/ModelUser';
-import { useFocusEffect } from '@react-navigation/native';
-import { GestureHandlerRootView, Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from "react-native-reanimated";
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 export default function DinlemeEgzersizScreen(route) {
     const animationRef = useRef(null);
@@ -15,65 +13,20 @@ export default function DinlemeEgzersizScreen(route) {
     const [meslekID, setMeslekID] = useState();
     const [Kelimeler, setKelimeler] = useState([]);
     const [anaKelime, setAnaKelime] = useState(null);
-    const [secilenKelimeler, setSecilenKelimeler] = useState([]);
-    const [secilenKelime, setSecilenKelime] = useState(null);
-    const dropZoneY = useSharedValue(0);
-    const dropZoneHeight = useSharedValue(0);
+    const [soruIndex, setSoruIndex] = useState(0);
+    const [siklar, setSiklar] = useState([])
+    const [secili, setSecili] = useState(false)
+    const [dogruCevaplar, setDogruCevaplar] = useState([])
+    const [yanlisCevaplar, setYanlisCevaplar] = useState([])
 
+    const navigation = useNavigation()
+
+    const [secilenKelime, setSecilenKelime] = useState(null)
     const getUserInfo = async () => {
         const user = await UserModel.currentUser;
         setMeslekID(user[0].MeslekID);
         setHangiDilID(user[0].DilID);
         setAnaDilID(user[0].SectigiDilID);
-    };
-
-    const GunlukGorevTamamlama = async () => { /* normalde oyun başarılı oulunca kaydetcek */
-        const currentDate = new Date();
-
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-
-        const formattedDate = `${year}-${month}-${day}`;
-
-        const response = await api.post("/kullanici/GunlukGorevEgzersiz", {
-            KullaniciID: route.route.params.id,
-            Date: formattedDate
-        })
-        console.log(response.data.message)
-        alert("Başarılı gunluk egzersiz")
-    }
-
-    useFocusEffect(
-        useCallback(() => {
-            getUserInfo();
-        }, [])
-    );
-
-    useEffect(() => {
-        if (anaDilID && hangiDilID && meslekID) {
-            KelimeleriGetir();
-            GunlukGorevTamamlama()
-        }
-    }, [anaDilID, hangiDilID, meslekID]);
-
-    useEffect(() => {
-        if (Kelimeler.length > 0) {
-            AnaKelimeSec(Kelimeler);
-        }
-    }, [Kelimeler]);
-
-    const KelimeyiSeslendirme = () => {
-        if (anaKelime) {
-            speakWord(anaKelime.Ceviri);
-            if (animationRef.current) {
-                animationRef.current.play();
-            }
-        }
-    };
-
-    const shuffleArray = (array) => {
-        return [...array].sort(() => Math.random() - 0.5);
     };
 
     const KelimeleriGetir = async () => {
@@ -97,20 +50,133 @@ export default function DinlemeEgzersizScreen(route) {
         }
     };
 
-    const AnaKelimeSec = (kelimeler) => {
-        if (kelimeler.length === 0) return;
+    const Soru = () => {
+        console.log(route.route.params.egzersizId)
+        console.log(soruIndex)
+        if (soruIndex < 7) {
+            setSoruIndex(soruIndex + 1)
+            const anaKelime = Kelimeler[soruIndex]; // Ana kelimeyi belirle
 
-        let anaKelime = kelimeler[Math.floor(Math.random() * kelimeler.length)];
-        setAnaKelime(anaKelime);
+            // Ana kelimeyi hariç tutarak rastgele 6 yanlış şık seç
+            let yanlisSiklar = Kelimeler
+                .filter(kelime => kelime !== anaKelime) // Ana kelime hariç
+                .sort(() => Math.random() - 0.5) // Rastgele sıralama
+                .slice(0, 8);
 
-        let secilenKelimeler = new Set([anaKelime]);
-        while (secilenKelimeler.size < 8) {
-            let rastgeleKelime = kelimeler[Math.floor(Math.random() * kelimeler.length)];
-            secilenKelimeler.add(rastgeleKelime);
+            // Ana kelimeyi ekleyip şıkları karıştır
+            let siklar = [...yanlisSiklar, anaKelime].sort(() => Math.random() - 0.5);
+            console.log(siklar)
+            setAnaKelime(anaKelime);
+            setSiklar(siklar);
+        } else {
+            GunlukGorevTamamlama()
+            OyunBitti()
+            console.log(dogruCevaplar)
+            console.log(yanlisCevaplar)
+            
+        }
+    };
+
+    const OyunBitti = async()=>{
+
+        for (const kelime of dogruCevaplar) {
+            try {
+                const response = await api.post("/kullanici/Egzersiz", {
+                    KullaniciID: route.route.params.id,
+                    TemelMi: route.route.params.egzersizTuru,
+                    EgzersizID: route.route.params.egzersizId,
+                    KelimeID: kelime.id,
+                    DogruMu: 1 // Doğru cevap olduğu için 1
+                });
+                console.log(response.data.message);
+            } catch (error) {
+                console.error("Doğru cevap gönderilirken hata oluştu:", error);
+            }
         }
 
-        setSecilenKelimeler([...secilenKelimeler]);
+        // Yanlış cevaplanan kelimeleri gönder
+        for (const kelime of yanlisCevaplar) {
+            try {
+                const response = await api.post("/kullanici/Egzersiz", {
+                    KullaniciID: route.route.params.id,
+                    TemelMi: route.route.params.egzersizTuru,
+                    EgzersizID: route.route.params.egzersizId,
+                    KelimeID: kelime.id,
+                    DogruMu: 0 // Yanlış cevap olduğu için 0
+                });
+                console.log(response.data.message);
+            } catch (error) {
+                console.error("Yanlış cevap gönderilirken hata oluştu:", error);
+            }
+        }
+        navigation.navigate("Egzersiz")
+    }
+    const GunlukGorevTamamlama = async () => { /* normalde oyun başarılı oulunca kaydetcek */
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}`;
+
+        const response = await api.post("/kullanici/GunlukGorevEgzersiz", {
+            KullaniciID: route.route.params.id,
+            Date: formattedDate
+        })
+        console.log(response.data.message)
+        //  alert("Başarılı gunluk egzersiz")
+    }
+
+    const DogruMu = (kelime) => {
+        setSecilenKelime(kelime)
+        setSecili(true)
+        if (kelime.Value == anaKelime.Value) {
+            console.log("dogru")
+            setDogruCevaplar((prev) => [...prev, kelime]); // Doğruysa diziye ekle
+        } else {
+            console.log("yanlis")
+            setYanlisCevaplar((prev) => [...prev, kelime])
+        }
+    }
+
+    const DevamEt = ()=>{
+        setSecilenKelime(null)
+        setSecili(false)
+        Soru()
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            getUserInfo();
+        }, [])
+    );
+
+    useEffect(() => {
+        if (anaDilID && hangiDilID && meslekID) {
+            KelimeleriGetir();
+        }
+    }, [anaDilID, hangiDilID, meslekID]);
+
+    useEffect(() => {
+        if (Kelimeler.length > 0) {
+            Soru()
+        }
+    }, [Kelimeler]);
+
+    const KelimeyiSeslendirme = () => {
+        if (anaKelime) {
+            speakWord(anaKelime.Value);
+            if (animationRef.current) {
+                animationRef.current.play();
+            }
+        }
     };
+
+    const shuffleArray = (array) => {
+        return [...array].sort(() => Math.random() - 0.5);
+    };
+
 
     const speakWord = (kelime) => {
         const options = {
@@ -124,8 +190,9 @@ export default function DinlemeEgzersizScreen(route) {
     };
 
     return anaKelime ? (
-        <GestureHandlerRootView style={styles.container}>
+        <View style={styles.container}>
             {/* Ses Butonu */}
+            <Text>{soruIndex} / 7</Text>
             <TouchableOpacity onPress={KelimeyiSeslendirme} style={styles.animationContainer}>
                 <LottieView
                     source={require('../../../assets/animasyon/sound.json')}
@@ -134,106 +201,61 @@ export default function DinlemeEgzersizScreen(route) {
                 />
             </TouchableOpacity>
 
-            {/* Ana Kelime */}
-            <Text style={styles.anaKelime}>{anaKelime?.Ceviri}</Text>
+            <View style={styles.secilenKelimeContainer}>
+              
+                    <View>
+                        {secilenKelime ?
+                            <Text style={{ color: "white", fontSize: 30, fontWeight: "bold" }}>
+                                {secilenKelime?.Value}
+                            </Text>
+                            :
+                            <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>Duyduğun Kelimeyi Seç</Text>
+                        }
 
-            {/* Hedef Bırakma Alanı */}
-            <View
-                style={styles.dropZone}
-                onLayout={(event) => {
-                    const { y, height } = event.nativeEvent.layout;
-                    dropZoneY.value = y;
-                    dropZoneHeight.value = height;
-                }}
-            >
-                <Text style={styles.dropZoneText}>
-                    {secilenKelime ? `Seçilen: ${secilenKelime}` : "Kelimeyi buraya bırak"}
-                </Text>
+                    </View>
+            
             </View>
+            {/* FlatList ile 2'şerli şıkları göster */}
+            <FlatList
+                data={siklar}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={3}
+                columnWrapperStyle={styles.row} // Satırları hizala
+                renderItem={({ item }) => (
+                    <TouchableOpacity
+                        style={styles.sik}
+                        onPress={() => !secili && DogruMu(item)} // Şık seçildiyse tıklamayı engelle
+                        disabled={secili} // Şık seçildikten sonra butonlar disabled olacak
+                    >
+                        <Text style={styles.sikText}>{item.Value}</Text>
+                    </TouchableOpacity>
+                )}
+            />
+            {
+                secilenKelime ?
+                    <View>
+                        <TouchableOpacity onPress={()=>DevamEt()}>
+                            <Image source={require("../../../assets/devam.png")} style={{ height: 75, width: 75, marginBottom: 170, marginLeft: 250 }} />
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    null
+            }
 
-            {/* Sürüklenebilir Kelimeler */}
-            <View style={styles.kelimelerContainer}>
-                {secilenKelimeler.map((kelime, index) => (
-                    <DraggableWord
-                        key={index}
-                        kelime={kelime}
-                        setSecilenKelime={setSecilenKelime}
-                        dropZoneY={dropZoneY}
-                        dropZoneHeight={dropZoneHeight}
-                    />
-                ))}
-            </View>
-        </GestureHandlerRootView>
+        </View>
     ) : null;
+
+
 }
-const DraggableWord = ({ kelime, setSecilenKelime, dropZoneY, dropZoneHeight }) => {
-    const translateY = useSharedValue(0);
-    const translateX = useSharedValue(0);
-    const isDropped = useSharedValue(false); // Kelimenin bırakıldığını takip et
-
-    const gesture = Gesture.Pan()
-        .onUpdate((event) => {
-            if (!isDropped.value) {
-                translateX.value = event.translationX;
-                translateY.value = event.translationY;
-            }
-        })
-        .onEnd((event) => {
-            const droppedY = event.absoluteY; // Kelimenin bırakıldığı yerin Y konumu
-            const dropZoneBottom = dropZoneY.value + dropZoneHeight.value; // Bırakma alanının alt sınırı
-            const dropZoneTop = dropZoneY.value; // Bırakma alanının üst sınırı
-            const dropZoneCenterX = event.absoluteX; // X koordinatını almak için event.absoluteX kullandık
-            const deneme = event.absoluteX; // Kelimenin bırakıldığı yerin Y konumu
-            console.log(deneme)
-            console.log(droppedY)
-
-            // Eğer bırakma alanı içinde bırakılmışsa
-            if (droppedY >= dropZoneTop && droppedY <= dropZoneBottom) {
-                runOnJS(setSecilenKelime)(kelime.Ceviri); // Kelimeyi set et
-                isDropped.value = true; // Kelime bırakıld
-
-                const kelimeWidth = 20;  // Kelimenin genişliği (istenilen boyut)
-                const kelimeHeight = 12; // Kelimenin yüksekliği (istenilen boyut)
-
-                // Başlangıçta kelimeyi sıfır noktasına yerleştir
-                translateX.value = withSpring(0);
-                translateY.value = withSpring(0);
-
-                // Sıfır noktasından animasyonla yeni koordinatlara yerleştir
-                translateX.value = withSpring(100);
-                translateY.value = withSpring(100);
-            } else {
-                // Eğer bırakma alanına gelmezse geri dön
-                translateX.value = withSpring(0);
-                translateY.value = withSpring(0);
-            }
-        });
-
-    const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
-    }));
-
-    return (
-        <GestureDetector gesture={gesture}>
-            <Animated.View style={[styles.kelimeItem, animatedStyle]}>
-                <Text style={styles.kelimeText}>{kelime.Ceviri}</Text>
-            </Animated.View>
-        </GestureDetector>
-    );
-};
-
-
-
-
-
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 10,
-        backgroundColor: '#f8f8f8'
+        padding: 20,
+        backgroundColor: '#f8f8f8',
+        marginTop: 100
     },
     animationContainer: {
         marginBottom: 20
@@ -243,45 +265,44 @@ const styles = StyleSheet.create({
         height: 150,
     },
     anaKelime: {
-        fontSize: 24,
+        fontSize: 26,
         fontWeight: 'bold',
-        marginVertical: 10,
-        color: '#333'
+        marginBottom: 20,
+        color: '#333',
+        textAlign: 'center',
     },
-    dropZone: {
-        width: "80%",
-        height: 100,
-        backgroundColor: "#dcdcdc",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 10,
-        marginBottom: 40,
-    },
-    dropZoneText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#333",
-    },
-    kelimelerContainer: {
+    row: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         width: '100%',
-        marginVertical: 20,
+        marginBottom: 10,
     },
-    kelimeItem: {
-        width: "30%",
-        height: 70,
-        padding: 10,
+    sik: {
+        flex: 1,
         margin: 5,
-        backgroundColor: '#ffcc00',
+        paddingVertical: 15,
         borderRadius: 10,
+        backgroundColor: '#4CAF50',
         alignItems: 'center',
         justifyContent: 'center',
+        elevation: 3, // Android gölge efekti
+        shadowColor: '#000', // iOS gölge efekti
+        shadowOffset: { width: 1, height: 1 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
     },
-    kelimeText: {
+    sikText: {
         fontSize: 18,
-        fontWeight: '600',
-        color: '#444'
+        color: '#fff',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    secilenKelimeContainer: {
+        width: 250,
+        height: 70,
+        backgroundColor: "red",
+        marginBottom: 20,
+        alignItems: "center",
+        justifyContent: "center"
     },
 });

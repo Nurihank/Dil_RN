@@ -144,13 +144,13 @@ export default function HomeScreen({ route }) {
 
 
 
-  const renderAccordionHeader = (section) => {
+  const renderAccordionHeader = (content, index, isActive, sections) => {
     // Geçilen sezonlar dizisini kontrol et, eğer yoksa boş bir dizi kullan
     const gecilenSezonlarArray = Array.isArray(gecilenSezonlar) ? gecilenSezonlar : [];
 
     // Bu sezona ait bilgileri al
-    const sezonID = section.SezonID;
-    const sezonOrder = section.Order;
+    const sezonID = content.SezonID;
+    const sezonOrder = content.Order;
 
     // Bu sezonun tamamlanıp tamamlanmadığını kontrol et
     const isCompletedSeason = gecilenSezonlarArray.some(
@@ -169,22 +169,30 @@ export default function HomeScreen({ route }) {
       (gecilenSezonlarArray.length === 0 && sezonOrder === 1);
 
     return (
-      <View style={styles.accordionHeader}>
-        {shouldOpen ? (
-          <View style={styles.headerContainer}>
-            {isCompletedSeason ? (
-              <View>
-                <FontAwesome name="check-circle" size={24} color="#2ecc71" />
-                <Text style={styles.headerText}>{section.Ceviri}</Text>
-              </View>
-            ) : (
-              <Text style={styles.headerText}>{section.Ceviri}</Text>
-            )}
-          </View>
-        ) : (
-          <Text style={styles.lockedText}>Kilitli</Text>
-        )}
-      </View>
+      <TouchableOpacity
+        style={styles.accordionHeader}
+        onPress={() => {
+          if (!shouldOpen) return;
+        }}
+        disabled={shouldOpen} // Kilitli ise tıklanabilirliği devre dışı bırak
+      >
+        <View>
+          {shouldOpen ? (
+            <View style={styles.headerContainer}>
+              {isCompletedSeason ? (
+                <View>
+                  <FontAwesome name="check-circle" size={24} color="#2ecc71" />
+                  <Text style={styles.headerText}>{content.Ceviri}</Text>
+                </View>
+              ) : (
+                <Text style={styles.headerText}>{content.Ceviri}</Text>
+              )}
+            </View>
+          ) : (
+            <Text style={styles.lockedText}>{content.Ceviri}</Text>
+          )}
+        </View>
+      </TouchableOpacity>
     );
   };
 

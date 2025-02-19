@@ -30,9 +30,9 @@ export default function EgzersizScreen() {
     setTercihModal(false)
     EgzersizOynadi()
     if (oyunID == 1) {
-      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru, id: userId })
+      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru, id: userId,egzersizId:oyunID })
     } else if (oyunID == 2) {
-      navigation.navigate("DinlemeEgzersiz", { egzersizTuru: egzersizTuru, id: userId })
+      navigation.navigate("DinlemeEgzersiz", { egzersizTuru: egzersizTuru, id: userId, egzersizId: oyunID })
     } else if (oyunID == 3) {
       /* görsel */
     } else if (oyunID == 4) {

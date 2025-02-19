@@ -46,9 +46,7 @@ export default function App() {
         <Stack.Screen name="premium" component={PremiumScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HataScreen" component={HatalarScreen} options={{ headerShown: false }} />
         <Stack.Screen name="DinlemeEgzersiz" component={DinlemeEgzersizScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Egzersiz" component={Egzersiz} options={{ headerShown: false }} />
         <Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false }} />
-
       </Stack.Navigator>
     </NavigationContainer>
   );
