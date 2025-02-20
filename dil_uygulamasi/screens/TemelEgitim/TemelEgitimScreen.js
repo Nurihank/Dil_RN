@@ -18,12 +18,13 @@ export default function TemelEgitimScreen() {
     const [sozlukKelimeler, setSozlukKelimeleri] = useState()
     const [gosterimDurumu, setGosterimDurumu] = useState({});
     const [ilerlemeYuzdesi, setIlerlemeYuzdesi] = useState(0)
-    
+    const [temelEgitimID, setTemelEgitimID] = useState(null);
+
     const setUserID = async () => {
         const id = await AsyncStorage.getItem("id");
-        console.log(id)
         setUserId(id);
     };
+
     const SozluktenKelimeSilme = async (item) => {
         const response = await api.delete("/kullanici/temelSozluk", {
             params: {
@@ -35,7 +36,6 @@ export default function TemelEgitimScreen() {
     }
     const getUserInfo = async () => {
         const user = await UserModel.currentUser;
-        console.log("sa ="+user)
         setHangiDilID(user[0].DilID);
         setAnaDilID(user[0].SectigiDilID);
     };

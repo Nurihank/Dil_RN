@@ -289,7 +289,7 @@ export default function TestScreen() {
 
             <Modal visible={testSonuModal} animationType="slide" transparent={true}>
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
+                    <View style={styles.modalContent}> 
                         <Text style={styles.modalTitle}>Test Sonucu</Text>
                         <Text style={{ fontSize: 17, color: "gray", fontWeight: "bold" }}>
                             {name} Test sonucunu görmek için

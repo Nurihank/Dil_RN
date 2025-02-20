@@ -4,6 +4,9 @@ import api from '../api/api';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Speech from 'expo-speech';
+import { ProgressBar } from 'react-native-paper';
+import UserModel from '../model/ModelUser';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -12,26 +15,48 @@ export default function EgitimScreen(props) {
     const [currentIndex, setCurrentIndex] = useState(0); // Track the current word index
     const [dil, setDil] = useState(false);
     const [userId, setUserId] = useState(null);
+    const [yuzde, setYuzde] = useState(0)
+    const [meslekID, setMeslekID] = useState();
+    const [HangiDilID, setHangiDilID] = useState();
+    const [AnaDilID, setAnaDilID] = useState();
+
+    const yuzdeHesaplama = () => {
+        const yuzdeHesabi = (currentIndex + 1) / kelimeler.length
+        console.log(((yuzdeHesabi * 100).toFixed(0)))
+        setYuzde((yuzdeHesabi*100).toFixed(0))
+    }
 
     const setUserID = async () => {
         const id = await AsyncStorage.getItem("id");
         setUserId(id);
     };
+
+    const getUserInfo = async () => {
+        const user = await UserModel.currentUser;
+        setMeslekID(user[0].MeslekID);
+        setHangiDilID(user[0].DilID);
+        setAnaDilID(user[0].SectigiDilID)
+    };
+
     const speakWord = (word) => {
         const options = {
-                rate: 0.40,  // Adjust the speed (0.75 is slower than normal, where 1.0 is the default speed)
-                pitch: 1.0,  // Adjust the pitch (1.0 is the default pitch)
+            rate: 0.40,  // Adjust the speed (0.75 is slower than normal, where 1.0 is the default speed)
+            pitch: 1.0,  // Adjust the pitch (1.0 is the default pitch)
             language: 'en',  // You can set the language here (e.g., 'en' for English) 
             onStart: () => console.log("Speech started"),
             onDone: () => console.log("Speech finished"),
-        }       
-                      Speech.speak(word, options)
         }
+        Speech.speak(word, options)
+    }
+
     const KelimeleriGetir = async () => {
         try {
             const response = await api.get("/kullanici/Egitim", {
                 params: {
-                    SeviyeID: props.route.params.id
+                    SeviyeID: props.route.params.id,
+                    MeslekID: meslekID,
+                    AnaDilID: AnaDilID,
+                    HangiDilID: HangiDilID
                 }
             });
             const data = response.data;
@@ -42,7 +67,7 @@ export default function EgitimScreen(props) {
                     [array[i], array[j]] = [array[j], array[i]];
                 }
                 return array;
-            } 
+            }
 
             if (data.length > 0) {
                 const shuffledData = shuffleArray([...data]);
@@ -52,25 +77,55 @@ export default function EgitimScreen(props) {
             console.error(error);
         }
     };
-    const SozlugeEkle = async(AnaKelimeID)=>{
-        const currentDate = new Date();
 
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
-    
-        const formattedDate = `${year}-${month}-${day}`;
-       
-        const response = await api.post("/kullanici/SozlugeKelimeEkleme",{
-            KullaniciID:userId,
-            AnaKelimeID:AnaKelimeID,
-            Date:formattedDate
-        })
-    }
+    const SozlugeEkle = async (AnaKelimeID) => {
+        try {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const day = String(currentDate.getDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+
+            const response = await api.post("/kullanici/SozlugeKelimeEkleme", {
+                KullaniciID: userId,
+                AnaKelimeID: AnaKelimeID,
+                Date: formattedDate
+            });
+
+            console.log(response.data.message)
+            showMessage({
+                message: response.data.message, // API'den gelen mesaj
+                type: "success", // Başarı mesajı (hata olursa "danger" yapabilirsin)
+                duration: 3000, // Mesajın ekranda kalma süresi (ms)
+                icon: "success",
+                style: {
+                    borderRadius: 10, // Köşe yuvarlama
+                    marginTop: 20, // Ekranın üstünden boşluk
+                    marginHorizontal: 10, // Yanlardan boşluk
+                },
+            });
+
+        } catch (error) {
+            console.error("Hata:", error);
+
+            showMessage({
+                message: "Bir hata oluştu! Lütfen tekrar deneyin.",
+                type: "danger",
+                duration: 3000,
+                icon: "danger"
+            });
+        }
+    };
+
     useEffect(() => {
         setUserID()
         KelimeleriGetir();
+        getUserInfo()
     }, []);
+
+    useEffect(() => {
+        yuzdeHesaplama()
+    }, [kelimeler,currentIndex])
 
     const nextWord = () => {
         if (currentIndex < kelimeler.length - 1) {
@@ -83,12 +138,17 @@ export default function EgitimScreen(props) {
             setCurrentIndex(currentIndex - 1);
         }
     };
-    console.log()
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => props.navigation.goBack()}>
                 <AntDesign name="arrowleft" size={24} color="black" />
             </TouchableOpacity>
+            <FlashMessage position="top" />
+            <Text>%{yuzde} TAMAMLADIN</Text>
+            <ProgressBar progress={0} width={230}
+                height={50} />
+
+
 
             {kelimeler.length > 0 && (
                 <View style={styles.wordContainer}>
@@ -96,27 +156,25 @@ export default function EgitimScreen(props) {
                         {dil ? kelimeler[currentIndex].Ceviri : kelimeler[currentIndex].Value}
                     </Text>
                     <TouchableOpacity onPress={() => speakWord(kelimeler[currentIndex].Value)}>
-                        <Image source={require("../assets/microphone.png")} style={{height:40,width:40}}/>
-                </TouchableOpacity>
-                    </View>
-                
-            )}
+                        <Image source={require("../assets/microphone.png")} style={{ height: 40, width: 40 }} />
+                    </TouchableOpacity>
+                </View>
+
+            )} 
 
             <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={previousWord} style={styles.navigationButton} disabled={currentIndex === 0}>
                     <Text style={styles.buttonText}>◀️</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setDil(!dil)} style={styles.languageButton}>
-                    <Text style={styles.buttonText}>
-                        {dil ? 'Öğrenmek İstedigin Dilde Gör' : 'Kendi Dilinde Gör'}
-                    </Text>
+                    <Image source={require("../assets/repeat.png")} style={{ height: 50, width: 50 }} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={nextWord} style={styles.navigationButton} disabled={currentIndex === kelimeler.length - 1}>
                     <Text style={styles.buttonText}>▶️</Text>
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.addButton} onPress={()=>SozlugeEkle(kelimeler[currentIndex].AnaKelimelerID)}>
+            <TouchableOpacity style={styles.addButton} onPress={() => SozlugeEkle(kelimeler[currentIndex].AnaKelimelerID)}>
                 <Text style={styles.addButtonText}>Sözlüğe Ekle</Text>
             </TouchableOpacity>
         </View>

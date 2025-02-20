@@ -256,7 +256,7 @@ const Kesfet = () => {
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Image source={require('../assets/no.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
-                    <TouchableOpacity onPress={() => navigation.navigate("Sozluk")}>
+                  <TouchableOpacity onPress={() => navigation.navigate("Sozluk")}>
                     <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
                   </TouchableOpacity>
                 </View>
@@ -269,7 +269,7 @@ const Kesfet = () => {
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Image source={require('../assets/no.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
-                    <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
+                  <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
                     <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
                   </TouchableOpacity>
                 </View>
@@ -282,7 +282,7 @@ const Kesfet = () => {
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Image source={require('../assets/no.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
-                    <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
+                  <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
                     <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
                   </TouchableOpacity>
                 </View>
@@ -299,10 +299,12 @@ const Kesfet = () => {
             horizontal
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Image source={{ uri: item.Image }} style={styles.image} />
-                <Text style={styles.text}>{item.Ceviri}</Text>
-              </View>
+              <TouchableOpacity onPress={() => navigation.navigate("Temel")}>
+                <View style={styles.card}>
+                  <Image source={{ uri: item.Image }} style={styles.image} />
+                  <Text style={styles.text}>{item.Ceviri}</Text>
+                </View>
+              </TouchableOpacity>
             )}
             showsHorizontalScrollIndicator={false}
           />
@@ -316,9 +318,11 @@ const Kesfet = () => {
             horizontal
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Text style={styles.text}>{item.EgzersizAdi}</Text>
-              </View>
+              <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
+                <View style={styles.card}>
+                  <Text style={styles.text}>{item.EgzersizAdi}</Text>
+                </View>
+              </TouchableOpacity>
             )}
           />
         </View>

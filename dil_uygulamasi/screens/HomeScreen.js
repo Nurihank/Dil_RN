@@ -254,7 +254,7 @@ export default function HomeScreen({ route }) {
     <View style={styles.mainContainer}>
       <View style={styles.container}>
 
-        <ProgressBars />
+        <ProgressBars/>
         <View style={styles.pickerContainer}>
           <View style={{ flexDirection: "row" }}>
             <GunlukGirisComponent />
@@ -274,7 +274,7 @@ export default function HomeScreen({ route }) {
           />
           <TouchableOpacity style={styles.eğitimButton} onPress={() => { navigation.navigate("Egitim", { id: selectedSeviyeID }) }}>
             <FontAwesome name="book" size={24} color="#ffffff" />
-            <Text style={styles.eğitimText}> Eğitim</Text>
+            <Text style={styles.eğitimText}>Seviye Eğitimi</Text>
           </TouchableOpacity>
         </View>
         <Accordion
