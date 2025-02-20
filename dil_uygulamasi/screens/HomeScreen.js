@@ -25,6 +25,8 @@ export default function HomeScreen({ route }) {
   const [HangiDilID, setHangiDilID] = useState();
   const [gecilenBolumler, setGecilenBolumler] = useState([]);
   const [gecilenSezonlar, setGecilenSezonlar] = useState([]);
+  const [gecilenSeviyeler, setGecilenSeviyeler] = useState([])
+  const [acikSeviyeler, setAcikSeviyeler] = useState([])
 
   const setUserID = async () => {
     const id = await AsyncStorage.getItem("id");
@@ -37,12 +39,12 @@ export default function HomeScreen({ route }) {
     setHangiDilID(user[0].DilID);
   };
 
-  const Oyun = (BolumID, SezonID) => {
-    navigation.navigate("OyunEkrani", { BolumID: BolumID, SezonID: SezonID });
+  const Oyun = (BolumID, SezonID, SeviyeID) => {
+    navigation.navigate("OyunEkrani", { BolumID: BolumID, SezonID: SezonID, SeviyeID: SeviyeID });
   };
 
   useFocusEffect(
-    useCallback(() => {  
+    useCallback(() => {
       const fetchData = async () => {
         await setUserID();
         await getUserInfo();
@@ -52,7 +54,7 @@ export default function HomeScreen({ route }) {
             const formattedData = Seviye.data.map(item => ({
               label: item.SeviyeAdi || 'Default Label',
               value: item.SeviyeID || 'defaultValue'
-            })); 
+            }));
             setSeviyeler(formattedData);
           } catch (error) {
             console.log("Seviyeleri getirirken hata oluştu:", error);
@@ -61,7 +63,8 @@ export default function HomeScreen({ route }) {
         await SeviyeGetir();
       };
       fetchData();
-    }, [userId]) 
+
+    }, [userId])
   );
 
   const SezonlariGetir = async () => {
@@ -99,6 +102,36 @@ export default function HomeScreen({ route }) {
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const gecilenSeviyeleriGetir = async () => {
+        const response = await api.get("/kullanici/GecilenSeviyeler", {
+          params: {
+            KullaniciID: userId
+          }
+        })
+        setGecilenSeviyeler(response.data.message)
+      }
+      gecilenSeviyeleriGetir()
+
+    }, [userId])
+  )
+
+  useEffect(() => {
+    const seviye = GozukecekSeviyeler()
+    setAcikSeviyeler(seviye)
+  }, [gecilenSeviyeler])
+
+  const GozukecekSeviyeler = () => {
+    const acikSeviyeSayisi = gecilenSeviyeler.length + 1;
+
+    return Seviyeler
+      .filter((_, index) => index < acikSeviyeSayisi) // Sadece açık olan seviyeleri al
+      .map(seviye => ({
+        label: seviye.label, // RNPickerSelect için 'label' ve 'value' formatına çeviriyoruz
+        value: seviye.value,
+      }));
+  };
 
   useFocusEffect(   //gecilen sezonları getirir
     useCallback(() => {
@@ -109,8 +142,7 @@ export default function HomeScreen({ route }) {
               KullaniciID: userId,
               SeviyeID: selectedSeviyeID
             }
-          }); 
-          console.log(response.data.message) 
+          });
 
           setGecilenSezonlar(response.data.message);
         } catch (error) {
@@ -129,12 +161,11 @@ export default function HomeScreen({ route }) {
     useCallback(() => {
       const GecilenBolumlerGetir = async () => {
         const response = await api.get("/kullanici/GecilenBolumler", {
-          params: { 
+          params: {
             KullaniciID: userId,
             SezonID: sezonID
           }
         })
-        console.log(response.data.message)
         setGecilenBolumler(response.data.message)
       }
       GecilenBolumlerGetir()
@@ -207,7 +238,7 @@ export default function HomeScreen({ route }) {
           );
 
           const nextBolumToOpen = gecilenBolumlerArray.find( //bir sonraki leveli buluyor
-            (completedBolum) => completedBolum.Order == (parseInt(bolum.Order) - 1)  
+            (completedBolum) => completedBolum.Order == (parseInt(bolum.Order) - 1)
           );
 
           const shouldOpen = isCompleted ||  //bölüm açık mı değil diye kontrol ediyor
@@ -219,7 +250,7 @@ export default function HomeScreen({ route }) {
               {shouldOpen ? (
                 <>
                   <Text style={styles.bolumText}>{bolum.Ceviri}</Text>
-                  <TouchableOpacity style={styles.iconContainer} onPress={() => Oyun(bolum.BolumID, sezonID)}>
+                  <TouchableOpacity style={styles.iconContainer} onPress={() => Oyun(bolum.BolumID, sezonID, selectedSeviyeID)}>
                     <FontAwesome name="gamepad" size={24} color="#3498db" />
                   </TouchableOpacity>
                 </>
@@ -237,7 +268,8 @@ export default function HomeScreen({ route }) {
     );
   };
 
-  const updateSections = (activeSections) => { 
+  const updateSections = (activeSections) => {
+    console.log(activeSections)
     setActiveSections(activeSections);
     if (activeSections.length > 0) {
       const selectedSezonID = sezonlar[activeSections[0]].SezonID;
@@ -245,6 +277,7 @@ export default function HomeScreen({ route }) {
       BolumleriGetir(selectedSezonID);
     }
   };
+
   const placeholder = {
     label: 'Seviye Seç',
     value: null,
@@ -254,11 +287,11 @@ export default function HomeScreen({ route }) {
     <View style={styles.mainContainer}>
       <View style={styles.container}>
 
-        <ProgressBars/>
+        <ProgressBars />
         <View style={styles.pickerContainer}>
           <View style={{ flexDirection: "row" }}>
             <GunlukGirisComponent />
-            <TouchableOpacity onPress={()=>navigation.navigate("premium")}>
+            <TouchableOpacity onPress={() => navigation.navigate("premium")}>
               <Image source={require("../assets/premium.png")} style={{ height: 50, width: 50 }} />
             </TouchableOpacity>
           </View>
@@ -266,8 +299,8 @@ export default function HomeScreen({ route }) {
 
           <Text style={styles.pickerLabel}>Seviye Seç:</Text>
           <RNPickerSelect
-            placeholder={placeholder}
-            items={Seviyeler}
+            placeholder={{ label: "Bir seviye seçin", value: null }}
+            items={acikSeviyeler} // Sadece açık seviyeler
             onValueChange={(value) => setSelectedSeviyeID(value)}
             value={selectedSeviyeID}
             style={pickerSelectStyles}

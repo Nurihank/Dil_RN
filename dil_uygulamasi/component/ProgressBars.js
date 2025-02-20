@@ -2,7 +2,7 @@ import { Image, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import React from 'react'
 import { ProgressBar } from 'react-native-paper';
 
-export default function ProgressBars(route) {  /* kullanıcnın mesleki eğitim için bir component */
+export default function ProgressBars() {  /* kullanıcnın mesleki eğitim için bir component */
 
   return (
     <View style={styles.container}>

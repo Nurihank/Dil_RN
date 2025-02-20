@@ -24,14 +24,12 @@ export default function GunlukGirisComponent() {
 
   useEffect(() => {
     if (userId) {
-      console.log("çalıştı")
       GunlukGirisiGetir();
     }
   }, [userId]);
 
   const GunlukGirisiGetir = async () => {
     try {
-      console.log(userId);
       const response = await api.get("/kullanici/GunlukGiris", {
         params: { 
           KullaniciID: userId
