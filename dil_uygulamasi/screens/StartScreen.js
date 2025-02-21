@@ -8,6 +8,7 @@ export default function StartScreen({ navigation }) {
     useEffect(()=>{
         AsyncStorage.clear()
     },[])
+    
     return (
         <View style={styles.container}>
 
@@ -16,7 +17,7 @@ export default function StartScreen({ navigation }) {
                 onPress={() => {
                     setPressed(true);
                     setTimeout(() => setPressed(false), 200); // Renk animasyonu için
-                    navigation.navigate("TestScreen"); // Test ekranına yönlendirme
+                    navigation.navigate("TestScreen",{girisYapmisMi:false}); // Test ekranına yönlendirme
                 }}
             >
                 <Text style={styles.title}>Mesleki Dil Yeterlilik Testi</Text>

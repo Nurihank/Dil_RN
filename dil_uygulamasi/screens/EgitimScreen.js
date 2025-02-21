@@ -21,10 +21,14 @@ export default function EgitimScreen(props) {
     const [AnaDilID, setAnaDilID] = useState();
 
     const yuzdeHesaplama = () => {
-        const yuzdeHesabi = (currentIndex + 1) / kelimeler.length
-        console.log(((yuzdeHesabi * 100).toFixed(0)))
-        setYuzde((yuzdeHesabi*100).toFixed(0))
-    }
+        if (kelimeler.length === 0) {
+            console.log("Kelime listesi boş!");
+            return;
+        }
+        const yuzdeHesabi = (currentIndex + 1) / kelimeler.length;
+        setYuzde((yuzdeHesabi * 100).toFixed(0));
+    };
+    
 
     const setUserID = async () => {
         const id = await AsyncStorage.getItem("id");
@@ -91,7 +95,7 @@ export default function EgitimScreen(props) {
                 AnaKelimeID: AnaKelimeID,
                 Date: formattedDate
             });
-
+ 
             console.log(response.data.message)
             showMessage({
                 message: response.data.message, // API'den gelen mesaj
@@ -106,7 +110,7 @@ export default function EgitimScreen(props) {
             });
 
         } catch (error) {
-            console.error("Hata:", error);
+            console.error("Hata:", error); 
 
             showMessage({
                 message: "Bir hata oluştu! Lütfen tekrar deneyin.",
@@ -117,15 +121,21 @@ export default function EgitimScreen(props) {
         }
     };
 
+    useEffect(()=>{
+        KelimeleriGetir();
+    },[userId])
+
     useEffect(() => {
         setUserID()
-        KelimeleriGetir();
         getUserInfo()
     }, []);
 
     useEffect(() => {
-        yuzdeHesaplama()
-    }, [kelimeler,currentIndex])
+        if (kelimeler.length > 0) {
+            yuzdeHesaplama();
+        }
+    }, [kelimeler,currentIndex]);
+    
 
     const nextWord = () => {
         if (currentIndex < kelimeler.length - 1) {
@@ -145,7 +155,7 @@ export default function EgitimScreen(props) {
             </TouchableOpacity>
             <FlashMessage position="top" />
             <Text>%{yuzde} TAMAMLADIN</Text>
-            <ProgressBar progress={0} width={230}
+            <ProgressBar progress={yuzde/100} width={230}
                 height={50} />
 
 

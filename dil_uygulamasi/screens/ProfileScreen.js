@@ -1,4 +1,4 @@
-import { ScrollView, Image, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { ScrollView, Image, StyleSheet, Text, View, ActivityIndicator, FlatList } from 'react-native';
 import React, { useEffect, useState, useCallback } from 'react';
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -107,45 +107,54 @@ export default function ProfileScreen() {
         }, [userId])
     );
 
-    return (
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          {loading ? (
-            <ActivityIndicator style={styles.loadingContainer} size="large" color="#3A8DFF" />
-          ) : userId && user ? (
-            <>
-              <View style={styles.profileImageContainer}>
-                <Image
-                  source={require("../assets/profile-default.jpg")}
-                  style={styles.imageStyle}
-                />
-              </View>
-              <Text style={styles.username}>{user.kullaniciAdi}</Text>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoTitle}>Meslek</Text>
-                <Text style={styles.infoText}>{user.meslek}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoTitle}>Ana Dili</Text>
-                <Text style={styles.infoText}>{user.dil}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoTitle}>Öğrendiğin Dil</Text>
-                <Text style={styles.infoText}>{user.OgrenilecekDil} Öğreniyor</Text>
-              </View>
-              <ProgressBars />
-              <TestSonucu KullaniciID ={userId}/>
-                
-              <Calendar
-                onDayPress={handleDayPress}
-                markedDates={markedDates}
-                style={styles.calendar}
-              />
-            </>
-          ) : (
-            <Text style={styles.errorText}>Kullanıcı bilgileri bulunamadı veya hata oluştu.</Text>
-          )}
-        </ScrollView>
+    const renderItem = () => {
+      if (!userId || !user) {
+        return <Text style={styles.errorText}>Kullanıcı bilgileri bulunamadı veya hata oluştu.</Text>;
+      }
+    
+      return (
+        <>
+          <View style={styles.profileImageContainer}>
+            <Image source={require("../assets/profile-default.jpg")} style={styles.imageStyle} />
+          </View>
+          <Text style={styles.username}>{user?.kullaniciAdi || "Bilinmeyen Kullanıcı"}</Text>
+    
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoTitle}>Meslek</Text>
+            <Text style={styles.infoText}>{user?.meslek || "Bilinmiyor"}</Text>
+          </View>
+    
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoTitle}>Ana Dili</Text>
+            <Text style={styles.infoText}>{user?.dil || "Bilinmiyor"}</Text>
+          </View>
+    
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoTitle}>Öğrendiğin Dil</Text>
+            <Text style={styles.infoText}>{user?.OgrenilecekDil ? `${user.OgrenilecekDil} Öğreniyor` : "Bilinmiyor"}</Text>
+          </View>
+    
+          <ProgressBars />
+    
+          <TestSonucu KullaniciID={userId} />
+    
+          <Calendar onDayPress={handleDayPress} markedDates={markedDates} style={styles.calendar} />
+        </>
       );
+    };
+
+   return (
+  <FlatList
+    data={userId && user ? [{ key: "profileScreen" }] : []} // Eğer user null ise listeyi boş gönder
+    keyExtractor={(item) => item.key}
+    renderItem={renderItem}
+    ListEmptyComponent={<Text style={styles.errorText}>Kullanıcı bilgileri bulunamadı veya hata oluştu.</Text>}
+    ListHeaderComponent={loading ? (
+      <ActivityIndicator style={styles.loadingContainer} size="large" color="#3A8DFF" />
+    ) : null}
+    contentContainerStyle={styles.container}
+  />
+);
     }
     
     const styles = StyleSheet.create({

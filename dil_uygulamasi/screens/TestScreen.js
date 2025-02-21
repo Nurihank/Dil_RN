@@ -13,8 +13,9 @@ import RNPickerSelect from 'react-native-picker-select';
 import api from "../api/api";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import UserModel from "../model/ModelUser";
 
-export default function TestScreen() {
+export default function TestScreen(route) {
     const [modalVisible, setModalVisible] = useState(true);
     const [name, setName] = useState("");
     const [meslekler, setMeslekler] = useState([]);
@@ -32,7 +33,27 @@ export default function TestScreen() {
     const [selectedOption, setSelectedOption] = useState(null);
     const [testSonuModal, setTestSonuModal] = useState(false)
     const [gelenID, setGelenID] = useState()
+    const [userID, setUserID] = useState()
+
     const navigation = useNavigation()
+
+    useEffect(()=>{ /* giriş yaptığnı kotnrol edşiyor ona göre kullanıcı verilerini alacak */
+        if(route.route.params.girisYapmisMi){
+            console.log(route.route.params.girisYapmisMi)
+            const KullaniciVerileri = async ()=>{
+                const user = await UserModel.currentUser;
+                setUserID(user[0].id)
+                setDillerL()
+                setDilID()
+                setMeslekID()
+                console.log(user)
+
+            }
+            KullaniciVerileri()
+        }else{
+            console.log(route.route.params.girisYapmisMi)
+        }
+    },[])
 
     const Sorular = () => {
         if (soruIndex < testSorulari.length || soruIndex < 12) {

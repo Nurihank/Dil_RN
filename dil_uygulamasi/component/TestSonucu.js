@@ -1,17 +1,21 @@
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { useNavigation } from '@react-navigation/native';
 
 export default function TestSonucu({ KullaniciID }) {
     const [testData, setTestData] = useState([]);
     const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+    const navigation = useNavigation()
 
     const TestSonucuGetir = async () => {
         try {
             const response = await api.get("/kullanici/TestSonucu", {
                 params: { KullaniciID }
             });
+            console.log(response.data.message)
             setTestData(response.data || []); // Eğer data undefined ise boş dizi atar
         } catch (error) {
             console.error("Test sonuçlarını alırken hata oluştu:", error);
@@ -62,19 +66,25 @@ export default function TestSonucu({ KullaniciID }) {
     };
 
     return (
-        <View style={{ flex: 1 }}>
-            <FlatList
-                data={levels}
-                renderItem={renderProgressBar} 
-                keyExtractor={(item) => item.toString()}  // Burada her item'ın unique bir key'e sahip olmasını sağla
-                numColumns={3}
-                contentContainerStyle={styles.container}
-                nestedScrollEnabled={false} // İç içe kaydırmayı devre dışı bırak
-            />
-        </View>
-    );
-
-
+        testData.length > 0 ? ( // Boş olup olmadığını kontrol et
+            <View style={{ flex: 1 }}>
+                <FlatList
+                    data={levels}
+                    renderItem={renderProgressBar}
+                    keyExtractor={(item) => item.toString()} 
+                    numColumns={3}
+                    contentContainerStyle={styles.container}
+                    nestedScrollEnabled={true} // İç içe kaydırmayı etkinleştir
+                /> 
+            </View>
+        ) : (
+            <View>
+                <TouchableOpacity onPress={()=>navigation.navigate("TestScreen",{girisYapmisMi:true})}>
+                    <Text>Mesleki Dil Seviyeni Görmek İster Misin?</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    );    
 }
 
 const styles = StyleSheet.create({
