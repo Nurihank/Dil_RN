@@ -206,7 +206,7 @@ const Kesfet = () => {
 
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 70 }}>
       <TouchableOpacity onPress={() => navigation.navigate("premium")}>
         <View style={styles.premiumBanner}>
           <Text style={styles.bannerText}>🌟 Premium Üye Ol! Daha Fazla Özellik Keşfet 🌟</Text>
@@ -214,10 +214,8 @@ const Kesfet = () => {
       </TouchableOpacity>
       <View style={styles.content}>
         <View style={styles.animationContent}>
-          <LottieView
-            source={require('../assets/animasyon/first.json')}
-            style={styles.animation}
-          />
+        <Image source={require('../assets/dance.png')} style={{ width: 200, height: 200 }} />
+
           <Text style={styles.first}>Bugüne Hazır Mısın? </Text>
         </View>
         <View style={styles.area}>
@@ -240,7 +238,7 @@ const Kesfet = () => {
             </View>
             <View style={styles.GorevAlani}>
               <Text style={styles.text}>Temel Eğitim {temeliEgitim}/3 </Text>
-              {temeliEgitim == 3 ?
+              {temeliEgitim >= 3 ?
                 <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
                 :
                 <TouchableOpacity onPress={() => navigation.navigate("Temel")}>
@@ -255,7 +253,6 @@ const Kesfet = () => {
                 <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Image source={require('../assets/no.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
                   <TouchableOpacity onPress={() => navigation.navigate("Sozluk")}>
                     <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
                   </TouchableOpacity>
@@ -268,7 +265,6 @@ const Kesfet = () => {
                 <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Image source={require('../assets/no.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
                   <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
                     <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
                   </TouchableOpacity>
@@ -281,7 +277,6 @@ const Kesfet = () => {
                 <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Image source={require('../assets/no.png')} style={{ width: 24, height: 24, marginRight: 8 }} />
                   <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
                     <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
                   </TouchableOpacity>
@@ -309,7 +304,7 @@ const Kesfet = () => {
             showsHorizontalScrollIndicator={false}
           />
         </View>
-        <View style={styles.area}>
+        <View style={[styles.area]}>
           <View style={{ alignItems: "center" }}>
             <Text style={styles.headerText}>Egzersiz Yapmak İster Misin ?</Text>
           </View>
@@ -319,17 +314,14 @@ const Kesfet = () => {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
-                <View style={styles.card}>
+                <View style={[styles.card]}>
                   <Text style={styles.text}>{item.EgzersizAdi}</Text>
                 </View>
               </TouchableOpacity>
             )}
           />
         </View>
-
       </View>
-
-
 
 
       <Modal
@@ -360,7 +352,8 @@ const Kesfet = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom: 80
+    backgroundColor:"#8A2BE2",
+    marginTop:30
   },
   premiumBanner: {
     width: "100%",
@@ -424,52 +417,57 @@ const styles = StyleSheet.create({
     height: 200,
   },
   first: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 5,
-    color: 'cyan', // Yazı rengini belirle
+    color: '#FFFFFF', // Yazı rengini belirle
     textAlign: 'center',
   },
   area: {
-    borderTopWidth: 2,
-    borderBottomColor: 'red'
+    backgroundColor: '#7D26CD', // Koyu mor, ana arka plan
+    padding: 15,
+    borderRadius: 15,
+    borderTopWidth: 3,
+    borderTopColor: '#BBA0D0', // Lavanta grisi çizgi
   },
   headerText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginLeft: 10,
-    marginTop: 8,
+    color: '#F6E6FF', // Açık mor, zarif bir başlık
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
   },
   GorevAlani: {
     flexDirection: "row",
     margin: 5,
     marginLeft: 10,
+    justifyContent:"space-between"
+  },
+  card: {
+    backgroundColor: '#9B30FF', // Canlı Mor, Kartların Arka Planı
+    width: 120, // **Sabit genişlik (Kare)**
+    height: 120, // **Sabit yükseklik (Kare)**
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  image: {
+    width: 60, // **İçindeki resmin sabit boyutu**
+    height: 60, 
+    borderRadius: 8,
+    marginBottom: 5,
   },
   text: {
+    color: '#FFFFFF', // Beyaz, net yazı
     fontSize: 20,
-    color: "gray",
-    fontWeight: "bold",
-
-  }, card: {
-    width: 120,
-    height: 120,
-    backgroundColor: "#f8f8f8",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 15,
-    padding: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-  }, image: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-  },
+    fontWeight: '600',
+    textAlign: 'center',
+  }
 });
 
 export default Kesfet;

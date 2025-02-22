@@ -325,7 +325,7 @@ export default function HomeScreen({ route }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#8A2BE2',
     padding: 16,
     justifyContent: 'center',
   },

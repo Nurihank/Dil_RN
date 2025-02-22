@@ -9,6 +9,7 @@ import SozlukEkrani from '../screens/SozlukEkrani.js';
 import TemelEgitimScreen from '../screens/TemelEgitim/TemelEgitimScreen.js';
 import EgzersizScreen from '../screens/Egzersiz/EgzersizScreen.js';
 import Kesfet from '../screens/Kesfet.js';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,13 +39,13 @@ export default function BottomNavigator() {
                             {focused ? (
                                 <Image source={require("../assets/user.png")} style={{ width: 35, height: 35 }} />
                             ) : (
-                                <Image source={require("../assets/users.png")} style={{ width: 35, height: 35 }} />
+                                <Image source={require("../assets/userC.png")} style={{ width: 35, height: 35 }} />
                             )}
                         </View>
-                    );
+                    ); 
                 } else if (route.name === "Sozluk") {
                     return (
-                        <View style={{ alignItems: 'center' }}>
+                        <View style={{ alignItems: 'center' }}> 
                             {focused ? (
                                 <Image source={require("../assets/dictionary.png")} style={{ width: 35, height: 35 }} />
                             ) : (
@@ -79,7 +80,7 @@ export default function BottomNavigator() {
                             {focused ? (
                                 <Image source={require("../assets/compass.png")} style={{ width: 35, height: 35 }} />
                             ) : (
-                                    <Image source={require("../assets/compass.png")} style={{ width: 30, height: 30 }} />
+                                    <Image source={require("../assets/compassC.png")} style={{ width: 30, height: 30 }} />
                             )}
                         </View>
                     );
@@ -90,33 +91,54 @@ export default function BottomNavigator() {
             tabBarInactiveTintColor: 'gray',
             tabBarLabelStyle: { ...styles.tabBarLabel },
         })}>
+
         <Tab.Screen name="Kesfet" component={Kesfet}  options={{
-            gestureEnabled: false, // Soldan kaydırmayı engeller
-              gestureDirection: 'horizontal'
+            headerShown: false, // Üst başlığı gizler
           }}/>
-            <Tab.Screen name="Ana Sayfa" component={HomeScreen} />
-            <Tab.Screen name="Profil" component={ProfileScreen} />
-            <Tab.Screen name="Sozluk" component={SozlukEkrani} />
-            <Tab.Screen name="Egzersiz" component={EgzersizScreen} />
-            <Tab.Screen name="Temel" component={TemelEgitimScreen} />
+            <Tab.Screen name="Ana Sayfa" component={HomeScreen}  options={{
+                headerShown: false, // Üst başlığı gizler
+              }}/>
+            <Tab.Screen name="Profil" component={ProfileScreen} options={{
+                headerShown: false, // Üst başlığı gizler
+              }} />
+            <Tab.Screen name="Sozluk" component={SozlukEkrani} options={{
+                headerShown: false, // Üst başlığı gizler
+              }} />
+            <Tab.Screen name="Egzersiz" component={EgzersizScreen} options={{
+                headerShown: false, // Üst başlığı gizler
+              }} />
+            <Tab.Screen name="Temel" component={TemelEgitimScreen} options={{
+                headerShown: false, // Üst başlığı gizler
+              }} />
 
         </Tab.Navigator>
+
     );
 }
 
 const styles = StyleSheet.create({
     tabBar: {
         position: 'absolute',
-        height: 60,
+        height: 65, // Hafif büyük modern görünüm
         borderTopWidth: 0,
         elevation: 0,
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        backgroundColor: 'rgba(55, 0, 179, 0.75)', // Daha şeffaf mor
         borderRadius: 20,
         marginHorizontal: 10,
         marginBottom: 7,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15, // Daha hafif gölge
+        shadowRadius: 3,
     },
     tabBarLabel: {
         fontSize: 12,
         marginBottom: 5,
+        color: '#F6E6FF', // Açık mor, uyumlu yazı rengi
     },
+    tabIcon: {
+        color: '#FFFFFF', // Beyaz ikonlar, net görünüm
+    }
 });
+
+

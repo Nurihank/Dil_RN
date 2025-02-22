@@ -61,12 +61,11 @@ export default function GunlukGirisComponent() {
 
   return (
     <View style={styles.container}>
-    <Text style={styles.title}>Gün Serisi</Text>
-      <View style={styles.iconContainer}>
+    <View style={styles.iconContainer}>
         <Image style={styles.icon} source={require("../assets/fire.png")} />
         <Text style={styles.count}>{gunSerisi}</Text> 
       </View>
-      
+    <Text style={styles.title}>Gün</Text>
     </View>
   );
 }
