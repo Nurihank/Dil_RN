@@ -287,7 +287,7 @@ export default function HomeScreen({ route }) {
     <View style={styles.mainContainer}>
       <View style={styles.container}>
 
-        <ProgressBars />
+        <ProgressBars KullaniciID={userId} SeviyeID={selectedSeviyeID} />
         <View style={styles.pickerContainer}>
           <View style={{ flexDirection: "row" }}>
             <GunlukGirisComponent />

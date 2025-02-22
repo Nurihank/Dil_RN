@@ -133,9 +133,6 @@ export default function ProfileScreen() {
             <Text style={styles.infoTitle}>Öğrendiğin Dil</Text>
             <Text style={styles.infoText}>{user?.OgrenilecekDil ? `${user.OgrenilecekDil} Öğreniyor` : "Bilinmiyor"}</Text>
           </View>
-    
-          <ProgressBars />
-    
           <TestSonucu KullaniciID={userId} />
     
           <Calendar onDayPress={handleDayPress} markedDates={markedDates} style={styles.calendar} />

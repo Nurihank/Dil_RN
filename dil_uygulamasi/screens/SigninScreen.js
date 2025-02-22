@@ -13,9 +13,9 @@ export default function SigninScreen() {
     const navigation = useNavigation();
 
     const TestIDKaydet = async (testId, userId) => {
-        await AsyncStorage.removeItem("testID"); //TESTİD'Yİ GÖNDERDİK SİLEBİLİRİZ
         console.log("test id = " + testId)
         if (testId) {
+            await AsyncStorage.removeItem("testID"); //TESTİD'Yİ GÖNDERDİK SİLEBİLİRİZ
             const response = await api.post("/kullanici/TestIDKaydet", {
                 TestID: testId,
                 KullaniciID: userId

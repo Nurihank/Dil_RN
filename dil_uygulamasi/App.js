@@ -36,7 +36,6 @@ export default function App() {
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="SecimEkrani" component={SeçimEkrani} options={{ headerShown: false }} />
-        <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Bottom" component={BottomNavigator} options={{ headerShown: false }} />
         <Stack.Screen name="Sozluk" component={SozlukEkrani} options={{ headerShown: false }} />
         <Stack.Screen name="OyunEkrani" component={OyunEkrani2} options={{ headerShown: false }} />

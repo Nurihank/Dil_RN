@@ -228,7 +228,7 @@ const Kesfet = () => {
           <View>
             <View style={styles.GorevAlani}>
               <Text style={styles.text}>Mesleki Eğitim {meslekiEgitim}/3 </Text>
-              {meslekiEgitim == 3 ?
+              {meslekiEgitim >= 3 ?
                 <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
                 :
                 <TouchableOpacity onPress={() => navigation.navigate("Ana Sayfa")}>

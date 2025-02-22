@@ -43,11 +43,10 @@ export default function TestScreen(route) {
             const KullaniciVerileri = async ()=>{
                 const user = await UserModel.currentUser;
                 setUserID(user[0].id)
-                setDillerL()
-                setDilID()
-                setMeslekID()
-                console.log(user)
-
+                setDilIDL(user[0].DilID)
+                setDilID(user[0].SectigiDilID)
+                setMeslekID(user[0].MeslekID)
+                setName(user[0].kullaniciAdi)
             }
             KullaniciVerileri()
         }else{
@@ -95,7 +94,6 @@ export default function TestScreen(route) {
 
         const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-        setTestSonuModal(true)
         const responseID = await api.post("/kullanici/test", {
             Name: name,
             Date: formattedDate
@@ -104,6 +102,12 @@ export default function TestScreen(route) {
         const testID = JSON.stringify(responseID.data.id)
         AsyncStorage.setItem("testID", testID)
         console.log("TEST ID =" + testID)
+        if(route.route.params.girisYapmisMi){
+            navigation.navigate("Profil")
+        }else{
+            setTestSonuModal(true)
+        }
+       
     }
 
 
@@ -149,6 +153,19 @@ export default function TestScreen(route) {
 
         if (gelenID) {
             Kaydet();
+            if(route.route.params.girisYapmisMi){
+                const TesIDKaydet = async()=>{
+                    console.log("burday")
+                    const response = await api.post("/kullanici/TestIDKaydet", {
+                        TestID: gelenID,
+                        KullaniciID: userID
+                    })
+                    console.log(response.data.message)
+                }
+                TesIDKaydet()
+            }else{
+
+            }
         }
     }, [gelenID]);
 
@@ -266,13 +283,15 @@ export default function TestScreen(route) {
 
                         {/* İsim Girişi */}
                         <TextInput
-                            style={styles.input}
-                            placeholder="İsminizi giriniz"
-                            value={name}
-                            onChangeText={setName}
+                        style={styles.input}
+                        placeholder="İsminizi giriniz"
+                        value={name}
+                        onChangeText={setName}
+                        editable={!route.route.params.girisYapmisMi} // Eğer giriş yapılmışsa devre dışı bırak
+                        textAlignVertical="center" // `verticalAlign` yerine `textAlignVertical`
                         />
 
-                        {/* Meslek Seçimi */}
+                         {/* Meslek Seçimi */}
                         <Text style={styles.label}>Mesleğinizi seçin:</Text>
                         <RNPickerSelect
                             placeholder={placeholder}
@@ -280,6 +299,7 @@ export default function TestScreen(route) {
                             onValueChange={(value) => setMeslekID(value)}
                             value={meslekID}
                             style={pickerSelectStyles}
+                            disabled={route.route.params.girisYapmisMi}
                         />
 
                         <Text style={styles.label}>Ana Dilinizi seçin:</Text>
@@ -289,6 +309,7 @@ export default function TestScreen(route) {
                             onValueChange={(value) => setDilIDL(value)}
                             value={dilIDL}
                             style={pickerSelectStyles}
+                            disabled={route.route.params.girisYapmisMi}
                         />
 
                         <Text style={styles.label}>Öğrenmek İstediğiniz Dili seçin:</Text>
@@ -298,7 +319,9 @@ export default function TestScreen(route) {
                             onValueChange={(value) => setDilID(value)}
                             value={dilID}
                             style={pickerSelectStyles}
+                            disabled={route.route.params.girisYapmisMi}
                         />
+
 
                         {/* Buton */}
                         <TouchableOpacity style={styles.button} onPress={handleModalClose}>
@@ -308,7 +331,8 @@ export default function TestScreen(route) {
                 </View>
             </Modal>
 
-            <Modal visible={testSonuModal} animationType="slide" transparent={true}>
+            {/**/}
+            <Modal visible={testSonuModal} animationType="slide" transparent={true}> 
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}> 
                         <Text style={styles.modalTitle}>Test Sonucu</Text>
