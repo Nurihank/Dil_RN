@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, Modal, TouchableOpacity, StyleSheet, Image, FlatList, ScrollView } from "react-native";
+import { View, Text, Modal, TouchableOpacity, StyleSheet, Image, FlatList, ScrollView, ImageBackground } from "react-native";
 import LottieView from 'lottie-react-native';
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import api from "../api/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserModel from "../model/ModelUser";
-import { asCalendarConsumer } from "react-native-calendars";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Kesfet = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -214,11 +214,11 @@ const Kesfet = () => {
       </TouchableOpacity>
       <View style={styles.content}>
         <View style={styles.animationContent}>
-        <Image source={require('../assets/dance.png')} style={{ width: 200, height: 200 }} />
+          <Image source={require('../assets/meditation.png')} style={{ width: 200, height: 200 }} />
 
           <Text style={styles.first}>Bugüne Hazır Mısın? </Text>
         </View>
-        <View style={styles.area}>
+        <View style={[styles.area]}>
           <View style={{ alignItems: "center" }}>
             <Text style={styles.headerText}>Günlük Yapılması Gerekenler</Text>
 
@@ -230,7 +230,7 @@ const Kesfet = () => {
                 <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
                 :
                 <TouchableOpacity onPress={() => navigation.navigate("Ana Sayfa")}>
-                  <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                  <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
                 </TouchableOpacity>
 
               }
@@ -242,7 +242,7 @@ const Kesfet = () => {
                 <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
                 :
                 <TouchableOpacity onPress={() => navigation.navigate("Temel")}>
-                  <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                  <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
                 </TouchableOpacity>
 
               }
@@ -254,7 +254,7 @@ const Kesfet = () => {
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <TouchableOpacity onPress={() => navigation.navigate("Sozluk")}>
-                    <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                      <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
                   </TouchableOpacity>
                 </View>
               )}
@@ -266,7 +266,7 @@ const Kesfet = () => {
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
-                    <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                      <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
                   </TouchableOpacity>
                 </View>
               )}
@@ -278,7 +278,7 @@ const Kesfet = () => {
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
-                    <Image source={require('../assets/go.png')} style={{ width: 24, height: 24 }} />
+                      <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
                   </TouchableOpacity>
                 </View>
               )}
@@ -352,12 +352,12 @@ const Kesfet = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:"#8A2BE2",
+    backgroundColor:"#E2DAD6",
     marginTop:30
   },
   premiumBanner: {
     width: "100%",
-    backgroundColor: "#FFD700",
+    backgroundColor: "#7FA1C3",
     padding: 10,
     alignItems: "center",
     position: "absolute",
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   bannerText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    color: "white",
   },
   overlay: {
     flex: 1,
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   title: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
   },
   message: {
@@ -419,18 +419,18 @@ const styles = StyleSheet.create({
   first: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFFFFF', // Yazı rengini belirle
+    color: '#1F324A', // Yazı rengini belirle
     textAlign: 'center',
   },
   area: {
-    backgroundColor: '#7D26CD', // Koyu mor, ana arka plan
     padding: 15,
     borderRadius: 15,
     borderTopWidth: 3,
-    borderTopColor: '#BBA0D0', // Lavanta grisi çizgi
+    borderTopColor: '#2E3F5F', // Lavanta grisi çizgi,
+    
   },
   headerText: {
-    color: '#F6E6FF', // Açık mor, zarif bir başlık
+    color: '#7FA1C3', // Açık mor, zarif bir başlık
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -440,10 +440,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     margin: 5,
     marginLeft: 10,
-    justifyContent:"space-between"
+    justifyContent:"space-between",
+    
   },
   card: {
-    backgroundColor: '#9B30FF', // Canlı Mor, Kartların Arka Planı
+    backgroundColor: '#EDE5E5', // Canlı Mor, Kartların Arka Planı
     width: 120, // **Sabit genişlik (Kare)**
     height: 120, // **Sabit yükseklik (Kare)**
     borderRadius: 10,
@@ -463,7 +464,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   text: {
-    color: '#FFFFFF', // Beyaz, net yazı
+    color: '#2F4960', // Beyaz, net yazı
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',

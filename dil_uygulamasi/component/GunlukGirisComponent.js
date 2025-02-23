@@ -72,37 +72,36 @@ export default function GunlukGirisComponent() {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "rgba(255, 255, 255, 0.1)", // Şeffaf mor
     borderRadius: 15,
-    elevation: 10,
-    margin: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    width: 120,
+    height: 120,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   iconContainer: {
-    position: 'relative',
-    marginRight: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 5,
   },
   icon: {
-    height: 50,
-    width: 50,
-    marginBottom: 10,
+    width: 30,
+    height: 30,
+    marginRight: 5,
+    tintColor: "#FFA500", // Turuncu ateş efekti
   },
   count: {
-    position: 'absolute',
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: 'red',
-    top: 5,
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#FFF",
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#333',
-    marginTop: 5,
+    fontSize: 14,
+    color: "#F6E6FF",
   },
 });
+

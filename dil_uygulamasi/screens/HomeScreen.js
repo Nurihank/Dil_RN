@@ -287,17 +287,28 @@ export default function HomeScreen({ route }) {
     <View style={styles.mainContainer}>
       <View style={styles.container}>
 
-        <ProgressBars KullaniciID={userId} SeviyeID={selectedSeviyeID} />
-        <View style={styles.pickerContainer}>
-          <View style={{ flexDirection: "row" }}>
+        <View style={styles.topContainer}>
+          <View style={styles.leftContainer}>
             <GunlukGirisComponent />
-            <TouchableOpacity onPress={() => navigation.navigate("premium")}>
-              <Image source={require("../assets/premium.png")} style={{ height: 50, width: 50 }} />
-            </TouchableOpacity>
           </View>
 
+          <TouchableOpacity onPress={() => navigation.navigate("premium")} style={styles.premiumButton}>
+            <Image source={require("../assets/premium.png")} style={styles.premiumIcon} />
+          </TouchableOpacity>
+        </View>
 
-          <Text style={styles.pickerLabel}>Seviye Seç:</Text>
+
+
+
+        <View style={styles.pickerContainer}>
+          <View style={styles.separator} />
+          <ProgressBars KullaniciID={userId} SeviyeID={selectedSeviyeID} />
+          <View style={styles.separator} />
+
+          <Text style={[styles.pickerLabel]}>
+            Seviye Seç:
+          </Text>
+
           <RNPickerSelect
             placeholder={{ label: "Bir seviye seçin", value: null }}
             items={acikSeviyeler} // Sadece açık seviyeler
@@ -305,14 +316,21 @@ export default function HomeScreen({ route }) {
             value={selectedSeviyeID}
             style={pickerSelectStyles}
           />
-          <TouchableOpacity style={styles.eğitimButton} onPress={() => { navigation.navigate("Egitim", { id: selectedSeviyeID }) }}>
-            <FontAwesome name="book" size={24} color="#ffffff" />
-            <Text style={styles.eğitimText}>Seviye Eğitimi</Text>
-          </TouchableOpacity>
+          <View style={styles.egitimContainer}>
+            <TouchableOpacity
+              style={styles.eğitimButton}
+              onPress={() => { navigation.navigate("Egitim", { id: selectedSeviyeID }) }}
+            >
+              <FontAwesome name="book" size={24} color="#fff" style={styles.eğitimIcon} />
+              <Text style={styles.eğitimText}>Seviye Eğitimi</Text>
+            </TouchableOpacity>
+
+          </View>
+         
         </View>
         <Accordion
           sections={sezonlar}
-          activeSections={activeSections}
+          activeSections={activeSections} 
           renderHeader={renderAccordionHeader}
           renderContent={renderAccordionContent}
           onChange={updateSections}
@@ -326,8 +344,8 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: '#8A2BE2',
-    padding: 16,
     justifyContent: 'center',
+    marginTop: 30
   },
   container: {
     flex: 1,
@@ -335,13 +353,16 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: '100%',
-    marginVertical: 16,
+    padding:7
   },
   pickerLabel: {
-    fontSize: 18,
+    fontSize: 25, // Çok büyük olmadan belirgin
     fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#34495e',
+    marginBottom: 6, // Picker ile arası çok açılmasın
+    color: 'rgb(230, 230, 230)', // Daha koyu ama yumuşak bir ton (Gri-Mavi)
+    textAlign: 'left', // **Sola hizalandı**
+    paddingLeft: 8, // Biraz içeriden başlasın
+    textTransform: 'capitalize', // Baş harfi büyük
   },
   headerContainer: {
     flexDirection: 'row',
@@ -350,18 +371,19 @@ const styles = StyleSheet.create({
     width: 350,
   },
   accordionHeader: {
-    backgroundColor: '#2980b9', // Dark blue
+    backgroundColor: '#b9e9ba',
     padding: 15,
     marginVertical: 8,
+    marginHorizontal: 10, // YAN BOŞLUĞU SABİTLE
     borderRadius: 12,
     elevation: 5,
-    height: 60, // Set a fixed height to prevent size change
-    justifyContent: 'center', // Ensures content is vertically centered
+    height: 60,
+    justifyContent: 'center',
   },
   headerText: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#000000',
     flexShrink: 1, // Ensures text doesn’t overflow beyond the container
     numberOfLines: 1, // Truncate long text
     ellipsizeMode: 'tail', // Add "..." at the end if text is too long
@@ -388,50 +410,87 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   eğitimButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#3498db', // Orijinal mavi tonu
-    padding: 12,
-    borderRadius: 10,
-    marginTop: 10,
-    elevation: 3, // Butona hafif gölge eklemek için
+    flexDirection: 'row',  // İkon ve yazıyı yan yana getir
+    alignItems: 'center',  // Dikey hizalama
+    justifyContent: 'center', // Yatay ortalama
+    backgroundColor: '#6A5ACD', // Soft mor tonu (Daha modern)
+    paddingVertical: 12, // Daha rahat dokunma alanı
+    paddingHorizontal: 16,
+    borderRadius: 12, // Yumuşak köşeler
+    shadowColor: '#6A5ACD',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5, // Android için gölge efekti
+    marginTop:10
+  },
+  eğitimIcon: {
+    marginRight: 8, // İkon ile yazı arasında boşluk
   },
   eğitimText: {
     fontSize: 18,
-    color: '#ffffff',
-    marginLeft: 8,
-    fontWeight: '500',
+    fontWeight: 'bold',
+    color: '#FFF', // Beyaz yazı rengi
+    textTransform: 'uppercase', // Tamamen büyük harf
+    letterSpacing: 1, // Harfler arası boşluk
   },
   lockedText: {
     fontSize: 16,
     color: '#e74c3c', // Kilitli metin için kırmızı
     fontStyle: 'italic',
   },
-  lockediconContainer: {
-
-  }
+  topContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between", // İkonları iki uca ayır
+    paddingHorizontal: 15, // Kenar boşluğu ekle
+    paddingVertical:10,
+  },
+  leftContainer: {
+    flex: 1, // Günlük giriş ikonunu sola it
+    alignItems: "flex-start",
+  },
+  premiumButton: {
+    alignItems: "flex-end",
+  },
+  premiumIcon: {
+    height: 50, // Biraz daha büyük
+    width: 50,
+    bottom: 25
+  }, separator: {
+    height: 2, // Çizgi kalınlığı
+    backgroundColor: "rgba(255, 255, 255, 0.5)", // Şeffaf beyaz çizgi
+    marginVertical: 4, // Üst ve alt boşluk
+    borderRadius: 1, // Daha yumuşak çizgi
+  },
 });
-
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 14,
     paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#bdc3c7', // Gri border
-    borderRadius: 8,
-    backgroundColor: '#ffffff',
-    fontSize: 16,
-    color: '#333',
-    elevation: 2, // Yükselti eklemek için
+    borderWidth: 2,
+    borderColor: '#7B68EE', // Yumuşak bir mor tonu (Pastel)
+    borderRadius: 12, // Hafif daha oval
+    backgroundColor: '#F8F8FF', // Hafif gri-beyaz arası soft renk
+    fontSize: 17,
+    color: '#4B0082', // Koyu mor tonu (Soft ama belirgin)
+    elevation: 4, // Hafif yükseltme efekti
+    shadowColor: "#7B68EE",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   inputAndroid: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: '#bdc3c7',
-    borderRadius: 8,
-    backgroundColor: '#ffffff',
-    fontSize: 16,
-    color: '#333',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderWidth: 2,
+    borderColor: '#7B68EE', // Android için de aynı border
+    borderRadius: 12,
+    backgroundColor: '#F8F8FF',
+    fontSize: 17,
+    color: '#4B0082',
+
   },
 });
+
+

@@ -7,7 +7,7 @@ import {
     TextInput,
     TouchableOpacity,
     FlatList,
-    Image,
+    Image, 
 } from "react-native";
 import RNPickerSelect from 'react-native-picker-select';
 import api from "../api/api";

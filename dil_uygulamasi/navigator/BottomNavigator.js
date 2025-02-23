@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         height: 65, // Hafif büyük modern görünüm
         borderTopWidth: 0,
         elevation: 0,
-        backgroundColor: 'rgba(55, 0, 179, 0.75)', // Daha şeffaf mor
+        backgroundColor: '#7FA1C3' , // %50 şeffaflık
         borderRadius: 20,
         marginHorizontal: 10,
         marginBottom: 7,
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     tabBarLabel: {
         fontSize: 12,
         marginBottom: 5,
-        color: '#F6E6FF', // Açık mor, uyumlu yazı rengi
+        color: 'white', // Açık mor, uyumlu yazı rengi
     },
     tabIcon: {
         color: '#FFFFFF', // Beyaz ikonlar, net görünüm
