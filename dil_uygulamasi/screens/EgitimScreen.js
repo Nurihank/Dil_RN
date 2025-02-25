@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Alert, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Dimensions, Alert, Image, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import api from '../api/api';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -7,6 +7,7 @@ import * as Speech from 'expo-speech';
 import { ProgressBar } from 'react-native-paper';
 import UserModel from '../model/ModelUser';
 import FlashMessage, { showMessage } from 'react-native-flash-message';
+import { useNavigation } from '@react-navigation/native';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -19,16 +20,17 @@ export default function EgitimScreen(props) {
     const [meslekID, setMeslekID] = useState();
     const [HangiDilID, setHangiDilID] = useState();
     const [AnaDilID, setAnaDilID] = useState();
+    const [egitimBitti, setEgitimBitti] = useState(false);
 
+    const navigation = useNavigation()
     const yuzdeHesaplama = () => {
         if (kelimeler.length === 0) {
-            console.log("Kelime listesi boş!");
             return;
         }
         const yuzdeHesabi = (currentIndex + 1) / kelimeler.length;
         setYuzde((yuzdeHesabi * 100).toFixed(0));
     };
-    
+
 
     const setUserID = async () => {
         const id = await AsyncStorage.getItem("id");
@@ -95,8 +97,7 @@ export default function EgitimScreen(props) {
                 AnaKelimeID: AnaKelimeID,
                 Date: formattedDate
             });
- 
-            console.log(response.data.message)
+
             showMessage({
                 message: response.data.message, // API'den gelen mesaj
                 type: "success", // Başarı mesajı (hata olursa "danger" yapabilirsin)
@@ -110,7 +111,7 @@ export default function EgitimScreen(props) {
             });
 
         } catch (error) {
-            console.error("Hata:", error); 
+            console.error("Hata:", error);
 
             showMessage({
                 message: "Bir hata oluştu! Lütfen tekrar deneyin.",
@@ -121,9 +122,9 @@ export default function EgitimScreen(props) {
         }
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         KelimeleriGetir();
-    },[userId])
+    }, [userId])
 
     useEffect(() => {
         setUserID()
@@ -134,13 +135,20 @@ export default function EgitimScreen(props) {
         if (kelimeler.length > 0) {
             yuzdeHesaplama();
         }
-    }, [kelimeler,currentIndex]);
-    
+    }, [kelimeler, currentIndex]);
+
 
     const nextWord = () => {
-        if (currentIndex < kelimeler.length - 1) {
-            setCurrentIndex(currentIndex + 1);
+        if (yuzde >= 100) {
+            setEgitimBitti(true)
+        } else{
+            if (currentIndex < kelimeler.length - 1) {
+                setCurrentIndex(currentIndex + 1);
+            }
         }
+           
+        
+
     };
 
     const previousWord = () => {
@@ -150,12 +158,13 @@ export default function EgitimScreen(props) {
     };
     return (
         <View style={styles.container}>
+            
             <TouchableOpacity style={styles.backButton} onPress={() => props.navigation.goBack()}>
                 <AntDesign name="arrowleft" size={24} color="black" />
             </TouchableOpacity>
             <FlashMessage position="top" />
             <Text>%{yuzde} TAMAMLADIN</Text>
-            <ProgressBar progress={yuzde/100} width={230}
+            <ProgressBar progress={yuzde / 100} width={230}
                 height={50} />
 
 
@@ -170,7 +179,7 @@ export default function EgitimScreen(props) {
                     </TouchableOpacity>
                 </View>
 
-            )} 
+            )}
 
             <View style={styles.buttonContainer}>
                 <TouchableOpacity onPress={previousWord} style={styles.navigationButton} disabled={currentIndex === 0}>
@@ -179,7 +188,7 @@ export default function EgitimScreen(props) {
                 <TouchableOpacity onPress={() => setDil(!dil)} style={styles.languageButton}>
                     <Image source={require("../assets/repeat.png")} style={{ height: 50, width: 50 }} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={nextWord} style={styles.navigationButton} disabled={currentIndex === kelimeler.length - 1}>
+                <TouchableOpacity onPress={nextWord} style={styles.navigationButton}>
                     <Text style={styles.buttonText}>▶️</Text>
                 </TouchableOpacity>
             </View>
@@ -187,6 +196,24 @@ export default function EgitimScreen(props) {
             <TouchableOpacity style={styles.addButton} onPress={() => SozlugeEkle(kelimeler[currentIndex].AnaKelimelerID)}>
                 <Text style={styles.addButtonText}>Sözlüğe Ekle</Text>
             </TouchableOpacity>
+            <Modal visible={egitimBitti} transparent animationType="slide">
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Eğitim Bitti</Text>
+
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.modalButton}>
+                            <Text style={styles.modalButtonText}>Ana Sayfaya Dön</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => navigation.replace("Egitim", { id: props.route.params.id })}
+                            style={[styles.modalButton, styles.repeatButton]}
+                        >
+                            <Text style={styles.modalButtonText}>Eğitimi Tekrarla</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -269,6 +296,45 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 5,
+    }, modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)", // Yarı saydam arka plan
+    },
+    modalContent: {
+        width: "80%",
+        padding: 20,
+        backgroundColor: "#fff",
+        borderRadius: 15,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5, // Android için gölge efekti
+    },
+    modalTitle: {
+        fontSize: 22,
+        fontWeight: "bold",
+        marginBottom: 20,
+        color: "#333",
+    },
+    modalButton: {
+        width: "100%",
+        paddingVertical: 12,
+        backgroundColor: "#3498db",
+        borderRadius: 10,
+        alignItems: "center",
+        marginTop: 10,
+    },
+    repeatButton: {
+        backgroundColor: "#2ecc71", // Yeşil buton (Eğitimi Tekrarla)
+    },
+    modalButtonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
     },
 });
 

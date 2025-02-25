@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Modal } from 'react-native';
 import LottieView from 'lottie-react-native';
 import * as Speech from 'expo-speech';
 import api from '../../../api/api';
@@ -18,6 +18,7 @@ export default function DinlemeEgzersizScreen(route) {
     const [secili, setSecili] = useState(false)
     const [dogruCevaplar, setDogruCevaplar] = useState([])
     const [yanlisCevaplar, setYanlisCevaplar] = useState([])
+    const [oyunDurdu, setOyunDurdu] = useState(false)
 
     const navigation = useNavigation()
 
@@ -73,11 +74,11 @@ export default function DinlemeEgzersizScreen(route) {
             OyunBitti()
             console.log(dogruCevaplar)
             console.log(yanlisCevaplar)
-            
+
         }
     };
 
-    const OyunBitti = async()=>{
+    const OyunBitti = async () => {
 
         for (const kelime of dogruCevaplar) {
             try {
@@ -140,7 +141,7 @@ export default function DinlemeEgzersizScreen(route) {
         }
     }
 
-    const DevamEt = ()=>{
+    const DevamEt = () => {
         setSecilenKelime(null)
         setSecili(false)
         Soru()
@@ -191,7 +192,11 @@ export default function DinlemeEgzersizScreen(route) {
 
     return anaKelime ? (
         <View style={styles.container}>
-            {/* Ses Butonu */}
+            <View>
+                <TouchableOpacity onPress={() => setOyunDurdu(true)}>
+                    <Image source={require("../../../assets/pause-button.png")} style={{ height: 40, width: 40, marginTop: 10 }} />
+                </TouchableOpacity>
+            </View>
             <Text>{soruIndex} / 7</Text>
             <TouchableOpacity onPress={KelimeyiSeslendirme} style={styles.animationContainer}>
                 <LottieView
@@ -202,18 +207,18 @@ export default function DinlemeEgzersizScreen(route) {
             </TouchableOpacity>
 
             <View style={styles.secilenKelimeContainer}>
-              
-                    <View>
-                        {secilenKelime ?
-                            <Text style={{ color: "white", fontSize: 30, fontWeight: "bold" }}>
-                                {secilenKelime?.Value}
-                            </Text>
-                            :
-                            <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>Duyduğun Kelimeyi Seç</Text>
-                        }
 
-                    </View>
-            
+                <View>
+                    {secilenKelime ?
+                        <Text style={{ color: "white", fontSize: 30, fontWeight: "bold" }}>
+                            {secilenKelime?.Value}
+                        </Text>
+                        :
+                        <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>Duyduğun Kelimeyi Seç</Text>
+                    }
+
+                </View>
+
             </View>
             {/* FlatList ile 2'şerli şıkları göster */}
             <FlatList
@@ -234,15 +239,41 @@ export default function DinlemeEgzersizScreen(route) {
             {
                 secilenKelime ?
                     <View>
-                        <TouchableOpacity onPress={()=>DevamEt()}>
+                        <TouchableOpacity onPress={() => DevamEt()}>
                             <Image source={require("../../../assets/devam.png")} style={{ height: 75, width: 75, marginBottom: 170, marginLeft: 250 }} />
                         </TouchableOpacity>
                     </View>
                     :
                     null
             }
+            <Modal
+                visible={oyunDurdu}
+                transparent={true}
+                animationType="slide"
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>⏸️ Oyun Durdu</Text>
+
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={()=>setOyunDurdu(!oyunDurdu)} // Devam etme fonksiyonunu buraya ekleyebilirsin
+                        >
+                            <Text style={styles.buttonText}>▶️ Devam Et</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.button, { backgroundColor: '#FF4C4C' }]}
+                            onPress={()=>navigation.goBack()} // Çıkış fonksiyonunu buraya ekleyebilirsin
+                        >
+                            <Text style={styles.buttonText}>❌ Çıkış Yap</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
 
         </View>
+
     ) : null;
 
 
@@ -304,5 +335,41 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         alignItems: "center",
         justifyContent: "center"
+    }, modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Şeffaf arka plan efekti
+    },
+    modalContent: {
+        width: 300,
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 15,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 5, // Android için gölge efekti
+    },
+    modalTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 20,
+    },
+    button: {
+        width: '100%',
+        paddingVertical: 12,
+        backgroundColor: '#4CAF50', // Yeşil devam et butonu
+        borderRadius: 10,
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });

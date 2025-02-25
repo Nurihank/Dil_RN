@@ -51,7 +51,7 @@ export default function ProgressBars({ KullaniciID, SeviyeID }) {
             {/* Çerçeveli Progress Bar */}
             <View style={styles.progressBarWrapper}>
               <LinearGradient
-                colors={["#00e0ff", "#0066ff"]} // Degrade efekti
+                  colors={["red", "#ffcc00"]} // Degrade efekti
                 style={[styles.progressFill, { width: `${progress * 100}%` }]}
               />
             </View>
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 18, // Daha büyük ve net yazı
     fontWeight: "bold",
-    color: "#ffffff",
+    color: "#e0e0e0",
     marginBottom: 10, // Çubuğun üstünde boşluk
     textAlign: "center",
   },

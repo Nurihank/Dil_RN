@@ -18,7 +18,6 @@ import TemelEgitimOyunScreen from './screens/TemelEgitim/TemelEgitimOyunScreen';
 import PremiumScreen from './screens/MagazaScreen';
 import HatalarScreen from './screens/Egzersiz/Egzersizler/HatalarScreen';
 import DinlemeEgzersizScreen from './screens/Egzersiz/Egzersizler/DinlemeEgzersizScreen';
-import Egzersiz from './screens/Egzersiz/EgzersizScreen.js';
 import StartScreen from './screens/StartScreen';
 import TestScreen from './screens/TestScreen';
 

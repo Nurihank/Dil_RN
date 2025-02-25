@@ -1,4 +1,4 @@
-import {Animated, StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
+import { Animated, StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import api from '../../api/api';
 import { useNavigation } from '@react-navigation/native';
@@ -14,10 +14,12 @@ export default function TemelEgitimOyunScreen(route) {
     const [cevapDurumu, setCevapDurumu] = useState()
     const [yanlisKelimeler, setYanlisKelimeler] = useState([]);
     const [devamEtButton, setDevamEtButton] = useState(false)
-    const navigation = useNavigation()
     const [yanlisCevapModal, setYanlisCevapModal] = useState(false)
     const [oyunBasariliBittiModal, setOyunBasariliBittiModal] = useState(false)
     const [oyunBasarisizBittiModal, setOyunBasarisizBittiModal] = useState(false)
+    const [oyunDurdu, setOyunDurdu] = useState(false)
+
+    const navigation = useNavigation()
 
     const digerSoru = (yanlisKelime) => {
         let yeniYanlisKelimeler = yanlisKelimeler;
@@ -76,15 +78,15 @@ export default function TemelEgitimOyunScreen(route) {
         const year = currentDate.getFullYear();
         const month = String(currentDate.getMonth() + 1).padStart(2, '0');
         const day = String(currentDate.getDate()).padStart(2, '0');
-    
+
         const formattedDate = `${year}-${month}-${day}`;
 
         const response = await api.post("/kullanici/OynananTemelOyun", {
             KullaniciID: route.route.params.UserID,
             BolumID: route.route.params.BolumID,
             KategoriID: route.route.params.KategoriID,
-            Date:formattedDate,
-            GectiMi:GectiMi
+            Date: formattedDate,
+            GectiMi: GectiMi
         })
     }
 
@@ -164,19 +166,19 @@ export default function TemelEgitimOyunScreen(route) {
         );
     }
 
-    const SozlugeKelimeEkleme = async(KelimeID)=>{
+    const SozlugeKelimeEkleme = async (KelimeID) => {
         const currentDate = new Date();
 
         const year = currentDate.getFullYear();
         const month = String(currentDate.getMonth() + 1).padStart(2, '0');
         const day = String(currentDate.getDate()).padStart(2, '0');
-    
+
         const formattedDate = `${year}-${month}-${day}`;
 
-        const response = await api.post("/kullanici/temelSozluk",{
+        const response = await api.post("/kullanici/temelSozluk", {
             KullaniciID: route.route.params.UserID,
-            KelimeID:KelimeID,
-            Date:formattedDate
+            KelimeID: KelimeID,
+            Date: formattedDate
         })
 
         alert(response.data.message)
@@ -185,12 +187,17 @@ export default function TemelEgitimOyunScreen(route) {
         <View style={styles.container}>
             {anaKelime ? (
                 <>
-                    <View style={{ marginTop: 75, marginBottom: 10 }}>
+                    <View>
+                        <TouchableOpacity onPress={() => setOyunDurdu(true)}>
+                            <Image source={require("../../assets/pause-button.png")} style={{ height: 40, width: 40, marginTop: 10 }} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ marginBottom: 10 }}>
                         <Text style={styles.title}>
                             Yeni bir kelime öğrenelim
                         </Text>
                         <Text style={styles.word}>"{anaKelime.ceviri}"</Text>
-                        <TouchableOpacity  onPress={()=>SozlugeKelimeEkleme(anaKelime.id)}>
+                        <TouchableOpacity onPress={() => SozlugeKelimeEkleme(anaKelime.id)}>
                             <Text style={styles.addToDictionaryText}>Sözlüğe Ekle</Text>
                         </TouchableOpacity>
                         <Image source={{ uri: anaKelime.Image }} style={styles.image} />
@@ -217,9 +224,9 @@ export default function TemelEgitimOyunScreen(route) {
                             />
                         )}
                     </View>
-                    
+
                 </>
-                
+
             ) : (
                 <Text style={styles.loadingText}>Yükleniyor...</Text>
             )}
@@ -248,7 +255,7 @@ export default function TemelEgitimOyunScreen(route) {
                     </View>
                 </View>
             </Modal>
-            <Modal /* oyun basarili bitti modal*/ 
+            <Modal /* oyun basarili bitti modal*/
                 visible={oyunBasariliBittiModal}
                 transparent={true}
                 animationType="slide"
@@ -289,8 +296,8 @@ export default function TemelEgitimOyunScreen(route) {
                         />
                         <View style={styles.modalActions}>
                             <TouchableOpacity
-                                    onPress={() => navigation.navigate("Bottom")}
-                                    style={[styles.button, styles.homeButton]}
+                                onPress={() => navigation.navigate("Bottom")}
+                                style={[styles.button, styles.homeButton]}
                             >
                                 <Text style={styles.buttonText}>Ana Sayfaya Dön</Text>
                             </TouchableOpacity>
@@ -301,6 +308,32 @@ export default function TemelEgitimOyunScreen(route) {
                     </View>
                 </View>
             </Modal>
+            <Modal
+                visible={oyunDurdu}
+                transparent={true}
+                animationType="slide"
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>⏸️ Oyun Durdu</Text>
+
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => setOyunDurdu(!oyunDurdu)}
+                        >
+                            <Text style={styles.buttonText}>▶️ Devam Et</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.button, { backgroundColor: '#FF4C4C' }]}
+                            onPress={() => navigation.goBack()}
+                        >
+                            <Text style={styles.buttonText}>❌ Çıkış Yap</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
         </View >
     );
 }
@@ -310,12 +343,12 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: '#e0f7fa',
         justifyContent: 'center',
-        
+
     },
     contentContainer: {
         flex: 1,
         justifyContent: 'center',
-        
+
     },
     title: {
         fontSize: 28,

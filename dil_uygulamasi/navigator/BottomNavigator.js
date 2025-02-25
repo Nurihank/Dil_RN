@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         height: 65, // Hafif büyük modern görünüm
         borderTopWidth: 0,
         elevation: 0,
-        backgroundColor: '#7FA1C3' , // %50 şeffaflık
+        backgroundColor: '#3c0663' , // %50 şeffaflık
         borderRadius: 20,
         marginHorizontal: 10,
         marginBottom: 7,

@@ -7,7 +7,7 @@ import {
     TextInput,
     TouchableOpacity,
     FlatList,
-    Image, 
+    Image,
 } from "react-native";
 import RNPickerSelect from 'react-native-picker-select';
 import api from "../api/api";
@@ -37,10 +37,10 @@ export default function TestScreen(route) {
 
     const navigation = useNavigation()
 
-    useEffect(()=>{ /* giriş yaptığnı kotnrol edşiyor ona göre kullanıcı verilerini alacak */
-        if(route.route.params.girisYapmisMi){
+    useEffect(() => { /* giriş yaptığnı kotnrol edşiyor ona göre kullanıcı verilerini alacak */
+        if (route.route.params.girisYapmisMi) {
             console.log(route.route.params.girisYapmisMi)
-            const KullaniciVerileri = async ()=>{
+            const KullaniciVerileri = async () => {
                 const user = await UserModel.currentUser;
                 setUserID(user[0].id)
                 setDilIDL(user[0].DilID)
@@ -49,10 +49,10 @@ export default function TestScreen(route) {
                 setName(user[0].kullaniciAdi)
             }
             KullaniciVerileri()
-        }else{
+        } else {
             console.log(route.route.params.girisYapmisMi)
         }
-    },[])
+    }, [])
 
     const Sorular = () => {
         if (soruIndex < testSorulari.length || soruIndex < 12) {
@@ -102,12 +102,12 @@ export default function TestScreen(route) {
         const testID = JSON.stringify(responseID.data.id)
         AsyncStorage.setItem("testID", testID)
         console.log("TEST ID =" + testID)
-        if(route.route.params.girisYapmisMi){
+        if (route.route.params.girisYapmisMi) {
             navigation.navigate("Profil")
-        }else{
+        } else {
             setTestSonuModal(true)
         }
-       
+
     }
 
 
@@ -153,8 +153,8 @@ export default function TestScreen(route) {
 
         if (gelenID) {
             Kaydet();
-            if(route.route.params.girisYapmisMi){
-                const TesIDKaydet = async()=>{
+            if (route.route.params.girisYapmisMi) {
+                const TesIDKaydet = async () => {
                     console.log("burday")
                     const response = await api.post("/kullanici/TestIDKaydet", {
                         TestID: gelenID,
@@ -163,7 +163,7 @@ export default function TestScreen(route) {
                     console.log(response.data.message)
                 }
                 TesIDKaydet()
-            }else{
+            } else {
 
             }
         }
@@ -227,8 +227,12 @@ export default function TestScreen(route) {
     }, []);
 
     const handleModalClose = () => {
-        setModalVisible(false);  // Modalı kapat
-        Sorular();  // Soruları yükle
+        if (name == null || meslekID == null || dilID == null || dilIDL == null) {
+            alert("Boş yer Kalmasın")
+        } else {
+            Sorular();  // Soruları yükle
+            setModalVisible(false);  // Modalı kapat
+        }
     };
 
     const placeholder = {
@@ -255,6 +259,31 @@ export default function TestScreen(route) {
 
     return (
         <View style={styles.container}>
+            <View style={{ bottom: 150, right: 120 }}>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={{
+                        backgroundColor: '#FF4C4C', // Kırmızı arka plan
+                        paddingVertical: 10,
+                        paddingHorizontal: 15,
+                        borderRadius: 10,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 3,
+                        elevation: 5, // Android gölge efekti
+                    }}
+                >
+                    <Text style={{
+                        color: 'white',
+                        fontSize: 18,
+                        fontWeight: 'bold',
+                        textAlign: 'center'
+                    }}>
+                        ❌ Çıkış
+                    </Text>
+                </TouchableOpacity>
+            </View>
             <Text>{soruIndex} / 12</Text>
             {soruKelimesi && (
                 <View style={styles.soruContainer}>
@@ -283,15 +312,15 @@ export default function TestScreen(route) {
 
                         {/* İsim Girişi */}
                         <TextInput
-                        style={styles.input}
-                        placeholder="İsminizi giriniz"
-                        value={name}
-                        onChangeText={setName}
-                        editable={!route.route.params.girisYapmisMi} // Eğer giriş yapılmışsa devre dışı bırak
-                        textAlignVertical="center" // `verticalAlign` yerine `textAlignVertical`
+                            style={styles.input}
+                            placeholder="İsminizi giriniz"
+                            value={name}
+                            onChangeText={setName}
+                            editable={!route.route.params.girisYapmisMi} // Eğer giriş yapılmışsa devre dışı bırak
+                            textAlignVertical="center" // `verticalAlign` yerine `textAlignVertical`
                         />
 
-                         {/* Meslek Seçimi */}
+                        {/* Meslek Seçimi */}
                         <Text style={styles.label}>Mesleğinizi seçin:</Text>
                         <RNPickerSelect
                             placeholder={placeholder}
@@ -327,14 +356,18 @@ export default function TestScreen(route) {
                         <TouchableOpacity style={styles.button} onPress={handleModalClose}>
                             <Text style={styles.buttonText}>Teste Hazırım</Text>
                         </TouchableOpacity>
+                        {/* Buton */}
+                        <TouchableOpacity style={[styles.button, { backgroundColor: "red" }]} onPress={() => navigation.goBack()}>
+                            <Text style={styles.buttonText}>Çıkış</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>
 
             {/**/}
-            <Modal visible={testSonuModal} animationType="slide" transparent={true}> 
+            <Modal visible={testSonuModal} animationType="slide" transparent={true}>
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}> 
+                    <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Test Sonucu</Text>
                         <Text style={{ fontSize: 17, color: "gray", fontWeight: "bold" }}>
                             {name} Test sonucunu görmek için

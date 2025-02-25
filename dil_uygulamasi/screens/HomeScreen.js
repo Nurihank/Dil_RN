@@ -11,6 +11,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFocusEffect } from '@react-navigation/native';
 import GunlukGirisComponent from '../component/GunlukGirisComponent';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function HomeScreen({ route }) {
   const navigation = useNavigation();
@@ -285,57 +286,66 @@ export default function HomeScreen({ route }) {
 
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.container}>
-
-        <View style={styles.topContainer}>
-          <View style={styles.leftContainer}>
-            <GunlukGirisComponent />
-          </View>
-
-          <TouchableOpacity onPress={() => navigation.navigate("premium")} style={styles.premiumButton}>
-            <Image source={require("../assets/premium.png")} style={styles.premiumIcon} />
-          </TouchableOpacity>
-        </View>
+      <LinearGradient
+        colors={['#5a108f', '#4a0a77', '#3c0663', '#310055']}
+        locations={[0, 0.4, 0.7, 1]}
 
 
+        style={{ flex: 1 }}
+      >
+        <View style={styles.container}>
 
+          <View style={styles.topContainer}>
+            <View style={styles.leftContainer}>
+              <GunlukGirisComponent />
+            </View>
 
-        <View style={styles.pickerContainer}>
-          <View style={styles.separator} />
-          <ProgressBars KullaniciID={userId} SeviyeID={selectedSeviyeID} />
-          <View style={styles.separator} />
-
-          <Text style={[styles.pickerLabel]}>
-            Seviye Seç:
-          </Text>
-
-          <RNPickerSelect
-            placeholder={{ label: "Bir seviye seçin", value: null }}
-            items={acikSeviyeler} // Sadece açık seviyeler
-            onValueChange={(value) => setSelectedSeviyeID(value)}
-            value={selectedSeviyeID}
-            style={pickerSelectStyles}
-          />
-          <View style={styles.egitimContainer}>
-            <TouchableOpacity
-              style={styles.eğitimButton}
-              onPress={() => { navigation.navigate("Egitim", { id: selectedSeviyeID }) }}
-            >
-              <FontAwesome name="book" size={24} color="#fff" style={styles.eğitimIcon} />
-              <Text style={styles.eğitimText}>Seviye Eğitimi</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("premium")} style={styles.premiumButton}>
+              <Image source={require("../assets/premium.png")} style={styles.premiumIcon} />
             </TouchableOpacity>
+          </View>
+
+
+
+
+          <View style={styles.pickerContainer}>
+            <View style={styles.separator} />
+            <ProgressBars KullaniciID={userId} SeviyeID={selectedSeviyeID} />
+            <View style={styles.separator} />
+
+            <Text style={[styles.pickerLabel]}>
+              Seviye Seç:
+            </Text>
+
+            <RNPickerSelect
+              placeholder={{ label: "Bir seviye seçin", value: null }}
+              items={acikSeviyeler} // Sadece açık seviyeler
+              onValueChange={(value) => setSelectedSeviyeID(value)}
+              value={selectedSeviyeID}
+              style={pickerSelectStyles}
+            />
+            <View style={styles.egitimContainer}>
+              <TouchableOpacity
+                style={styles.eğitimButton}
+                onPress={() => { navigation.navigate("Egitim", { id: selectedSeviyeID }) }}
+              >
+                <FontAwesome name="book" size={24} color="#fff" style={styles.eğitimIcon} />
+                <Text style={styles.eğitimText}>Seviye Eğitimi</Text>
+              </TouchableOpacity>
+
+            </View>
 
           </View>
-         
+          <Accordion
+            sections={sezonlar}
+            activeSections={activeSections}
+            renderHeader={renderAccordionHeader}
+            renderContent={renderAccordionContent}
+            onChange={updateSections}
+          />
         </View>
-        <Accordion
-          sections={sezonlar}
-          activeSections={activeSections} 
-          renderHeader={renderAccordionHeader}
-          renderContent={renderAccordionContent}
-          onChange={updateSections}
-        />
-      </View>
+      </LinearGradient>
+
     </View>
   );
 }
@@ -343,7 +353,7 @@ export default function HomeScreen({ route }) {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#8A2BE2',
+    backgroundColor: '#3c096c',
     justifyContent: 'center',
     marginTop: 30
   },
@@ -353,7 +363,7 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: '100%',
-    padding:7
+    padding: 7
   },
   pickerLabel: {
     fontSize: 25, // Çok büyük olmadan belirgin
@@ -371,7 +381,7 @@ const styles = StyleSheet.create({
     width: 350,
   },
   accordionHeader: {
-    backgroundColor: '#b9e9ba',
+    backgroundColor: '#5a108f',
     padding: 15,
     marginVertical: 8,
     marginHorizontal: 10, // YAN BOŞLUĞU SABİTLE
@@ -383,7 +393,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#000000',
+    color: '#e0c3fc',
     flexShrink: 1, // Ensures text doesn’t overflow beyond the container
     numberOfLines: 1, // Truncate long text
     ellipsizeMode: 'tail', // Add "..." at the end if text is too long
@@ -413,7 +423,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',  // İkon ve yazıyı yan yana getir
     alignItems: 'center',  // Dikey hizalama
     justifyContent: 'center', // Yatay ortalama
-    backgroundColor: '#6A5ACD', // Soft mor tonu (Daha modern)
+    backgroundColor: '#8b2fc9', // Soft mor tonu (Daha modern)
     paddingVertical: 12, // Daha rahat dokunma alanı
     paddingHorizontal: 16,
     borderRadius: 12, // Yumuşak köşeler
@@ -422,7 +432,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5, // Android için gölge efekti
-    marginTop:10
+    marginTop: 10
   },
   eğitimIcon: {
     marginRight: 8, // İkon ile yazı arasında boşluk
@@ -444,7 +454,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between", // İkonları iki uca ayır
     paddingHorizontal: 15, // Kenar boşluğu ekle
-    paddingVertical:10,
+    paddingVertical: 10,
   },
   leftContainer: {
     flex: 1, // Günlük giriş ikonunu sola it

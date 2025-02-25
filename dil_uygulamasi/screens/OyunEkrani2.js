@@ -27,7 +27,7 @@ export default function OyunEkrani2(props) {
     const [basariliOyunSonuAlertModal, setBasariliOyunSonuAlertModal] = useState(false);
     const [sozlugeEkleResponse, setSozlugeEkleResponse] = useState("");
     const [secili, setSecili] = useState(false)
-
+    const [oyunDurdu, setOyunDurdu] = useState(false)
     const navigation = useNavigation();
 
 
@@ -297,13 +297,18 @@ export default function OyunEkrani2(props) {
     return (
         <View style={styles.container}>
             <FlashMessage position="top" />
+            <View>
+                <TouchableOpacity onPress={() => setOyunDurdu(true)}>
+                    <Image source={require("../assets/pause-button.png")} style={{ height: 40, width: 40, marginTop: 10 }} />
+                </TouchableOpacity>
+            </View>
             <View style={styles.progressBarContainer}>
                 <ProgressBar progress={dogruYüzdesi / 100} style={styles.progressBar} />
                 <View style={styles.progressMarker} />
             </View>
 
             <View style={styles.askContainer}>
-                <Text style={{right:140,bottom:37 , fontSize:25 ,color:"gray",fontWeight:"bold"}}>{soru+1} / 3</Text>
+                <Text style={{ right: 140, bottom: 37, fontSize: 25, color: "gray", fontWeight: "bold" }}>{soru + 1} / 3</Text>
                 <Image source={require("../assets/question.png")} style={styles.image} />
                 {anaKelime && <Text style={styles.askText}>{anaKelime.value}</Text>}
                 <TouchableOpacity onPress={() => speakWord(anaKelime.value)}>
@@ -328,6 +333,34 @@ export default function OyunEkrani2(props) {
                 </TouchableOpacity>
                 : null
             }
+            <Modal
+                visible={oyunDurdu}
+                transparent={true}
+                animationType="slide">
+
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={{
+                            fontSize: 27,
+                            fontWeight: 'bold',
+                            color: '#FF4C4C', // Kırmızı renk (Dikkat çekici)
+                            textAlign: 'center',
+                         
+                        }}>Oyunu Durdurdun</Text>
+                        <View style={styles.alertButtonGroup}>
+                            <TouchableOpacity style={styles.alertButton} onPress={() => setOyunDurdu(!oyunDurdu)}>
+                                <Text style={styles.buttonText}>Devam Et</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.alertButton} onPress={() => navigation.replace("OyunEkrani", { BolumID: props.route.params.BolumID, SezonID: props.route.params.SezonID, SeviyeID: props.route.params.SeviyeID })}>
+                                <Text style={styles.buttonText}>Bölümü Tekrarla</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.alertButton} onPress={() => navigation.goBack()}>
+                                <Text style={styles.buttonText}>Çıkış Yap</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
             <Modal /* kelimeyi bilemeyince */
                 visible={soruAlertModal}
                 transparent={true}

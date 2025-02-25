@@ -8,14 +8,14 @@ export default function SozlukEkrani() {
   const [userId, setUserId] = useState(null);
   const [kelimeler, setKelimeler] = useState([]);
   const [gosterimDurumu, setGosterimDurumu] = useState({});
-
+  const [gosterimDurumuKontrol, setGosterimDurumuKontrol] = useState(false)
   // Kullanıcı ID'sini AsyncStorage'dan al
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("id");
     setUserId(id);
   };
 
-  const sozlukTekrari=async()=>{ /* burda sözlük tekrarı yapan oyuna gidecek */
+  const sozlukTekrari = async () => { /* burda sözlük tekrarı yapan oyuna gidecek */
     const currentDate = new Date();
 
     const year = currentDate.getFullYear();
@@ -23,14 +23,21 @@ export default function SozlukEkrani() {
     const day = String(currentDate.getDate()).padStart(2, '0');
 
     const formattedDate = `${year}-${month}-${day}`;
-    const response = await api.post("/kullanici/GunlukGorevSozluk",{
-      KullaniciID:userId,
-      Date:formattedDate,
-      SozlugeGiris:true,  
+    const response = await api.post("/kullanici/GunlukGorevSozluk", {
+      KullaniciID: userId,
+      Date: formattedDate,
+      SozlugeGiris: true,
     })
     console.log(response.data)
   }
-
+  const KelimeleriGosterme = () => {
+    const yeniDurum = {};
+    kelimeler.forEach(item => {
+      yeniDurum[item.Value] = !gosterimDurumuKontrol; // Tüm kelimeleri görünür yap
+    });
+    setGosterimDurumu(yeniDurum);
+    setGosterimDurumuKontrol(!gosterimDurumuKontrol)
+  };
 
 
   const KelimeleriGetir = async (userId) => {
@@ -60,7 +67,7 @@ export default function SozlukEkrani() {
         }
       });
       await KelimeleriGetir(userId)
-      } catch (error) {
+    } catch (error) {
       console.error("Silme işleminde hata:", error);
     }
   };
@@ -103,7 +110,7 @@ export default function SozlukEkrani() {
                 style={styles.icon}
               />
             </TouchableOpacity>
-            
+
           </View>
         </TouchableOpacity>
       </View>
@@ -111,20 +118,39 @@ export default function SozlukEkrani() {
   };
 
   return (
-    <View style={styles.container}> 
-    <TouchableOpacity onPress={()=>sozlukTekrari()}>
-    <Text>
-      Sözlük Tekrarı
-    </Text>
-    </TouchableOpacity>
-   
-      <FlatList
-        data={kelimeler}  // Veriyi FlatList'e gönderin
-        renderItem={renderItem}  // Her bir item için render fonksiyonu
-        keyExtractor={(item, index) => index.toString()} // Benzersiz anahtar
-      />
+    <View style={styles.container}>
+      {kelimeler && kelimeler.length > 0 ? (
+        <>
+          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <TouchableOpacity onPress={() => sozlukTekrari()} style={styles.button}>
+              <Text style={styles.buttonText}>Sözlük Tekrarı</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => KelimeleriGosterme()}>
+              {!gosterimDurumuKontrol ?
+                <Text style={styles.buttonText}>Hepsini Görünür Yap</Text>
+                :
+                <Text style={styles.buttonText}>Hepsini Kapat</Text>
+
+              }
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={kelimeler} // Veriyi FlatList'e gönderin
+            renderItem={renderItem} // Her bir item için render fonksiyonu
+            keyExtractor={(item, index) => index.toString()} // Benzersiz anahtar
+          />
+        </>
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>
+            Sözlükte hiçbir kelime bulunmuyor. Mesleki eğitimden kelime eklemeniz gerekiyor.
+          </Text>
+        </View>
+      )}
     </View>
   );
+
+
 }
 
 const styles = StyleSheet.create({
@@ -132,6 +158,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f0f4f8',
     padding: 10,
+    marginTop: 20
   },
   itemContainer: {
     padding: 15,
@@ -164,5 +191,30 @@ const styles = StyleSheet.create({
     height: 35,
     width: 35,
     marginLeft: 10
+  }, button: {
+    backgroundColor: "#007bff",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 10,
+    width: "40%",
+    justifyContent: "center"
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  emptyText: {
+    fontSize: 25,
+    color: "#555",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });

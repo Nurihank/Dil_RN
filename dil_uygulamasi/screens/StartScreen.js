@@ -5,10 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function StartScreen({ navigation }) {
     const [pressed, setPressed] = useState(false);
 
-    useEffect(()=>{
+    useEffect(() => {
         AsyncStorage.clear()
-    },[])
-    
+    }, [])
+
     return (
         <View style={styles.container}>
 
@@ -17,14 +17,14 @@ export default function StartScreen({ navigation }) {
                 onPress={() => {
                     setPressed(true);
                     setTimeout(() => setPressed(false), 200); // Renk animasyonu için
-                    navigation.navigate("TestScreen",{girisYapmisMi:false}); // Test ekranına yönlendirme
+                    navigation.navigate("TestScreen", { girisYapmisMi: false }); // Test ekranına yönlendirme
                 }}
             >
                 <Text style={styles.title}>Mesleki Dil Yeterlilik Testi</Text>
                 <Text style={styles.subtitle}>(Başlamak için dokunun)</Text>
             </TouchableOpacity>
 
-            <Image source={require("../assets/office.png")} style={styles.image} />
+            <Image source={require("../assets/hamdi.png")} style={styles.image} />
 
             <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate("Signin")}>
                 <Text style={styles.buttonText}>Giriş Yap</Text>
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     image: {
-        height: 250,
+        height: 320,
         width: 250,
         marginBottom: 20,
     },
