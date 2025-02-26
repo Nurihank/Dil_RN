@@ -9,7 +9,9 @@ import SozlukEkrani from '../screens/SozlukEkrani.js';
 import TemelEgitimScreen from '../screens/TemelEgitim/TemelEgitimScreen.js';
 import EgzersizScreen from '../screens/Egzersiz/EgzersizScreen.js';
 import Kesfet from '../screens/Kesfet.js';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Feather from '@expo/vector-icons/Feather';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const Tab = createBottomTabNavigator();
 
@@ -27,9 +29,9 @@ export default function BottomNavigator() {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Image source={require("../assets/house.png")} style={{ width: 30, height: 30 }} />
+                                <AntDesign name="home" size={35} color="white" />
                             ) : (
-                                <Image source={require("../assets/home.png")} style={{ width: 30, height: 30 }} />
+                                    <AntDesign name="home" size={35} color="gray" />
                             )}
                         </View>
                     );
@@ -37,40 +39,34 @@ export default function BottomNavigator() {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Image source={require("../assets/user.png")} style={{ width: 35, height: 35 }} />
+                                <AntDesign name="user" size={35} color="white" />
                             ) : (
-                                <Image source={require("../assets/userC.png")} style={{ width: 35, height: 35 }} />
-                            )}
+                                <AntDesign name="user" size={35} color="gray" />)}
                         </View>
-                    ); 
+                    );
                 } else if (route.name === "Sozluk") {
                     return (
-                        <View style={{ alignItems: 'center' }}> 
+                        <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Image source={require("../assets/dictionary.png")} style={{ width: 35, height: 35 }} />
-                            ) : (
-                                <Image source={require("../assets/book.png")} style={{ width: 30, height: 30 }} />
-                            )}
+                                <AntDesign name="book" size={35} color="white" />) : (
+                                    <AntDesign name="book" size={35} color="gray" />)}
                         </View>
                     );
                 } else if (route.name === 'Egzersiz') {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Image source={require("../assets/exerciseO.png")} style={{ width: 35, height: 35 }} />
-                            ) : (
-                                    <Image source={require("../assets/exercise.png")} style={{ width: 30, height: 30 }} />
-                            )}
+                                <MaterialCommunityIcons name="dumbbell" size={35} color="white" />) : (
+                                    <MaterialCommunityIcons name="dumbbell" size={35} color="gray" />)}
                         </View>
                     );
                 } else if (route.name === 'Temel') {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Image source={require("../assets/basisO.png")} style={{ width: 35, height: 35 }} />
+                                <Ionicons name="newspaper-outline" size={35} color="white" />
                             ) : (
-                                    <Image source={require("../assets/basisC.png")} style={{ width: 30, height: 30 }} />
-                            )}
+                                    <Ionicons name="newspaper-outline" size={35} color="gray" />)}
                         </View>
                     );
                 }
@@ -78,10 +74,9 @@ export default function BottomNavigator() {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Image source={require("../assets/compass.png")} style={{ width: 35, height: 35 }} />
+                                <Feather name="compass" size={35} color="white" />
                             ) : (
-                                    <Image source={require("../assets/compassC.png")} style={{ width: 30, height: 30 }} />
-                            )}
+                                    <Feather name="compass" size={35} color="gray" />)}
                         </View>
                     );
                 }
@@ -92,24 +87,24 @@ export default function BottomNavigator() {
             tabBarLabelStyle: { ...styles.tabBarLabel },
         })}>
 
-        <Tab.Screen name="Kesfet" component={Kesfet}  options={{
-            headerShown: false, // Üst başlığı gizler
-          }}/>
-            <Tab.Screen name="Ana Sayfa" component={HomeScreen}  options={{
+            <Tab.Screen name="Kesfet" component={Kesfet} options={{
                 headerShown: false, // Üst başlığı gizler
-              }}/>
+            }} />
+            <Tab.Screen name="Ana Sayfa" component={HomeScreen} options={{
+                headerShown: false, // Üst başlığı gizler
+            }} />
             <Tab.Screen name="Profil" component={ProfileScreen} options={{
                 headerShown: false, // Üst başlığı gizler
-              }} />
+            }} />
             <Tab.Screen name="Sozluk" component={SozlukEkrani} options={{
                 headerShown: false, // Üst başlığı gizler
-              }} />
+            }} />
             <Tab.Screen name="Egzersiz" component={EgzersizScreen} options={{
                 headerShown: false, // Üst başlığı gizler
-              }} />
+            }} />
             <Tab.Screen name="Temel" component={TemelEgitimScreen} options={{
                 headerShown: false, // Üst başlığı gizler
-              }} />
+            }} />
 
         </Tab.Navigator>
 
@@ -122,7 +117,7 @@ const styles = StyleSheet.create({
         height: 65, // Hafif büyük modern görünüm
         borderTopWidth: 0,
         elevation: 0,
-        backgroundColor: '#3c0663' , // %50 şeffaflık
+        backgroundColor: '#3c0663', // %50 şeffaflık
         borderRadius: 20,
         marginHorizontal: 10,
         marginBottom: 7,
