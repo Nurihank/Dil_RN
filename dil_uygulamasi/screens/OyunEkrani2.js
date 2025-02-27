@@ -19,56 +19,52 @@ export default function OyunEkrani2(props) {
     const [dogruKelimeler, setDogruKelimeler] = useState([]);
     const [dogruYüzdesi, setDogruYüzdesi] = useState(1);
     const [seciliSik, setSeciliSik] = useState(null);
-    const [cevapDurumu, setCevapDurumu] = useState(null);
     const [userId, setUserId] = useState(null);
     const [sozlugeEkliMi, setSozlugeEkliMi] = useState({});
-    const [soruAlertModal, setSoruAlertModal] = useState(false);
     const [basarisizOyunSonuAlertModal, setBasarisizOyunSonuAlertModal] = useState(false);
     const [basariliOyunSonuAlertModal, setBasariliOyunSonuAlertModal] = useState(false);
     const [sozlugeEkleResponse, setSozlugeEkleResponse] = useState("");
     const [secili, setSecili] = useState(false)
     const [oyunDurdu, setOyunDurdu] = useState(false)
     const navigation = useNavigation();
-
+    const [cevap, setCevap] = useState(null)
+    const [bolumBittiMi,setBolumBittiMi] =useState(false)
 
     const getUserID = async () => {
         const id = await AsyncStorage.getItem("id");
         setUserId(id);
     };
 
-    const DigerSoru = async (yanlisKelime) => {
-        let yeniYanlisKelimeler = yanlisKelimeler;
-        setSecili(false)
-        if (yanlisKelime) {
-            yeniYanlisKelimeler = [...yanlisKelimeler, yanlisKelime];
-            setYanlisKelimeler(yeniYanlisKelimeler);  // Yanlış kelimeleri güncelle
-        }
+    const yanlisKelimeleriKaydetme = (kelimeler) => {
+        const currentDate = new Date();
 
-        const yanlisKelimeleriKaydetme = (kelimeler) => {
-            const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
 
-            const year = currentDate.getFullYear();
-            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-            const day = String(currentDate.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
 
-            const formattedDate = `${year}-${month}-${day}`;
+        kelimeler.forEach(kelime => {
+            const kaydet = async () => {
+                const response = await api.post("/kullanici/yanlisBilinenKelime", {
+                    KelimeID: kelime.AnaKelimeID,
+                    KullaniciID: userId,
+                    TemelMi: 0,
+                    Date: formattedDate
+                })
+            }
+            console.log(kelime)
+            kaydet()
+        });
+    }
 
-            kelimeler.forEach(kelime => {
-                const kaydet = async () => {
-                    const response = await api.post("/kullanici/yanlisBilinenKelime", {
-                        KelimeID: kelime.AnaKelimeID,
-                        KullaniciID: userId,
-                        TemelMi: 0,
-                        Date: formattedDate
-                    })
-                }
-                kaydet()
-            });
-        }
-        setSoruAlertModal(false)
+    const DigerSoru = async () => {
+        setSeciliSik(null);
+        setSecili(null)
+       
         if (soru >= 2) {
-            yanlisKelimeleriKaydetme(yeniYanlisKelimeler)
-            if (yeniYanlisKelimeler.length > 1) {
+
+            if (yanlisKelimeler.length > 1) {
                 BolumBitti(0)
                 setBasarisizOyunSonuAlertModal(true)
             } else {
@@ -80,7 +76,6 @@ export default function OyunEkrani2(props) {
             setSoru(soru + 1);
             setDevamEtButton(false);
             setSeciliSik(null);
-            setCevapDurumu(null);
             const data = kelimeler;
 
             function shuffleArray(array) {
@@ -100,13 +95,13 @@ export default function OyunEkrani2(props) {
 
     const BolumBitti = async (GectiMi) => {
         const currentDate = new Date();
-
+        
         const year = currentDate.getFullYear();
         const month = String(currentDate.getMonth() + 1).padStart(2, '0');
         const day = String(currentDate.getDate()).padStart(2, '0');
 
         const formattedDate = `${year}-${month}-${day}`;
-
+        
         const response = await api.post("/kullanici/OynananOyun", {
             KullaniciID: userId,
             BolumID: props.route.params.BolumID,
@@ -114,7 +109,8 @@ export default function OyunEkrani2(props) {
             GectiMi: GectiMi
         })
         if (response.data.message == "succes") {
-
+            setBolumBittiMi(true)
+            console.log(yanlisKelimeler.length)
             const sezonunBittiMi = await api.get("/kullanici/SezonBittiMiKontrol", {
                 params: {
                     KullaniciID: userId,
@@ -143,6 +139,8 @@ export default function OyunEkrani2(props) {
                     }
                 }
             }
+        }else{
+            console.log(yanlisKelimeler.length)
         }
     }
 
@@ -210,11 +208,15 @@ export default function OyunEkrani2(props) {
     };
     const CevapDogruMu = (cevap) => {
         setSecili(true)
-        let yeniDogruKelimeler = dogruKelimeler
+        setDevamEtButton(true)
+        let yeniDogruKelimeler = dogruKelimeler;    
+
         if (cevap.value === anaKelime.value) {
+            console.log("doğru")
             setDogruYüzdesi(dogruYüzdesi + 33)
+            setCevap(true)
             if (cevap) {
-                yeniDogruKelimeler = [...dogruKelimeler, cevap];
+                yeniDogruKelimeler = [...dogruKelimeler, anaKelime];
                 setDogruKelimeler(yeniDogruKelimeler);  // Yanlış kelimeleri güncelle
             }
             if (soru >= 2) {
@@ -222,10 +224,18 @@ export default function OyunEkrani2(props) {
             } else {
                 setDevamEtButton(true); //eğer son soru değilse devam et buttonu aktif oluyo
             }
-            setCevapDurumu('correct');  //bu da işaretlediğin cevabın rengini gösteriyor
         } else {
-            setSoruAlertModal(true)
-            setCevapDurumu('incorrect'); //bu da işaretlediğin cevabın rengini gösteriyor
+            setYanlisKelimeler(prevYanlisKelimeler =>[...prevYanlisKelimeler, anaKelime] );
+            setCevap(false)
+            if (cevap) {
+                if (soru >= 2) {
+                    DigerSoru(); 
+                } else {
+                    setDevamEtButton(true);
+                }
+            }
+            
+            
         }
         setSeciliSik(cevap);
     };
@@ -260,22 +270,25 @@ export default function OyunEkrani2(props) {
 
     const renderItem = ({ item }) => {
         const isSelected = item === seciliSik;
-        const isCorrect = isSelected && cevapDurumu === 'correct';
-        const isIncorrect = isSelected && cevapDurumu === 'incorrect';
+        const isCorrect =  secili && item === anaKelime ; // Doğru cevabı sadece seçim yapıldıysa göster
+        const isIncorrect = isSelected && item !== anaKelime; // Yanlış şık seçildiyse kırmızı yap
+    
         return (
             <TouchableOpacity
                 onPress={() => CevapDogruMu(item)}
-                disabled={secili} // Şık seçildikten sonra butonlar disabled olacak
+                disabled={secili} // Şık seçildikten sonra butonlar devre dışı olacak
                 style={[
                     styles.answerItem,
-                    isCorrect && styles.correctAnswer,
-                    isIncorrect && styles.incorrectAnswer
+                    isCorrect && styles.correctAnswer, // Doğru şık sadece seçim sonrası yeşil olacak
+                    isIncorrect && styles.incorrectAnswer // Yanlış seçilen şık kırmızı olacak
                 ]}
             >
                 <Text style={styles.answerText}>{item.ceviri}</Text>
             </TouchableOpacity>
         );
     };
+    
+    
     useEffect(() => {
         const checkSozlugeEkliMi = async () => {
             let statusMap = {};
@@ -290,9 +303,12 @@ export default function OyunEkrani2(props) {
             }
             setSozlugeEkliMi(statusMap); //{"10": false, "9": true} bu şekilde ekliyor önemli
         };
-
         checkSozlugeEkliMi();
-    }, [yanlisKelimeler]);
+  
+        if(bolumBittiMi){
+            yanlisKelimeleriKaydetme(yanlisKelimeler)
+        }
+    }, [yanlisKelimeler,bolumBittiMi]);
 
     return (
         <View style={styles.container}>
@@ -328,11 +344,27 @@ export default function OyunEkrani2(props) {
             />
 
             {devamEtButton
-                ? <TouchableOpacity onPress={() => DigerSoru()}>
-                    <Image source={require("../assets/nextButton.png")} style={styles.nextButton} />
-                </TouchableOpacity>
+                ? 
+                <View>
+                <TouchableOpacity 
+                onPress={() => DigerSoru()} 
+                style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    backgroundColor: cevap == true ? "green" : cevap == false ? "red" :null, 
+                    padding: 15,
+                    alignItems: "center",
+                    borderRadius:15
+                }}
+            >
+                <Text style={{ color: "#fff", fontWeight: "bold" }}>DEVAM ET</Text>
+            </TouchableOpacity>
+                </View>
                 : null
             }
+
             <Modal
                 visible={oyunDurdu}
                 transparent={true}
@@ -357,34 +389,6 @@ export default function OyunEkrani2(props) {
                             <TouchableOpacity style={styles.alertButton} onPress={() => navigation.goBack()}>
                                 <Text style={styles.buttonText}>Çıkış Yap</Text>
                             </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-            <Modal /* kelimeyi bilemeyince */
-                visible={soruAlertModal}
-                transparent={true}
-                animationType="slide"
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <View>
-                            <Text>
-                                Yanlış Cevap
-                            </Text>
-                            <Text>
-                                {anaKelime.value}   kelimesi   {anaKelime.ceviri} demek
-
-                            </Text>
-                        </View>
-                        <View style={styles.alertButtonGroup}>
-                            <TouchableOpacity style={styles.alertButton} onPress={() => DigerSoru(anaKelime)}>
-                                <Text style={styles.buttonText}>Devam Et</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.alertButton} onPress={() => SozlugeEkle(anaKelime)}>
-                                <Text style={styles.buttonText}>Sözlüğe Ekle</Text>
-                            </TouchableOpacity>
-
                         </View>
                     </View>
                 </View>
@@ -444,25 +448,6 @@ export default function OyunEkrani2(props) {
                             </View>
 
                         )}
-
-                        {dogruKelimeler.length > 0 && (
-                            <View>
-                                <Text>
-                                    Doğru kelimeler
-                                </Text>
-                                <FlatList
-                                    data={dogruKelimeler}
-                                    keyExtractor={(item, index) => index.toString()}
-                                    renderItem={({ item }) => (
-                                        <View style={styles.listItem}>
-                                            <Icon name="checkmark-circle" size={20} color="#2ecc71" style={styles.listIcon} />
-                                            <Text style={styles.listText}>{item.value}</Text>
-                                        </View>
-                                    )}
-                                />
-                            </View>
-
-                        )}
                         <ProgressBar progress={dogruYüzdesi / 100} style={[styles.progressBar, { marginTop: 15 }]} />
                         <Text>%{dogruYüzdesi} başarılı</Text>
                     </View>
@@ -487,6 +472,40 @@ export default function OyunEkrani2(props) {
                             <Icon name="refresh" size={24} color="#fff" style={styles.icon} />
                             <Text style={styles.buttonText}>Tekrar Oyna</Text>
                         </TouchableOpacity>
+                        {yanlisKelimeler.length > 0 && (
+                            <View>
+                                <Text>
+                                    Yanlis Kelimeler
+                                </Text>
+                                <FlatList
+                                    data={yanlisKelimeler}
+                                    keyExtractor={(item) => item.AnaKelimeID.toString()}
+                                    renderItem={({ item }) => {
+                                        const isEkli = sozlugeEkliMi[item.AnaKelimeID];
+                                        return (
+                                            <View style={styles.listItem}>
+                                                {isEkli ? (
+                                                    <View style={{ flexDirection: "row" }}>
+                                                        <Icon name="close-circle" size={20} color="#e74c3c" style={styles.listIcon} />
+                                                        <Text style={styles.listText}>{item.value}</Text>
+                                                        <FontAwesome name="check-circle" size={24} color="black" />
+                                                    </View>
+                                                ) : (
+                                                    <View style={{ flexDirection: "row" }}>
+                                                        <Icon name="close-circle" size={20} color="#e74c3c" style={styles.listIcon} />
+                                                        <Text style={styles.listText}>{item.value}</Text>
+                                                        <TouchableOpacity onPress={() => SozlugeEkle(item)}>
+                                                            <FontAwesome name="plus" size={24} color="green" />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                )}
+                                            </View>
+                                        );
+                                    }}
+                                />
+                            </View>
+
+                        )}
                         <ProgressBar progress={dogruYüzdesi / 100} style={[styles.progressBar, { marginTop: 15 }]} />
                         <Text>%{dogruYüzdesi} başarılı  </Text>
                         <Text>Tebrik Ederim</Text>

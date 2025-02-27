@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ProgressBars from '../component/ProgressBars';
 import api from '../api/api';
@@ -285,10 +285,12 @@ export default function HomeScreen({ route }) {
   };
 
   return (
-    <View style={styles.mainContainer}>
+    <ScrollView style={styles.mainContainer}>
       <LinearGradient
-        colors={['#5a108f', '#4a0a77', '#3c0663', '#310055']}
-        locations={[0, 0.4, 0.7, 1]}
+      colors={['#4a0a77', '#3c0663', '#310055', '#28003d']}
+locations={[0, 0.4, 0.7, 1]}
+ 
+      
 
 
         style={{ flex: 1 }}
@@ -299,16 +301,9 @@ export default function HomeScreen({ route }) {
             <View style={styles.leftContainer}>
               <GunlukGirisComponent />
             </View>
-
-            <TouchableOpacity onPress={() => navigation.navigate("premium")} style={styles.premiumButton}>
-              <Image source={require("../assets/premium.png")} style={styles.premiumIcon} />
-            </TouchableOpacity>
           </View>
-
-
-
-
           <View style={styles.pickerContainer}>
+          
             <View style={styles.separator} />
             <ProgressBars KullaniciID={userId} SeviyeID={selectedSeviyeID} />
             <View style={styles.separator} />
@@ -324,7 +319,7 @@ export default function HomeScreen({ route }) {
               value={selectedSeviyeID}
               style={pickerSelectStyles}
             />
-            <View style={styles.egitimContainer}>
+            <View>
               <TouchableOpacity
                 style={styles.eğitimButton}
                 onPress={() => { navigation.navigate("Egitim", { id: selectedSeviyeID }) }}
@@ -343,18 +338,30 @@ export default function HomeScreen({ route }) {
             renderContent={renderAccordionContent}
             onChange={updateSections}
           />
+          <Accordion
+            sections={sezonlar}
+            activeSections={activeSections}
+            renderHeader={renderAccordionHeader}
+            renderContent={renderAccordionContent}
+            onChange={updateSections}
+          />
+          <Accordion
+            sections={sezonlar}
+            activeSections={activeSections}
+            renderHeader={renderAccordionHeader}
+            renderContent={renderAccordionContent}
+            onChange={updateSections}
+          />
         </View>
       </LinearGradient>
 
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#3c096c',
-    justifyContent: 'center',
     marginTop: 30
   },
   container: {
@@ -392,7 +399,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
-    fontWeight: '700',
+    fontWeight: "800",
     color: '#e0c3fc',
     flexShrink: 1, // Ensures text doesn’t overflow beyond the container
     numberOfLines: 1, // Truncate long text
@@ -445,14 +452,14 @@ const styles = StyleSheet.create({
     letterSpacing: 1, // Harfler arası boşluk
   },
   lockedText: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#e74c3c', // Kilitli metin için kırmızı
     fontStyle: 'italic',
+    fontWeight:"bold"
   },
   topContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between", // İkonları iki uca ayır
     paddingHorizontal: 15, // Kenar boşluğu ekle
     paddingVertical: 10,
   },
@@ -467,10 +474,10 @@ const styles = StyleSheet.create({
     height: 50, // Biraz daha büyük
     width: 50,
     bottom: 25
-  }, separator: {
+  }, 
+  separator: {
     height: 2, // Çizgi kalınlığı
     backgroundColor: "rgba(255, 255, 255, 0.5)", // Şeffaf beyaz çizgi
-    marginVertical: 4, // Üst ve alt boşluk
     borderRadius: 1, // Daha yumuşak çizgi
   },
 });

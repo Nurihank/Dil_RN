@@ -18,14 +18,32 @@ const Kesfet = () => {
   const [egzersiz, setEgzersiz] = useState()
   const [HangiDilID, setHangiDilID] = useState();
   const [AnaDilID, setAnaDilID] = useState();
+  const [MeslekID, setMeslekID] = useState()
   const [temelKategoriler, setTemelKategoriler] = useState([]);
-  const [egzersizler, setEgzersizler] = useState([]); // Verileri depolamak için state
+  const [egzersizler, setEgzersizler] = useState([]);
+  const [eksikBilgiModal, setEksikBilgiModal] = useState(false)
 
   const getUserInfo = async () => {
     const user = await UserModel.currentUser;
     setHangiDilID(user[0].DilID);
     setAnaDilID(user[0].SectigiDilID);
+    setMeslekID(user[0].MeslekID)
   };
+
+  const KullaniciBilgileriniTamGirmisMi = () => {
+    if (HangiDilID && AnaDilID && MeslekID) {
+      console.log("tamam")
+        setEksikBilgiModal(false)
+    } else {
+        setEksikBilgiModal(true)
+    }
+};
+
+useEffect(() => {
+    KullaniciBilgileriniTamGirmisMi();
+}, [HangiDilID, AnaDilID,MeslekID]);
+
+  
 
   const gunlukGorevTamamlandi = async () => {
 
@@ -345,6 +363,27 @@ const Kesfet = () => {
           </View>
         </View>
       </Modal>
+
+          <Modal
+        visible={eksikBilgiModal}
+        transparent={true}
+        animationType="slide"
+    >
+        <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+                <Text style={styles.modalText}>Bilgilerini Tamamlamamışsın</Text>
+                <Image style={{height:200,width:200}} source={require("../assets/sad.png")}/>
+
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate("SecimEkrani", { id: userID })} 
+                    style={styles.modalButton}
+                >
+                    <Text style={styles.buttonText}>Bilgilerini tamamlamak için dokun</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    </Modal>
+
     </ScrollView>
   );
 };
@@ -468,7 +507,43 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
-  }
+  },modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Arka planı yarı saydam yapar
+},
+modalContent: {
+    width: "80%",
+    padding: 20,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    alignItems: "center",
+    elevation: 5, // Android gölgelendirme
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+},
+modalText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 15,
+},
+modalButton: {
+    backgroundColor: "#3498db",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    marginTop: 10,
+},
+buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+},
 });
 
 export default Kesfet;

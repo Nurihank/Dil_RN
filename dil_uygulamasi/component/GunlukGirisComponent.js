@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import api from '../api/api';
 import { useFocusEffect } from '@react-navigation/native';
@@ -52,8 +52,7 @@ export default function GunlukGirisComponent() {
           break;
         }
       }
-   
-      setGunSerisi(ardışıkGunSayısı);
+      setGunSerisi(10);
     } catch (error) { 
       console.error("Hata:", error);
     }  
@@ -61,27 +60,42 @@ export default function GunlukGirisComponent() {
 
   return (
     <View style={styles.container}>
-    <View style={styles.iconContainer}>
-        <Image style={styles.icon} source={require("../assets/fire.png")} />
-        <Text style={styles.count}>{gunSerisi}</Text> 
+      <View style={styles.iconContainer}>
+        {Array.from({ length: 7 }, (_, index) => {
+          const minGun = Math.max(1, gunSerisi - 3); // İlk 4'lünün başlangıç günü
+          const gunIndex = minGun + index; // Hangi gün gösterilecek
+          const isActive = index < 4; // İlk 4 tanesi renkli, son 3 tanesi gri
+
+          return (
+            <View key={index} style={styles.iconWrapper}>
+              <Text style={[styles.gunText, { color: isActive ? "white" : "gray" }]}>
+                {gunIndex}
+              </Text>
+              <Image
+                style={[styles.icon, { tintColor: isActive ? "#FFD700" : "gray" }]}
+                source={require("../assets/fire.png")}
+              />
+            </View>
+          );
+        })}
       </View>
-    <Text style={styles.title}>Gün</Text>
+      <Text style={styles.title}>Gün</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)", // Şeffaf mor
     borderRadius: 15,
     alignItems: "center",
     justifyContent: "center",
-    width: 120,
-    height: 120,
+    width: 270,
+    height: 100,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
+    marginLeft:50
   },
   iconContainer: {
     flexDirection: "row",
@@ -92,16 +106,15 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginRight: 5,
-    tintColor: "#FFA500", // Turuncu ateş efekti
-  },
-  count: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#FFF",
+    tintColor: "#FFD700", // Turuncu ateş efekti
   },
   title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color:"white"
+  },gunText: {
     fontSize: 14,
-    color: "#F6E6FF",
+    fontWeight: "bold",
   },
 });
 

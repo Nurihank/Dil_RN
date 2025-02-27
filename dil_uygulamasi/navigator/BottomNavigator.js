@@ -29,9 +29,9 @@ export default function BottomNavigator() {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <AntDesign name="home" size={35} color="white" />
+                                <AntDesign name="home" size={35} color="gray" />
                             ) : (
-                                    <AntDesign name="home" size={35} color="gray" />
+                                    <AntDesign name="home" size={35} color="white" />
                             )}
                         </View>
                     );
@@ -39,34 +39,34 @@ export default function BottomNavigator() {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <AntDesign name="user" size={35} color="white" />
+                                <AntDesign name="user" size={35} color="gray" />
                             ) : (
-                                <AntDesign name="user" size={35} color="gray" />)}
+                                <AntDesign name="user" size={35} color="white" />)}
                         </View>
                     );
                 } else if (route.name === "Sozluk") {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <AntDesign name="book" size={35} color="white" />) : (
-                                    <AntDesign name="book" size={35} color="gray" />)}
+                                <AntDesign name="book" size={35} color="gray" />) : (
+                                    <AntDesign name="book" size={35} color="white" />)}
                         </View>
                     );
                 } else if (route.name === 'Egzersiz') {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <MaterialCommunityIcons name="dumbbell" size={35} color="white" />) : (
-                                    <MaterialCommunityIcons name="dumbbell" size={35} color="gray" />)}
+                                <MaterialCommunityIcons name="dumbbell" size={35} color="gray" />) : (
+                                    <MaterialCommunityIcons name="dumbbell" size={35} color="white" />)}
                         </View>
                     );
                 } else if (route.name === 'Temel') {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Ionicons name="newspaper-outline" size={35} color="white" />
+                                <Ionicons name="newspaper-outline" size={35} color="gray" />
                             ) : (
-                                    <Ionicons name="newspaper-outline" size={35} color="gray" />)}
+                                    <Ionicons name="newspaper-outline" size={35} color="white" />)}
                         </View>
                     );
                 }
@@ -76,7 +76,7 @@ export default function BottomNavigator() {
                             {focused ? (
                                 <Feather name="compass" size={35} color="white" />
                             ) : (
-                                    <Feather name="compass" size={35} color="gray" />)}
+                                    <Feather name="compass" size={35} color="white" />)}
                         </View>
                     );
                 }

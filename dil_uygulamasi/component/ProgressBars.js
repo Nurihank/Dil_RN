@@ -37,25 +37,31 @@ export default function ProgressBars({ KullaniciID, SeviyeID }) {
     }, [KullaniciID, SeviyeID])
   );
 
+  const getGradientColors = () => {
+    if (progress < 0.3) return ["#ffcc00", "#ff6600"]; // Mavi → Yeşil
+    if (progress < 0.6) return ["#ffcc00", "#ff6600"]; // Yeşil → Sarı
+    if (progress < 0.9) return ["#ff6600", "#ffcc00"]; // Sarı → Turuncu
+    return ["#ffcc00", "#ff6600"]; // Turuncu → Kırmızı
+  };
+  
+
   return (
     <View style={styles.container}>
-      <View style={styles.ImageContainer}>
+      <View style={styles.progressContainer}>
         {loading ? (
           <ActivityIndicator size="large" color="#00e0ff" />
         ) : (
-          <View style={styles.progressContainer}>
+          <>
             <Text style={styles.progressText}>
               🚀 %{Math.round(progress * 100)} TAMAMLANDI
             </Text>
-
-            {/* Çerçeveli Progress Bar */}
             <View style={styles.progressBarWrapper}>
               <LinearGradient
-                  colors={["red", "#ffcc00"]} // Degrade efekti
+                colors={getGradientColors()}
                 style={[styles.progressFill, { width: `${progress * 100}%` }]}
               />
             </View>
-          </View>
+          </>
         )}
       </View>
     </View>
@@ -63,37 +69,34 @@ export default function ProgressBars({ KullaniciID, SeviyeID }) {
 }
 
 const styles = StyleSheet.create({
-  ImageContainer: {
-    flexDirection: "row",
-  },
-
-  progressContainer: {
-    marginVertical: 12,
+  container: {
     alignItems: "center",
-    width: "100%",
+    justifyContent: "center",
+    paddingVertical: 20,
   },
-
+  progressContainer: {
+    alignItems: "center",
+    width: "90%",
+  },
   progressText: {
-    fontSize: 18, // Daha büyük ve net yazı
+    fontSize: 18,
     fontWeight: "bold",
     color: "#e0e0e0",
-    marginBottom: 10, // Çubuğun üstünde boşluk
+    marginBottom: 10,
     textAlign: "center",
   },
-
   progressBarWrapper: {
-    width: 300, // Daha geniş
-    height: 25, // Daha dolgun
-    backgroundColor: "rgba(255, 255, 255, 0.2)", // Hafif beyaz arkaplan
-    borderRadius: 15, // Daha yuvarlak kenarlar
-    overflow: "hidden", // Taşmayı engeller
-    borderWidth: 2, // Çerçeve efekti
-    borderColor: "#00e0ff", // Şık çerçeve rengi
+    width: "100%",
+    height: 25,
+    backgroundColor: "rgba(255, 255, 255, 0.1)", // Hafif şeffaf beyaz/mor
+    borderRadius: 15,
+    overflow: "hidden",
+    borderWidth: 2,
+    borderColor: "#8a2be2", // Parlak mor çerçeve
   },
-
   progressFill: {
     height: "100%",
-    borderRadius: 15, // İç dolguyu da yuvarlak yap
+    borderRadius: 15,
   },
 });
 

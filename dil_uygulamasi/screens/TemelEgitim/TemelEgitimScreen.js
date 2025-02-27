@@ -246,11 +246,13 @@ export default function TemelEgitimScreen() {
                                     </TouchableOpacity>
                                 ) : (
                                     <View style={styles.bolumContainer}>
-                                        <Image
-                                                source={require("../../assets/lock.png")}
-                                            style={{ width: 30, height: 30 }}
-                                        />
-                                        <Text style={styles.bolumTextKapali}>Kilitli</Text>
+                                    <Image 
+                                        source={{ uri: bolum.Image }} 
+                                        style={[styles.icon,{ opacity: 0.3 }]}
+                                    />
+
+                                
+                                        <Text style={styles.bolumTextKapali}>{bolum.ceviri}</Text>
                                     </View>
                                 )
                             )}
@@ -397,6 +399,10 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     }, iconContainer: {
         flexDirection: "row"
-
+    },disabledImage: {
+        tintColor: "gray", // Resmi gri yapar
+    },bolumTextKapali:{
+        color:"gray"
     }
+    
 });

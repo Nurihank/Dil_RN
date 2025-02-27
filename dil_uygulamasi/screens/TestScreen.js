@@ -112,6 +112,9 @@ export default function TestScreen(route) {
 
 
     const dogruMuCevap = () => {
+        
+        
+
         Sorular()
         if (soruKelimesi.Ceviri === selectedOption.Ceviri) {
             setDogruCevaplar(prevState => [...prevState, soruKelimesi]);
@@ -124,6 +127,12 @@ export default function TestScreen(route) {
         }
     };
 
+    useEffect(()=>{
+        if(selectedOption){
+            dogruMuCevap()
+        }
+    },[selectedOption])
+
     useEffect(() => {
         const Kaydet = async () => {
             try {
@@ -133,7 +142,7 @@ export default function TestScreen(route) {
                         KelimeID: kelime.AnaKelimelerID,
                         dogruMu: 1
                     });
-
+                    console.log("d "+kelime.AnaKelimelerID)
                 }
 
                 // Daha sonra yanlış cevapları kaydet
@@ -143,6 +152,7 @@ export default function TestScreen(route) {
                         KelimeID: kelime.AnaKelimelerID,
                         dogruMu: 0
                     });
+                    console.log("y "+kelime.AnaKelimelerID)
 
                 }
                 console.log("Tüm kelimeler başarıyla kaydedildi.");
@@ -249,11 +259,14 @@ export default function TestScreen(route) {
 
         const isSelected = selectedOption && selectedOption.AnaKelimelerID === item.AnaKelimelerID; // id ile eşleşme kontrolü (id'yi öğeyle sağlamak gerekebilir)
         return (
+            (item) ? 
             <TouchableOpacity onPress={() => setSelectedOption(item)}>
                 <View style={[styles.sikContainer, isSelected && styles.selectedOption]}>
                     <Text style={[styles.sikText, isSelected && styles.selectedText]}>{item.Ceviri}</Text>
                 </View>
             </TouchableOpacity>
+            :
+            null
         );
     };
 
@@ -293,14 +306,6 @@ export default function TestScreen(route) {
                         renderItem={renderSiklar}
                         keyExtractor={(item, index) => index.toString()}
                     />
-                    {
-                        selectedOption ?
-                            <TouchableOpacity onPress={() => dogruMuCevap()}>
-                                <Image source={require("../assets/devam.png")} style={{ height: 50, width: 50 }} />
-                            </TouchableOpacity>
-                            :
-                            null
-                    }
                 </View>
             )}
 
