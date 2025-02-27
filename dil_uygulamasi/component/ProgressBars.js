@@ -53,7 +53,7 @@ export default function ProgressBars({ KullaniciID, SeviyeID }) {
         ) : (
           <>
             <Text style={styles.progressText}>
-              🚀 %{Math.round(progress * 100)} TAMAMLANDI
+              SEVİYE %{Math.round(progress * 100)} TAMAMLANDI
             </Text>
             <View style={styles.progressBarWrapper}>
               <LinearGradient

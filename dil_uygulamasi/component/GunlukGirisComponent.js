@@ -52,7 +52,7 @@ export default function GunlukGirisComponent() {
           break;
         }
       }
-      setGunSerisi(10);
+      setGunSerisi(ardışıkGunSayısı);
     } catch (error) { 
       console.error("Hata:", error);
     }  
@@ -95,17 +95,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    marginLeft:50
   },
   iconContainer: {
     flexDirection: "row",
-    alignItems: "center",
     marginBottom: 5,
   },
   icon: {
     width: 30,
     height: 30,
-    marginRight: 5,
+    marginRight: 7,
     tintColor: "#FFD700", // Turuncu ateş efekti
   },
   title: {

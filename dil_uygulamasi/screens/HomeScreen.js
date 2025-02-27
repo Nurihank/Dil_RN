@@ -28,9 +28,10 @@ export default function HomeScreen({ route }) {
   const [gecilenSezonlar, setGecilenSezonlar] = useState([]);
   const [gecilenSeviyeler, setGecilenSeviyeler] = useState([])
   const [acikSeviyeler, setAcikSeviyeler] = useState([])
+  const [open, setOpen] = useState(false);
 
   const setUserID = async () => {
-    const id = await AsyncStorage.getItem("id");
+    const id = await AsyncStorage.getItem("id"); 
     setUserId(id);
   };
 
@@ -214,10 +215,10 @@ export default function HomeScreen({ route }) {
               {isCompletedSeason ? (
                 <View>
                   <FontAwesome name="check-circle" size={24} color="#2ecc71" />
-                  <Text style={styles.headerText}>{content.Ceviri}</Text>
+                  <Text style={[styles.headerText, { color: "#856098" }]}>{content.Ceviri}</Text>
                 </View>
               ) : (
-                <Text style={styles.headerText}>{content.Ceviri}</Text>
+                  <Text style={[styles.headerText]}>{content.Ceviri}</Text>
               )}
             </View>
           ) : (
@@ -252,14 +253,14 @@ export default function HomeScreen({ route }) {
                 <>
                   <Text style={styles.bolumText}>{bolum.Ceviri}</Text>
                   <TouchableOpacity style={styles.iconContainer} onPress={() => Oyun(bolum.BolumID, sezonID, selectedSeviyeID)}>
-                    <FontAwesome name="gamepad" size={24} color="#3498db" />
+                    <FontAwesome name="gamepad" size={24} color="#2d0b45" />
                   </TouchableOpacity>
                 </>
               ) : (
                 <>
-                  <Text style={styles.bolumText}>{bolum.Ceviri}</Text>
+                    <Text style={[styles.bolumText, { color:"#6a667a"}]}>{bolum.Ceviri}</Text>
                   <TouchableOpacity style={styles.lockediconContainer} >
-                    <Fontisto name="locked" size={24} color="black" />
+                      <Fontisto name="locked" size={24} color="#6a667a" />
                   </TouchableOpacity>
                 </>)}
             </View>
@@ -287,10 +288,10 @@ export default function HomeScreen({ route }) {
   return (
     <ScrollView style={styles.mainContainer}>
       <LinearGradient
-      colors={['#4a0a77', '#3c0663', '#310055', '#28003d']}
-locations={[0, 0.4, 0.7, 1]}
- 
-      
+        colors={['#693D89', '#5A227E', '#4A1769', '#3C0663', '#2A0040']}
+        locations={[0, 0.2, 0.4, 0.7, 1]}
+
+
 
 
         style={{ flex: 1 }}
@@ -298,9 +299,8 @@ locations={[0, 0.4, 0.7, 1]}
         <View style={styles.container}>
 
           <View style={styles.topContainer}>
-            <View style={styles.leftContainer}>
+            
               <GunlukGirisComponent />
-            </View>
           </View>
           <View style={styles.pickerContainer}>
           
@@ -311,14 +311,17 @@ locations={[0, 0.4, 0.7, 1]}
             <Text style={[styles.pickerLabel]}>
               Seviye Seç:
             </Text>
-
-            <RNPickerSelect
-              placeholder={{ label: "Bir seviye seçin", value: null }}
-              items={acikSeviyeler} // Sadece açık seviyeler
-              onValueChange={(value) => setSelectedSeviyeID(value)}
-              value={selectedSeviyeID}
-              style={pickerSelectStyles}
-            />
+            
+            
+              <RNPickerSelect
+                placeholder={{ label: "Bir seviye seçin", value: null }}
+                items={acikSeviyeler} // Sadece açık seviyeler
+                onValueChange={(value) => setSelectedSeviyeID(value)}
+                value={selectedSeviyeID}
+                style={pickerSelectStyles}
+              />
+     
+            
             <View>
               <TouchableOpacity
                 style={styles.eğitimButton}
@@ -327,7 +330,6 @@ locations={[0, 0.4, 0.7, 1]}
                 <FontAwesome name="book" size={24} color="#fff" style={styles.eğitimIcon} />
                 <Text style={styles.eğitimText}>Seviye Eğitimi</Text>
               </TouchableOpacity>
-
             </View>
 
           </View>
@@ -370,7 +372,7 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: '100%',
-    padding: 7
+    padding: 7,
   },
   pickerLabel: {
     fontSize: 25, // Çok büyük olmadan belirgin
@@ -380,6 +382,7 @@ const styles = StyleSheet.create({
     textAlign: 'left', // **Sola hizalandı**
     paddingLeft: 8, // Biraz içeriden başlasın
     textTransform: 'capitalize', // Baş harfi büyük
+    marginLeft:16
   },
   headerContainer: {
     flexDirection: 'row',
@@ -406,7 +409,7 @@ const styles = StyleSheet.create({
     ellipsizeMode: 'tail', // Add "..." at the end if text is too long
   },
   accordionContent: {
-    backgroundColor: '#ecf0f1', // Açık gri tonu
+    backgroundColor: '#b09fcf', // Açık gri tonu
     padding: 15,
     borderRadius: 12,
     marginBottom: 8,
@@ -420,8 +423,9 @@ const styles = StyleSheet.create({
   },
   bolumText: {
     fontSize: 18,
-    color: '#2c3e50',
+    color: '#56307F ',
     flex: 1,
+    fontWeight:"600"
   },
   iconContainer: {
     paddingLeft: 10,
@@ -452,20 +456,17 @@ const styles = StyleSheet.create({
     letterSpacing: 1, // Harfler arası boşluk
   },
   lockedText: {
-    fontSize: 17,
-    color: '#e74c3c', // Kilitli metin için kırmızı
+    fontSize: 16,
+    color: '#A08CB8', // Kilitli metin için kırmızı
     fontStyle: 'italic',
     fontWeight:"bold"
   },
   topContainer: {
-    flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 15, // Kenar boşluğu ekle
-    paddingVertical: 10,
+    justifyContent:"center"
   },
   leftContainer: {
-    flex: 1, // Günlük giriş ikonunu sola it
-    alignItems: "flex-start",
+    alignItems: "center",
   },
   premiumButton: {
     alignItems: "flex-end",
@@ -483,31 +484,34 @@ const styles = StyleSheet.create({
 });
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     borderWidth: 2,
-    borderColor: '#7B68EE', // Yumuşak bir mor tonu (Pastel)
-    borderRadius: 12, // Hafif daha oval
-    backgroundColor: '#F8F8FF', // Hafif gri-beyaz arası soft renk
+    borderColor: '#4E1A66', // Daha koyu ve doygun mor tonu
+    borderRadius: 14, // Hafif daha oval
+    backgroundColor: '#32184D', // Derin mor (soft ve karanlık)
     fontSize: 17,
-    color: '#4B0082', // Koyu mor tonu (Soft ama belirgin)
-    elevation: 4, // Hafif yükseltme efekti
-    shadowColor: "#7B68EE",
+    color: '#D8B4FF', // Açık lila tonu (Daha görünür ve şık)
+    elevation: 5, // Hafif yükseltme efekti
+    shadowColor: "#B86EF3", // Hafif neonumsu mor gölge
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
   },
   inputAndroid: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderWidth: 2,
-    borderColor: '#7B68EE', // Android için de aynı border
-    borderRadius: 12,
-    backgroundColor: '#F8F8FF',
+    borderColor: '#4E1A66', // Aynı koyu mor çerçeve
+    borderRadius: 25,
+    backgroundColor: '#32184D', // Aynı derin mor tonu
     fontSize: 17,
-    color: '#4B0082',
-
+    color: 'white', // Android için de açık lila rengi
+    fontWeight:"bold",
+    width:"90%",
+    marginLeft:18
   },
 });
+
 
 

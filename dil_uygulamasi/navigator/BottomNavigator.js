@@ -114,25 +114,25 @@ export default function BottomNavigator() {
 const styles = StyleSheet.create({
     tabBar: {
         position: 'absolute',
-        height: 65, // Hafif büyük modern görünüm
+        height: 65, 
         borderTopWidth: 0,
         elevation: 0,
-        backgroundColor: '#3c0663', // %50 şeffaflık
+        backgroundColor: '#3c0663', 
         borderRadius: 20,
         marginHorizontal: 10,
         marginBottom: 7,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15, // Daha hafif gölge
+        shadowOpacity: 0.15, 
         shadowRadius: 3,
     },
     tabBarLabel: {
         fontSize: 12,
         marginBottom: 5,
-        color: 'white', // Açık mor, uyumlu yazı rengi
+        color: 'white', 
     },
     tabIcon: {
-        color: '#FFFFFF', // Beyaz ikonlar, net görünüm
+        color: '#FFFFFF', 
     }
 });
 
