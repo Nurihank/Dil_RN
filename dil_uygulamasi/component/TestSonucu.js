@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import api from '../api/api';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
@@ -7,6 +7,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 export default function TestSonucu({ KullaniciID }) {
     const [testData, setTestData] = useState([]);
     const [loading, setLoading] = useState(true); // Yüklenme durumu
+    const [testSonucuModal, setTestSonucuModal] = useState(false)
     const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
     const navigation = useNavigation();
@@ -31,12 +32,40 @@ export default function TestSonucu({ KullaniciID }) {
         }, [KullaniciID])
     );
 
+    const TestSonucu = ({ item }) => {
+        // `testData` içinden eşleşenleri filtrele
+        const filtered = testData.filter(test => test.SeviyeAdi === item);
+        console.log(filtered);
+
+        return (
+            <View>
+                <View>
+                    <Text >{filtered[0].SeviyeAdi}</Text>
+                </View>
+
+                <FlatList
+                    data={filtered}
+                    keyExtractor={(item) => item.AnaKelimelerID?.toString()}
+                    nestedScrollEnabled={true}
+                    renderItem={({ item }) => (
+                        <View>
+                            <Text>{item.AnaKelimelerID}</Text>
+                        </View>
+                    )}
+                />
+
+            </View>
+        );
+    };
+
+
     const getLevelStats = (level) => {
         const filtered = testData.filter(item => item.SeviyeAdi === level);
         const total = filtered.length;
         const correct = filtered.filter(item => item.dogruMu === 1).length;
         return total === 0 ? 0 : (correct / total) * 100;
     };
+
 
     const renderProgressBar = ({ item }) => {
         const fill = getLevelStats(item);
@@ -70,6 +99,9 @@ export default function TestSonucu({ KullaniciID }) {
     return (
         testData.length > 0 ? (
             <View style={{ flex: 1 }}>
+                <TouchableOpacity onPress={() => setTestSonucuModal(true)}>
+                    <Text>Test Sonucunu Görmek İçin Tıkla</Text>
+                </TouchableOpacity>
                 <FlatList
                     data={levels}
                     renderItem={renderProgressBar}
@@ -78,6 +110,22 @@ export default function TestSonucu({ KullaniciID }) {
                     contentContainerStyle={styles.container}
                     nestedScrollEnabled={true}
                 />
+                <Modal
+                    visible={testSonucuModal}
+                    transparent={true}
+                >
+                    <View>
+                        <TouchableOpacity onPress={() => setTestSonucuModal(false)}>
+                            <Text>X</Text>
+                        </TouchableOpacity>
+                        <FlatList
+                            data={levels}
+                            renderItem={TestSonucu}
+                            keyExtractor={(item) => item.toString()}
+                            nestedScrollEnabled={true}
+                        />
+                    </View>
+                </Modal>
             </View>
         ) : (
             <View style={styles.noDataContainer}>

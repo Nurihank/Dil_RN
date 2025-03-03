@@ -5,7 +5,7 @@ import * as Speech from 'expo-speech';
 import { useNavigation } from '@react-navigation/native';
 
 export default function HatalarScreen(route) {
-  const [kelimeler, setKelimeler] = useState();
+  const [kelimeler, setKelimeler] = useState([]);
   const [gozdenGecirModal, setGozdenGecirModal] = useState(false)
   const [gozdenGecirilenKelime, setGozdenGecirilenKelime] = useState(null)
 
@@ -102,55 +102,64 @@ export default function HatalarScreen(route) {
   );
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text>
-          KAPAT
-        </Text>
-      </TouchableOpacity>
+    (kelimeler.length > 0) ?
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text>
+            KAPAT
+          </Text>
+        </TouchableOpacity>
 
-      <View style={{ alignItems: "center", marginTop: 25 }} >
-        <Text style={styles.headerText}>Hata Yaptığın Kelimeler</Text>
-      </View>
-      <FlatList
-        data={kelimeler}
-        renderItem={renderKelime}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.listContainer}
-      />
-      <Modal visible={gozdenGecirModal} transparent animationType="slide">
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity onPress={() => setGozdenGecirModal(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>X</Text>
-            </TouchableOpacity>
+        <View style={{ alignItems: "center", marginTop: 25 }} >
+          <Text style={styles.headerText}>Hata Yaptığın Kelimeler</Text>
+        </View>
+        <FlatList
+          data={kelimeler}
+          renderItem={renderKelime}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={styles.listContainer}
+        />
+        <Modal visible={gozdenGecirModal} transparent animationType="slide">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity onPress={() => setGozdenGecirModal(false)} style={styles.closeButton}>
+                <Text style={styles.closeButtonText}>X</Text>
+              </TouchableOpacity>
 
-            {gozdenGecirilenKelime && (
-              <>
-                {route.route.params.egzersizTuru == 0 ?
-                  <Text style={styles.modalWord}>{gozdenGecirilenKelime.Value}</Text>
-                  :
-                  <Text style={styles.modalWord}>{gozdenGecirilenKelime.value}</Text>
-                }
-                <Text style={styles.modalTranslation}>{gozdenGecirilenKelime.Ceviri}</Text>
+              {gozdenGecirilenKelime && (
+                <>
+                  {route.route.params.egzersizTuru == 0 ?
+                    <Text style={styles.modalWord}>{gozdenGecirilenKelime.Value}</Text>
+                    :
+                    <Text style={styles.modalWord}>{gozdenGecirilenKelime.value}</Text>
+                  }
+                  <Text style={styles.modalTranslation}>{gozdenGecirilenKelime.Ceviri}</Text>
 
-                <TouchableOpacity onPress={() => speakWord(gozdenGecirilenKelime)} style={styles.speakerButton}>
-                  <Image source={require("../../../assets/microphone.png")} style={styles.speakerIcon} />
-                </TouchableOpacity>
-
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity style={styles.learnedButton} onPress={() => Ogrendim(gozdenGecirilenKelime)}>
-                    <Text style={styles.buttonText}>Öğrendim</Text>
+                  <TouchableOpacity onPress={() => speakWord(gozdenGecirilenKelime)} style={styles.speakerButton}>
+                    <Image source={require("../../../assets/microphone.png")} style={styles.speakerIcon} />
                   </TouchableOpacity>
 
-                </View>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.learnedButton} onPress={() => Ogrendim(gozdenGecirilenKelime)}>
+                      <Text style={styles.buttonText}>Öğrendim</Text>
+                    </TouchableOpacity>
 
-    </View>
+                  </View>
+                </>
+              )}
+            </View>
+          </View>
+        </Modal>
+      </View>
+      :
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text>
+            KAPAT
+          </Text>
+        </TouchableOpacity>
+        <Text>Şu anda Hata Yaptığın Kelime bulunmuyor</Text>
+      </View>
   );
 }
 
