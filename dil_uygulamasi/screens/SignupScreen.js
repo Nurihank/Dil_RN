@@ -1,6 +1,6 @@
 import { Alert, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons'; // FontAwesome kullanarak ikonlar ekliyoruz
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,17 +12,17 @@ export default function SignupScreen() {
     const [sifre, setSifre] = useState("");
     const navigation = useNavigation();
 
-    const TestIDKaydet = async(userId,testId)=>{
+    const TestIDKaydet = async (userId, testId) => {
 
         await AsyncStorage.removeItem("testID"); //TESTİD'Yİ GÖNDERDİK SİLEBİLİRİZ
 
-        if(testId){
-            const response = await api.post("/kullanici/TestIDKaydet",{
-                TestID:testId,
+        if (testId) {
+            const response = await api.post("/kullanici/TestIDKaydet", {
+                TestID: testId,
                 KullaniciID: userId
             })
             console.log(response.data.message)
-        }else{
+        } else {
             console.log("Test id yok")
         }
     }
@@ -30,7 +30,7 @@ export default function SignupScreen() {
     const handleSignup = async () => {
 
         const testID = await AsyncStorage.getItem("testID")
-        console.log("testID "+testID)
+        console.log("testID " + testID)
 
         try {
             const response = await api.post("/kullanici/signup", {
@@ -40,8 +40,8 @@ export default function SignupScreen() {
             });
             console.log(response.data.status)
             if (response.data.status === "SUCCESS") {
-                
-               TestIDKaydet(response.data.userId,testID)
+
+                TestIDKaydet(response.data.userId, testID)
 
                 const responseSignin = await api.post("/kullanici/signin", {
                     eposta: email,
@@ -65,7 +65,13 @@ export default function SignupScreen() {
             console.log(error);
         }
     };
-
+    useFocusEffect(
+        useCallback(() => {
+            setEmail(null)
+            setSifre(null)
+            setKullaniciAdi(null)
+        }, [])
+    )
     return (
         <KeyboardAvoidingView style={styles.container}>
             <View style={styles.textContainer}>

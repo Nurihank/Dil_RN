@@ -1,6 +1,6 @@
 import { Alert, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons'; // FontAwesome kullanarak ikonlar ekliyoruz
 import api from '../api/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -56,6 +56,12 @@ export default function SigninScreen() {
         }
     };
 
+    useFocusEffect(
+        useCallback(()=>{
+            setEposta(null)
+            setSifre(null)
+        },[])
+    )
     const handleSignup = () => {
         navigation.navigate("Signup");
     };

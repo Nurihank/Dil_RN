@@ -112,9 +112,6 @@ export default function TestScreen(route) {
 
 
     const dogruMuCevap = () => {
-        
-        
-
         Sorular()
         if (soruKelimesi.Ceviri === selectedOption.Ceviri) {
             setDogruCevaplar(prevState => [...prevState, soruKelimesi]);

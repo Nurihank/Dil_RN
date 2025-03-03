@@ -33,17 +33,17 @@ const Kesfet = () => {
   const KullaniciBilgileriniTamGirmisMi = () => {
     if (HangiDilID && AnaDilID && MeslekID) {
       console.log("tamam")
-        setEksikBilgiModal(false)
+      setEksikBilgiModal(false)
     } else {
-        setEksikBilgiModal(true)
+      setEksikBilgiModal(true)
     }
-};
+  };
 
-useEffect(() => {
+  useEffect(() => {
     KullaniciBilgileriniTamGirmisMi();
-}, [HangiDilID, AnaDilID,MeslekID]);
+  }, [HangiDilID, AnaDilID, MeslekID]);
 
-  
+
 
   const gunlukGorevTamamlandi = async () => {
 
@@ -225,174 +225,180 @@ useEffect(() => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 70 }}>
-      <TouchableOpacity onPress={() => navigation.navigate("premium")}>
-        <View style={styles.premiumBanner}>
-          <Text style={styles.bannerText}>🌟 Premium Üye Ol! Daha Fazla Özellik Keşfet 🌟</Text>
-        </View>
-      </TouchableOpacity>
-      <View style={styles.content}>
-        <View style={styles.animationContent}>
-          <Image source={require('../assets/meditation.png')} style={{ width: 200, height: 200 }} />
-
-          <Text style={styles.first}>Bugüne Hazır Mısın? </Text>
-        </View>
-        <View style={[styles.area]}>
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.headerText}>Günlük Yapılması Gerekenler</Text>
-
-          </View>
-          <View>
-            <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Mesleki Eğitim {meslekiEgitim}/3 </Text>
-              {meslekiEgitim >= 3 ?
-                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
-                :
-                <TouchableOpacity onPress={() => navigation.navigate("Ana Sayfa")}>
-                  <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
-                </TouchableOpacity>
-
-              }
-
-            </View>
-            <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Temel Eğitim {temeliEgitim}/3 </Text>
-              {temeliEgitim >= 3 ?
-                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
-                :
-                <TouchableOpacity onPress={() => navigation.navigate("Temel")}>
-                  <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
-                </TouchableOpacity>
-
-              }
-            </View>
-            <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Sözlük Tekrarı </Text>
-              {sozlukTekrari === 1 ? (
-                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
-              ) : (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => navigation.navigate("Sozluk")}>
-                      <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-            <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Hatalara Bakma</Text>
-              {hatalaraBakma === 1 ? (
-                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
-              ) : (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
-                      <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-            <View style={styles.GorevAlani}>
-              <Text style={styles.text}>Günlük Egzersiz </Text>
-              {egzersiz === 1 ? (
-                <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
-              ) : (
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
-                      <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          </View>
-        </View>
-        <View style={styles.area}>
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.headerText}>Temel Kelimelerde Eksiğin Mi Var ?</Text>
-          </View>
-          <FlatList
-            data={temelKategoriler}
-            horizontal
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => navigation.navigate("Temel")}>
-                <View style={styles.card}>
-                  <Image source={{ uri: item.Image }} style={styles.image} />
-                  <Text style={styles.text}>{item.Ceviri}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-        <View style={[styles.area]}>
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.headerText}>Egzersiz Yapmak İster Misin ?</Text>
-          </View>
-          <FlatList
-            data={egzersizler}
-            horizontal
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
-                <View style={[styles.card]}>
-                  <Text style={styles.text}>{item.EgzersizAdi}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      </View>
-
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+      <LinearGradient
+        colors={['#693D89', '#5A227E', '#4A1769', '#3C0663', '#2A0040']}
+        locations={[0, 0.2, 0.4, 0.7, 1]}
+        style={{ flex: 1 }}
       >
-        <View style={styles.overlay}>
-          <View style={styles.modalView}>
-            <Text style={styles.title}>Premium Üye Ol!</Text>
-            <Text style={styles.message}>
-              Tüm özelliklere erişmek için premium olabilirsin.
-            </Text>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.buttonText}>Kapat</Text>
-            </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("premium")}>
+          <View style={styles.premiumBanner}>
+            <Text style={styles.bannerText}>🌟 Premium Üye Ol! Daha Fazla Özellik Keşfet 🌟</Text>
+          </View>
+        </TouchableOpacity>
+        <View style={styles.content}>
+          <View style={styles.animationContent}>
+            <Image source={require('../assets/meditation.png')} style={{ width: 200, height: 200 }} />
+
+            <Text style={styles.first}>Bugüne Hazır Mısın? </Text>
+          </View>
+          <View style={[styles.area]}>
+            <View style={{ alignItems: "center" }}>
+              <Text style={styles.headerText}>Günlük Yapılması Gerekenler</Text>
+
+            </View>
+            <View>
+              <View style={styles.GorevAlani}>
+                <Text style={styles.text}>Mesleki Eğitim {meslekiEgitim}/3 </Text>
+                {meslekiEgitim >= 3 ?
+                  <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+                  :
+                  <TouchableOpacity onPress={() => navigation.navigate("Ana Sayfa")}>
+                    <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
+                  </TouchableOpacity>
+
+                }
+
+              </View>
+              <View style={styles.GorevAlani}>
+                <Text style={styles.text}>Temel Eğitim {temeliEgitim}/3 </Text>
+                {temeliEgitim >= 3 ?
+                  <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+                  :
+                  <TouchableOpacity onPress={() => navigation.navigate("Temel")}>
+                    <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
+                  </TouchableOpacity>
+
+                }
+              </View>
+              <View style={styles.GorevAlani}>
+                <Text style={styles.text}>Sözlük Tekrarı </Text>
+                {sozlukTekrari === 1 ? (
+                  <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+                ) : (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Sozluk")}>
+                      <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+              <View style={styles.GorevAlani}>
+                <Text style={styles.text}>Hatalara Bakma</Text>
+                {hatalaraBakma === 1 ? (
+                  <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+                ) : (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
+                      <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+              <View style={styles.GorevAlani}>
+                <Text style={styles.text}>Günlük Egzersiz </Text>
+                {egzersiz === 1 ? (
+                  <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+                ) : (
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
+                      <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            </View>
+          </View>
+          <View style={styles.area}>
+            <View style={{ alignItems: "center" }}>
+              <Text style={styles.headerText}>Temel Kelimelerde Eksiğin Mi Var ?</Text>
+            </View>
+            <FlatList
+              data={temelKategoriler}
+              horizontal
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => navigation.navigate("Temel")}>
+                  <View style={styles.card}>
+                    <Image source={{ uri: item.Image }} style={styles.image} />
+                    <Text style={styles.text}>{item.Ceviri}</Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+          <View style={[styles.area]}>
+            <View style={{ alignItems: "center" }}>
+              <Text style={styles.headerText}>Egzersiz Yapmak İster Misin ?</Text>
+            </View>
+            <FlatList
+              data={egzersizler}
+              horizontal
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => navigation.navigate("Egzersiz")}>
+                  <View style={[styles.card]}>
+                    <Text style={styles.text}>{item.EgzersizAdi}</Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
           </View>
         </View>
-      </Modal>
 
-          <Modal
-        visible={eksikBilgiModal}
-        transparent={true}
-        animationType="slide"
-    >
-        <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-                <Text style={styles.modalText}>Bilgilerini Tamamlamamışsın</Text>
-                <Image style={{height:200,width:200}} source={require("../assets/sad.png")}/>
 
-                <TouchableOpacity 
-                    onPress={() => navigation.navigate("SecimEkrani", { id: userID })} 
-                    style={styles.modalButton}
-                >
-                    <Text style={styles.buttonText}>Bilgilerini tamamlamak için dokun</Text>
-                </TouchableOpacity>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.overlay}>
+            <View style={styles.modalView}>
+              <Text style={styles.title}>Premium Üye Ol!</Text>
+              <Text style={styles.message}>
+                Tüm özelliklere erişmek için premium olabilirsin.
+              </Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.buttonText}>Kapat</Text>
+              </TouchableOpacity>
             </View>
-        </View>
-    </Modal>
+          </View>
+        </Modal>
 
-    </ScrollView>
+        <Modal
+          visible={eksikBilgiModal}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>Bilgilerini Tamamlamamışsın</Text>
+              <Image style={{ height: 200, width: 200 }} source={require("../assets/sad.png")} />
+
+              <TouchableOpacity
+                onPress={() => navigation.navigate("SecimEkrani", { id: userID })}
+                style={styles.modalButton}
+              >
+                <Text style={styles.buttonText}>Bilgilerini tamamlamak için dokun</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </LinearGradient>
+
+    </ScrollView >
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:"#E2DAD6",
-    marginTop:30
+    backgroundColor: "#E2DAD6",
+    marginTop: 30
   },
   premiumBanner: {
     width: "100%",
@@ -466,7 +472,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderTopWidth: 3,
     borderTopColor: '#2E3F5F', // Lavanta grisi çizgi,
-    
+
   },
   headerText: {
     color: '#7FA1C3', // Açık mor, zarif bir başlık
@@ -479,8 +485,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     margin: 5,
     marginLeft: 10,
-    justifyContent:"space-between",
-    
+    justifyContent: "space-between",
+
   },
   card: {
     backgroundColor: '#EDE5E5', // Canlı Mor, Kartların Arka Planı
@@ -498,7 +504,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 60, // **İçindeki resmin sabit boyutu**
-    height: 60, 
+    height: 60,
     borderRadius: 8,
     marginBottom: 5,
   },
@@ -507,13 +513,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
-  },modalContainer: {
+  }, modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Arka planı yarı saydam yapar
-},
-modalContent: {
+  },
+  modalContent: {
     width: "80%",
     padding: 20,
     backgroundColor: "#fff",
@@ -524,26 +530,26 @@ modalContent: {
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-},
-modalText: {
+  },
+  modalText: {
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 15,
-},
-modalButton: {
+  },
+  modalButton: {
     backgroundColor: "#3498db",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
     marginTop: 10,
-},
-buttonText: {
+  },
+  buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
     textAlign: "center",
-},
+  },
 });
 
 export default Kesfet;

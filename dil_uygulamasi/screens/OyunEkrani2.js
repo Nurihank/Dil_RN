@@ -28,7 +28,7 @@ export default function OyunEkrani2(props) {
     const [oyunDurdu, setOyunDurdu] = useState(false)
     const navigation = useNavigation();
     const [cevap, setCevap] = useState(null)
-    const [bolumBittiMi,setBolumBittiMi] =useState(false)
+    const [bolumBittiMi, setBolumBittiMi] = useState(false)
 
     const getUserID = async () => {
         const id = await AsyncStorage.getItem("id");
@@ -61,20 +61,12 @@ export default function OyunEkrani2(props) {
     const DigerSoru = async () => {
         setSeciliSik(null);
         setSecili(null)
-       
+        setDevamEtButton(false)
         if (soru >= 2) {
-
-            if (yanlisKelimeler.length > 1) {
-                BolumBitti(0)
-                setBasarisizOyunSonuAlertModal(true)
-            } else {
-                BolumBitti(1)
-                setBasariliOyunSonuAlertModal(true)
-            }
+            setBolumBittiMi(true)
         }
         else {
             setSoru(soru + 1);
-            setDevamEtButton(false);
             setSeciliSik(null);
             const data = kelimeler;
 
@@ -93,56 +85,7 @@ export default function OyunEkrani2(props) {
         }
     }
 
-    const BolumBitti = async (GectiMi) => {
-        const currentDate = new Date();
-        
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const day = String(currentDate.getDate()).padStart(2, '0');
 
-        const formattedDate = `${year}-${month}-${day}`;
-        
-        const response = await api.post("/kullanici/OynananOyun", {
-            KullaniciID: userId,
-            BolumID: props.route.params.BolumID,
-            Date: formattedDate,
-            GectiMi: GectiMi
-        })
-        if (response.data.message == "succes") {
-            setBolumBittiMi(true)
-            console.log(yanlisKelimeler.length)
-            const sezonunBittiMi = await api.get("/kullanici/SezonBittiMiKontrol", {
-                params: {
-                    KullaniciID: userId,
-                    SezonID: props.route.params.SezonID
-                }
-            })
-            if (sezonunBittiMi.data.sezonBittiMi) {
-                const sezonEkle = await api.post("/kullanici/GecilenSezonEkle", {
-                    KullaniciID: userId,
-                    SezonID: props.route.params.SezonID,
-                    Date: formattedDate
-                })
-                if (sezonEkle.data.message == "succes") {
-                    const seviyeBittiMiKontrol = await api.get("/kullanici/SeviyeBittiMiKontrol", {
-                        params: {
-                            KullaniciID: userId,
-                            SeviyeID: props.route.params.SeviyeID
-                        }
-                    })
-                    if (seviyeBittiMiKontrol.data.seviyeBittiMi) {
-                        const seviyeEkle = await api.post("/kullanici/GecilenSeviyeEkle", {
-                            KullaniciID: userId,
-                            SeviyeID: props.route.params.SeviyeID,
-                            Date: formattedDate
-                        })
-                    }
-                }
-            }
-        }else{
-            console.log(yanlisKelimeler.length)
-        }
-    }
 
     const KelimeleriGetir = async () => {
         try {
@@ -206,18 +149,66 @@ export default function OyunEkrani2(props) {
             },
         });
     };
+
+    const BolumBitti = async (GectiMi) => {
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}`;
+
+        const response = await api.post("/kullanici/OynananOyun", {
+            KullaniciID: userId,
+            BolumID: props.route.params.BolumID,
+            Date: formattedDate,
+            GectiMi: GectiMi
+        })
+        if (response.data.message == "succes") {
+            console.log(yanlisKelimeler.length)
+            const sezonunBittiMi = await api.get("/kullanici/SezonBittiMiKontrol", {
+                params: {
+                    KullaniciID: userId,
+                    SezonID: props.route.params.SezonID
+                }
+            })
+            if (sezonunBittiMi.data.sezonBittiMi) {
+                const sezonEkle = await api.post("/kullanici/GecilenSezonEkle", {
+                    KullaniciID: userId,
+                    SezonID: props.route.params.SezonID,
+                    Date: formattedDate
+                })
+                if (sezonEkle.data.message == "succes") {
+                    const seviyeBittiMiKontrol = await api.get("/kullanici/SeviyeBittiMiKontrol", {
+                        params: {
+                            KullaniciID: userId,
+                            SeviyeID: props.route.params.SeviyeID
+                        }
+                    })
+                    if (seviyeBittiMiKontrol.data.seviyeBittiMi) {
+                        const seviyeEkle = await api.post("/kullanici/GecilenSeviyeEkle", {
+                            KullaniciID: userId,
+                            SeviyeID: props.route.params.SeviyeID,
+                            Date: formattedDate
+                        })
+                    }
+                }
+            }
+        } else {
+            console.log(yanlisKelimeler.length)
+        }
+    }
+
     const CevapDogruMu = (cevap) => {
         setSecili(true)
-        setDevamEtButton(true)
-        let yeniDogruKelimeler = dogruKelimeler;    
 
         if (cevap.value === anaKelime.value) {
             console.log("doğru")
             setDogruYüzdesi(dogruYüzdesi + 33)
             setCevap(true)
             if (cevap) {
-                yeniDogruKelimeler = [...dogruKelimeler, anaKelime];
-                setDogruKelimeler(yeniDogruKelimeler);  // Yanlış kelimeleri güncelle
+                setDogruKelimeler(prevDogruKelimeler => [...prevDogruKelimeler, anaKelime]);  // Yanlış kelimeleri güncelle
             }
             if (soru >= 2) {
                 DigerSoru()
@@ -225,20 +216,27 @@ export default function OyunEkrani2(props) {
                 setDevamEtButton(true); //eğer son soru değilse devam et buttonu aktif oluyo
             }
         } else {
-            setYanlisKelimeler(prevYanlisKelimeler =>[...prevYanlisKelimeler, anaKelime] );
+            console.log("yanlis")
+            setYanlisKelimeler(prevYanlisKelimeler => [...prevYanlisKelimeler, anaKelime]);
             setCevap(false)
             if (cevap) {
                 if (soru >= 2) {
-                    DigerSoru(); 
+                    DigerSoru()
                 } else {
                     setDevamEtButton(true);
                 }
             }
-            
-            
+
+
         }
         setSeciliSik(cevap);
     };
+
+    useEffect(() => {
+        if (seciliSik) {
+            CevapDogruMu(seciliSik)
+        }
+    }, [seciliSik])
 
     useFocusEffect(
         React.useCallback(() => {
@@ -268,27 +266,8 @@ export default function OyunEkrani2(props) {
         }
     }, [soru, kelimeler]);
 
-    const renderItem = ({ item }) => {
-        const isSelected = item === seciliSik;
-        const isCorrect =  secili && item === anaKelime ; // Doğru cevabı sadece seçim yapıldıysa göster
-        const isIncorrect = isSelected && item !== anaKelime; // Yanlış şık seçildiyse kırmızı yap
-    
-        return (
-            <TouchableOpacity
-                onPress={() => CevapDogruMu(item)}
-                disabled={secili} // Şık seçildikten sonra butonlar devre dışı olacak
-                style={[
-                    styles.answerItem,
-                    isCorrect && styles.correctAnswer, // Doğru şık sadece seçim sonrası yeşil olacak
-                    isIncorrect && styles.incorrectAnswer // Yanlış seçilen şık kırmızı olacak
-                ]}
-            >
-                <Text style={styles.answerText}>{item.ceviri}</Text>
-            </TouchableOpacity>
-        );
-    };
-    
-    
+
+
     useEffect(() => {
         const checkSozlugeEkliMi = async () => {
             let statusMap = {};
@@ -304,11 +283,42 @@ export default function OyunEkrani2(props) {
             setSozlugeEkliMi(statusMap); //{"10": false, "9": true} bu şekilde ekliyor önemli
         };
         checkSozlugeEkliMi();
-  
-        if(bolumBittiMi){
+
+    }, [yanlisKelimeler]);
+
+    useEffect(() => {
+        if (bolumBittiMi) {
             yanlisKelimeleriKaydetme(yanlisKelimeler)
+            if (yanlisKelimeler.length > 1) {
+                BolumBitti(0)
+                setBasarisizOyunSonuAlertModal(true)
+            } else {
+                BolumBitti(1)
+                setBasariliOyunSonuAlertModal(true)
+            }
         }
-    }, [yanlisKelimeler,bolumBittiMi]);
+    }, [bolumBittiMi, yanlisKelimeler, dogruKelimeler])
+
+    const renderItem = ({ item }) => {
+        const isSelected = item === seciliSik;
+        const isCorrect = secili && item === anaKelime; // Doğru cevabı sadece seçim yapıldıysa göster
+        const isIncorrect = isSelected && item !== anaKelime; // Yanlış şık seçildiyse kırmızı yap
+
+        return (
+            <TouchableOpacity
+                onPress={() => setSeciliSik(item)}
+                disabled={secili} // Şık seçildikten sonra butonlar devre dışı olacak
+                style={[
+                    styles.answerItem,
+                    isCorrect && styles.correctAnswer, // Doğru şık sadece seçim sonrası yeşil olacak
+                    isIncorrect && styles.incorrectAnswer // Yanlış seçilen şık kırmızı olacak
+                ]}
+            >
+                <Text style={styles.answerText}>{item.ceviri}</Text>
+            </TouchableOpacity>
+        );
+    };
+
 
     return (
         <View style={styles.container}>
@@ -344,23 +354,23 @@ export default function OyunEkrani2(props) {
             />
 
             {devamEtButton
-                ? 
+                ?
                 <View>
-                <TouchableOpacity 
-                onPress={() => DigerSoru()} 
-                style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    backgroundColor: cevap == true ? "green" : cevap == false ? "red" :null, 
-                    padding: 15,
-                    alignItems: "center",
-                    borderRadius:15
-                }}
-            >
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>DEVAM ET</Text>
-            </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => DigerSoru()}
+                        style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            backgroundColor: cevap == true ? "green" : cevap == false ? "red" : null,
+                            padding: 15,
+                            alignItems: "center",
+                            borderRadius: 15
+                        }}
+                    >
+                        <Text style={{ color: "#fff", fontWeight: "bold" }}>DEVAM ET</Text>
+                    </TouchableOpacity>
                 </View>
                 : null
             }
@@ -377,7 +387,7 @@ export default function OyunEkrani2(props) {
                             fontWeight: 'bold',
                             color: '#FF4C4C', // Kırmızı renk (Dikkat çekici)
                             textAlign: 'center',
-                         
+
                         }}>Oyunu Durdurdun</Text>
                         <View style={styles.alertButtonGroup}>
                             <TouchableOpacity style={styles.alertButton} onPress={() => setOyunDurdu(!oyunDurdu)}>

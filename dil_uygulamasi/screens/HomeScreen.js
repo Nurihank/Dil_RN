@@ -290,10 +290,6 @@ export default function HomeScreen({ route }) {
       <LinearGradient
         colors={['#693D89', '#5A227E', '#4A1769', '#3C0663', '#2A0040']}
         locations={[0, 0.2, 0.4, 0.7, 1]}
-
-
-
-
         style={{ flex: 1 }}
       >
         <View style={styles.container}>

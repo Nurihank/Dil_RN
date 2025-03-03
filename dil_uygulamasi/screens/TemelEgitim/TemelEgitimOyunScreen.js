@@ -17,24 +17,21 @@ export default function TemelEgitimOyunScreen(route) {
     const [oyunBasariliBittiModal, setOyunBasariliBittiModal] = useState(false)
     const [oyunBasarisizBittiModal, setOyunBasarisizBittiModal] = useState(false)
     const [oyunDurdu, setOyunDurdu] = useState(false)
+    const [bolumBittiMi, setBolumBittiMi] = useState(false)
+    const [secili, setSecili] = useState(null)
 
     const navigation = useNavigation()
+
 
     const digerSoru = () => {
         setCevapDurumu(null)
         setSeciliCevap(null)
+        setSecili(null)
         setDevamEtButton(false)
         setSoruIndex(soruIndex + 1);
 
         if (soruIndex >= 2) {
-            yanlisKelimeleriKaydetme(yanlisKelimeler)
-            if (yanlisKelimeler.length > 1) {
-                BolumBitti(false)
-                setOyunBasarisizBittiModal(true)
-            } else {
-                BolumBitti(true)
-                setOyunBasariliBittiModal(true)
-            }
+            setBolumBittiMi(true)
         } else {
             setSoruIndex(soruIndex + 1);
             const data = kelimeler;
@@ -61,13 +58,13 @@ export default function TemelEgitimOyunScreen(route) {
                 })
                 console.log(response.data.message)
             }
+            console.log(kelime)
             kaydet()
         });
     }
 
     const BolumBitti = async (GectiMi) => {
         const currentDate = new Date();
-        console.log(GectiMi)
         const year = currentDate.getFullYear();
         const month = String(currentDate.getMonth() + 1).padStart(2, '0');
         const day = String(currentDate.getDate()).padStart(2, '0');
@@ -79,7 +76,7 @@ export default function TemelEgitimOyunScreen(route) {
             BolumID: route.route.params.BolumID,
             KategoriID: route.route.params.KategoriID,
             Date: formattedDate,
-            GectiMi: GectiMi 
+            GectiMi: GectiMi
         })
     }
 
@@ -125,9 +122,7 @@ export default function TemelEgitimOyunScreen(route) {
     }, [soruIndex, kelimeler])
 
     const cevapDogruMu = (cevap) => {
-        
-        let yeniYanlisKelimeler
-
+        setSecili(true)
         if (anaKelime.value === cevap.value) {
             setCevapDurumu('correct');
             speakWord(cevap)
@@ -137,11 +132,11 @@ export default function TemelEgitimOyunScreen(route) {
                 setDevamEtButton(true);
             }
         } else {
-            if(cevap){
-                yeniYanlisKelimeler = [...yanlisKelimeler,anaKelime]
-                setYanlisKelimeler(yeniYanlisKelimeler)  
+            if (cevap) {
+                console.log(anaKelime)
+                setYanlisKelimeler(prevYanlisKelimeler => [...prevYanlisKelimeler, anaKelime])
+                setCevapDurumu('incorrect');
             }
-            setCevapDurumu('incorrect');
             if (soruIndex >= 2) {
                 digerSoru();
             } else {
@@ -151,13 +146,33 @@ export default function TemelEgitimOyunScreen(route) {
         setSeciliCevap(cevap);
     };
 
+    useEffect(() => {
+        if (bolumBittiMi) {
+            yanlisKelimeleriKaydetme(yanlisKelimeler)
+            console.log(yanlisKelimeler.length)
+            if (yanlisKelimeler.length > 1) {
+                BolumBitti(false)
+                setOyunBasarisizBittiModal(true)
+            } else {
+                BolumBitti(true)
+                setOyunBasariliBittiModal(true)
+            }
+        }
+    }, [bolumBittiMi, yanlisKelimeler])
+
+    useEffect(() => {
+        if (seciliCevap) {
+            cevapDogruMu(seciliCevap)
+        }
+    }, [seciliCevap])
+
     const renderItem = ({ item }) => {
         const isSelected = item === seciliCevap
-        const isCorrect =  isSelected && item === anaKelime ;
+        const isCorrect = isSelected && item === anaKelime;
         const isIncorrect = isSelected && item != anaKelime;
         return (
             <TouchableOpacity
-                onPress={() => cevapDogruMu(item)}
+                onPress={() => setSeciliCevap(item)}
                 style={[
                     styles.answerItem,
                     isCorrect && styles.correctAnswer,
@@ -214,9 +229,9 @@ export default function TemelEgitimOyunScreen(route) {
                     </View>
                     <View style={styles.contentContainer}>
                         <FlatList
-                        data={kelimeler}
-                        renderItem={renderItem}
-                        style={styles.optionsContainer}
+                            data={kelimeler}
+                            renderItem={renderItem}
+                            style={styles.optionsContainer}
                         />
                         {devamEtButton ? (
                             <View>
@@ -225,7 +240,7 @@ export default function TemelEgitimOyunScreen(route) {
                                 </TouchableOpacity>
                             </View>
                         ) : (
-                           null
+                            null
                         )}
                     </View>
 
@@ -234,8 +249,8 @@ export default function TemelEgitimOyunScreen(route) {
             ) : (
                 <Text style={styles.loadingText}>Yükleniyor...</Text>
             )}
-            
-            
+
+
             <Modal /* oyun basarili bitti modal*/
                 visible={oyunBasariliBittiModal}
                 transparent={true}
@@ -387,7 +402,7 @@ const styles = StyleSheet.create({
     },
     nextButtonContainer: {
         alignItems: 'center',
-        
+
     },
     nextButtonImage: {
         height: 70,
