@@ -15,7 +15,7 @@ export default function ProfileScreen() {
 
   const handleDayPress = (day) => {
     console.log(day.dateString);
-  };
+  }; 
 
   const setMarkedDatesApi = async () => { /* günlük giriş yaptığımız günleri takvimde set etmek için  */
     const response = await api.get("/kullanici/GunlukGiris", {
@@ -42,56 +42,15 @@ export default function ProfileScreen() {
     const id = await AsyncStorage.getItem("id");
     setUserId(id);
     try {
-      const accessToken = await AsyncStorage.getItem("accessToken");
-      if (!accessToken) {
-        throw new Error("Access token not found");
-      }
       const response = await api.get("/kullanici/KullaniciBilgileri", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        },
         params: {
-          id: id
+          id: id    
         },
       });
-      console.log("gelen kullanıcı = " + response)
       setUser(response.data.user[0]);
       setLoading(false);
-
     } catch (error) {
-      handleTokenError(error);
-    }
-  };
-
-  const handleTokenError = async (error) => {
-    console.log("gelen hata = " + error.response)
-    if (error.response && error.response.data.message === "Token süresi dolmuş") {
-      await refreshAccessToken();
-    } else {
-
-      setUser(null);
-    }
-  };
-
-  const refreshAccessToken = async () => {
-    try {
-      let refreshToken = await AsyncStorage.getItem("refreshToken");
-      console.log(refreshToken)
-      refreshToken = refreshToken.replace(/^"|"$/g, '');
-      console.log(refreshToken)
-      if (!refreshToken) {
-        throw new Error("Refresh token not found");
-      }
-      const response = await api.put('/kullanici/NewAccessToken', {
-        id: userId,
-        refreshToken: refreshToken
-      });
-      await AsyncStorage.setItem('accessToken', response.data.accessToken);
-      getUserInfo();
-    } catch (error) {
-      console.log("access Token alırken hata = " + error.response.data.message)
-      setUser(null);
-    }
+    }  
   };
 
   // useFocusEffect ile ekran odaklandığında veri yenileme

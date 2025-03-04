@@ -14,7 +14,7 @@ export default class UserModel {
             console.error("Kullanıcı verisi alınırken bir hata oluştu:", error);
         }
     }
-
+ 
     static getCurrentUser = () => {
         if (!this.currentUser) {
             console.warn("Henüz kullanıcı verisi yüklenmedi.");

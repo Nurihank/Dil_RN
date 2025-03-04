@@ -33,27 +33,22 @@ export default function TestSonucu({ KullaniciID }) {
     );
 
     const TestSonucu = ({ item }) => {
-        // `testData` içinden eşleşenleri filtrele
         const filtered = testData.filter(test => test.SeviyeAdi === item);
-        console.log(filtered);
 
         return (
             <View>
-                <View>
-                    <Text >{filtered[0].SeviyeAdi}</Text>
-                </View>
-
+                <Text style={styles.modalTitle}>{item} Test Sonucu</Text>
                 <FlatList
                     data={filtered}
                     keyExtractor={(item) => item.AnaKelimelerID?.toString()}
                     nestedScrollEnabled={true}
                     renderItem={({ item }) => (
-                        <View>
-                            <Text>{item.AnaKelimelerID}</Text>
+                        <View style={[styles.resultRow, item.dogruMu ? styles.correctAnswer : styles.wrongAnswer]}>
+                            <Text style={styles.resultText}>{item.Value}</Text>
+                            <Text style={styles.resultText}>{item.Ceviri}</Text>
                         </View>
                     )}
                 />
-
             </View>
         );
     };
@@ -113,10 +108,11 @@ export default function TestSonucu({ KullaniciID }) {
                 <Modal
                     visible={testSonucuModal}
                     transparent={true}
+                    animationType="slide"
                 >
-                    <View>
-                        <TouchableOpacity onPress={() => setTestSonucuModal(false)}>
-                            <Text>X</Text>
+                    <View style={styles.modalContainer}>
+                        <TouchableOpacity onPress={() => setTestSonucuModal(false)} style={styles.closeButton}>
+                            <Text style={styles.closeButtonText}>X</Text>
                         </TouchableOpacity>
                         <FlatList
                             data={levels}
@@ -139,21 +135,44 @@ export default function TestSonucu({ KullaniciID }) {
 
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 10,
+    modalContainer: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        justifyContent: 'center',
         alignItems: 'center',
+        padding: 20,
     },
-    progressContainer: {
-        alignItems: 'center',
-        margin: 10,
-    },
-    levelText: {
-        fontSize: 16,
+    modalTitle: {
+        fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 5,
+        marginBottom: 10,
+        textAlign: 'center',
+        color: 'white',
     },
-    fillText: {
+    resultRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+        marginVertical: 5,
+        borderRadius: 5,
+    },
+    correctAnswer: {
+        backgroundColor: 'rgba(0, 255, 0, 0.3)',
+    },
+    wrongAnswer: {
+        backgroundColor: 'rgba(255, 0, 0, 0.3)',
+    },
+    resultText: {
+        fontSize: 16,
+        color: 'black',
+    },
+    closeButton: {
+        alignSelf: 'flex-end',
+        padding: 10,
+    },
+    closeButtonText: {
         fontSize: 18,
         fontWeight: 'bold',
+        color: 'white',
     }
 });

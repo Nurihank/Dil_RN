@@ -22,7 +22,7 @@ export default function EgzersizScreen() {
     setTercihModal(true)
   }
 
-  const EgzersizOynadi = ()=>{ /* her egzersiz sonunda bunu yapcak ama benim egzersizler bitmediği için oyuna giriş yapar yapmaz kontrol ediyorum */
+  const EgzersizOynadi = () => { /* her egzersiz sonunda bunu yapcak ama benim egzersizler bitmediği için oyuna giriş yapar yapmaz kontrol ediyorum */
 
   }
 
@@ -30,13 +30,13 @@ export default function EgzersizScreen() {
     setTercihModal(false)
     EgzersizOynadi()
     if (oyunID == 1) {
-      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru, id: userId,egzersizId:oyunID })
+      navigation.navigate("HataScreen", { egzersizTuru: egzersizTuru, id: userId, egzersizId: oyunID })
     } else if (oyunID == 2) {
-      navigation.navigate("DinlemeEgzersiz", { egzersizTuru: egzersizTuru, id: userId, egzersizId: oyunID })
+      navigation.navigate("DinlemeGorselEgzersiz", { egzersizTuru: egzersizTuru, id: userId, egzersizId: oyunID })
     } else if (oyunID == 3) {
-      /* görsel */
+      navigation.navigate("DinlemeGorselEgzersiz", { egzersizTuru: egzersizTuru, id: userId, egzersizId: oyunID })
     } else if (oyunID == 4) {
-      /* cümle çeviri */ 
+      /* cümle çeviri */
     }
   }
 
@@ -63,15 +63,11 @@ export default function EgzersizScreen() {
   const renderEgzersiz = ({ item }) => {
     return (
       <View style={styles.itemContainer}>
-      
-
-
-        
         <TouchableOpacity onPress={() => Tercih(item.id)}>
-      <Text style={styles.itemText}>{item.EgzersizAdi}</Text>
-    </TouchableOpacity>
+          <Text style={styles.itemText}>{item.EgzersizAdi}</Text>
+        </TouchableOpacity>
 
- </View>
+      </View>
     );
   };
 
@@ -92,9 +88,12 @@ export default function EgzersizScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Egzersiz Tercih Edin</Text>
-            <TouchableOpacity style={styles.button} onPress={() => EgzersizeGecis(0)}>
-              <Text style={styles.buttonText}>Mesleki Kelimeler</Text>
-            </TouchableOpacity>
+            {oyunID == 3 ?
+              null
+              :
+              <TouchableOpacity style={styles.button} onPress={() => EgzersizeGecis(0)}>
+                <Text style={styles.buttonText}>Mesleki Kelimeler</Text>
+              </TouchableOpacity>}
             <TouchableOpacity style={styles.button} onPress={() => EgzersizeGecis(1)}>
               <Text style={styles.buttonText}>Temel Kelimeler</Text>
             </TouchableOpacity>

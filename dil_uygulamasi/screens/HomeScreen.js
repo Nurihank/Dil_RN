@@ -31,7 +31,7 @@ export default function HomeScreen({ route }) {
   const [open, setOpen] = useState(false);
 
   const setUserID = async () => {
-    const id = await AsyncStorage.getItem("id"); 
+    const id = await AsyncStorage.getItem("id");
     setUserId(id);
   };
 
@@ -218,7 +218,7 @@ export default function HomeScreen({ route }) {
                   <Text style={[styles.headerText, { color: "#856098" }]}>{content.Ceviri}</Text>
                 </View>
               ) : (
-                  <Text style={[styles.headerText]}>{content.Ceviri}</Text>
+                <Text style={[styles.headerText]}>{content.Ceviri}</Text>
               )}
             </View>
           ) : (
@@ -258,9 +258,9 @@ export default function HomeScreen({ route }) {
                 </>
               ) : (
                 <>
-                    <Text style={[styles.bolumText, { color:"#6a667a"}]}>{bolum.Ceviri}</Text>
+                  <Text style={[styles.bolumText, { color: "#6a667a" }]}>{bolum.Ceviri}</Text>
                   <TouchableOpacity style={styles.lockediconContainer} >
-                      <Fontisto name="locked" size={24} color="#6a667a" />
+                    <Fontisto name="locked" size={24} color="#6a667a" />
                   </TouchableOpacity>
                 </>)}
             </View>
@@ -271,7 +271,6 @@ export default function HomeScreen({ route }) {
   };
 
   const updateSections = (activeSections) => {
-    console.log(activeSections)
     setActiveSections(activeSections);
     if (activeSections.length > 0) {
       const selectedSezonID = sezonlar[activeSections[0]].SezonID;
@@ -295,11 +294,11 @@ export default function HomeScreen({ route }) {
         <View style={styles.container}>
 
           <View style={styles.topContainer}>
-            
-              <GunlukGirisComponent />
+
+            <GunlukGirisComponent />
           </View>
           <View style={styles.pickerContainer}>
-          
+
             <View style={styles.separator} />
             <ProgressBars KullaniciID={userId} SeviyeID={selectedSeviyeID} />
             <View style={styles.separator} />
@@ -307,17 +306,17 @@ export default function HomeScreen({ route }) {
             <Text style={[styles.pickerLabel]}>
               Seviye Seç:
             </Text>
-            
-            
-              <RNPickerSelect
-                placeholder={{ label: "Bir seviye seçin", value: null }}
-                items={acikSeviyeler} // Sadece açık seviyeler
-                onValueChange={(value) => setSelectedSeviyeID(value)}
-                value={selectedSeviyeID}
-                style={pickerSelectStyles}
-              />
-     
-            
+
+
+            <RNPickerSelect
+              placeholder={{ label: "Bir seviye seçin", value: null }}
+              items={acikSeviyeler} // Sadece açık seviyeler
+              onValueChange={(value) => setSelectedSeviyeID(value)}
+              value={selectedSeviyeID}
+              style={pickerSelectStyles}
+            />
+
+
             <View>
               <TouchableOpacity
                 style={styles.eğitimButton}
@@ -378,7 +377,7 @@ const styles = StyleSheet.create({
     textAlign: 'left', // **Sola hizalandı**
     paddingLeft: 8, // Biraz içeriden başlasın
     textTransform: 'capitalize', // Baş harfi büyük
-    marginLeft:16
+    marginLeft: 16
   },
   headerContainer: {
     flexDirection: 'row',
@@ -421,7 +420,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#56307F ',
     flex: 1,
-    fontWeight:"600"
+    fontWeight: "600"
   },
   iconContainer: {
     paddingLeft: 10,
@@ -455,11 +454,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#A08CB8', // Kilitli metin için kırmızı
     fontStyle: 'italic',
-    fontWeight:"bold"
+    fontWeight: "bold"
   },
   topContainer: {
     alignItems: "center",
-    justifyContent:"center"
+    justifyContent: "center"
   },
   leftContainer: {
     alignItems: "center",
@@ -471,7 +470,7 @@ const styles = StyleSheet.create({
     height: 50, // Biraz daha büyük
     width: 50,
     bottom: 25
-  }, 
+  },
   separator: {
     height: 2, // Çizgi kalınlığı
     backgroundColor: "rgba(255, 255, 255, 0.5)", // Şeffaf beyaz çizgi
@@ -503,9 +502,9 @@ const pickerSelectStyles = StyleSheet.create({
     backgroundColor: '#32184D', // Aynı derin mor tonu
     fontSize: 17,
     color: 'white', // Android için de açık lila rengi
-    fontWeight:"bold",
-    width:"90%",
-    marginLeft:18
+    fontWeight: "bold",
+    width: "90%",
+    marginLeft: 18
   },
 });
 

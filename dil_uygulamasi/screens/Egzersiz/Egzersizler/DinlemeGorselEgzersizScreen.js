@@ -6,7 +6,7 @@ import api from '../../../api/api';
 import UserModel from '../../../model/ModelUser';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
-export default function DinlemeEgzersizScreen(route) {
+export default function DinlemeGorselEgzersizScreen(route) {
     const animationRef = useRef(null);
     const [anaDilID, setAnaDilID] = useState();
     const [hangiDilID, setHangiDilID] = useState();
@@ -32,7 +32,7 @@ export default function DinlemeEgzersizScreen(route) {
 
     const KelimeleriGetir = async () => {
         try {
-            const response = await api.get("/kullanici/dinlemeEgzersizi", {
+            const response = await api.get("/kullanici/EgzersizKelimeleri", {
                 params: {
                     KullaniciID: route.route.params.id,
                     temelMi: route.route.params.egzersizTuru,
@@ -52,8 +52,6 @@ export default function DinlemeEgzersizScreen(route) {
     };
 
     const Soru = () => {
-        console.log(route.route.params.egzersizId)
-        console.log(soruIndex)
         if (soruIndex < 7) {
             setSoruIndex(soruIndex + 1)
             const anaKelime = Kelimeler[soruIndex]; // Ana kelimeyi belirle
@@ -66,7 +64,6 @@ export default function DinlemeEgzersizScreen(route) {
 
             // Ana kelimeyi ekleyip şıkları karıştır
             let siklar = [...yanlisSiklar, anaKelime].sort(() => Math.random() - 0.5);
-            console.log(siklar)
             setAnaKelime(anaKelime);
             setSiklar(siklar);
         } else {
@@ -89,7 +86,7 @@ export default function DinlemeEgzersizScreen(route) {
                     KelimeID: kelime.id,
                     DogruMu: 1 // Doğru cevap olduğu için 1
                 });
-                console.log(response.data.message);
+                // console.log(response.data.message);
             } catch (error) {
                 console.error("Doğru cevap gönderilirken hata oluştu:", error);
             }
@@ -105,12 +102,13 @@ export default function DinlemeEgzersizScreen(route) {
                     KelimeID: kelime.id,
                     DogruMu: 0 // Yanlış cevap olduğu için 0
                 });
-                console.log(response.data.message);
+                // console.log(response.data.message);
             } catch (error) {
                 console.error("Yanlış cevap gönderilirken hata oluştu:", error);
             }
         }
         navigation.navigate("Egzersiz")
+
     }
     const GunlukGorevTamamlama = async () => { /* normalde oyun başarılı oulunca kaydetcek */
         const currentDate = new Date();
@@ -132,7 +130,9 @@ export default function DinlemeEgzersizScreen(route) {
     const DogruMu = (kelime) => {
         setSecilenKelime(kelime)
         setSecili(true)
-        if (kelime.Value == anaKelime.Value) {
+        console.log(kelime)
+        console.log(anaKelime)
+        if (kelime.value == anaKelime.Value) {
             console.log("dogru")
             setDogruCevaplar((prev) => [...prev, kelime]); // Doğruysa diziye ekle
         } else {
@@ -198,13 +198,23 @@ export default function DinlemeEgzersizScreen(route) {
                 </TouchableOpacity>
             </View>
             <Text>{soruIndex} / 7</Text>
-            <TouchableOpacity onPress={KelimeyiSeslendirme} style={styles.animationContainer}>
-                <LottieView
-                    source={require('../../../assets/animasyon/sound.json')}
-                    loop={false}
-                    style={styles.animation}
-                />
-            </TouchableOpacity>
+            {route.route.params.egzersizId == 2
+                ?
+                <TouchableOpacity onPress={KelimeyiSeslendirme} style={styles.animationContainer}>
+                    <LottieView
+                        source={require('../../../assets/animasyon/sound.json')}
+                        loop={false}
+                        style={styles.animation}
+                    />
+                </TouchableOpacity>
+                :
+                <View>
+                    <Text>{anaKelime.id}</Text>
+                    <Image source={{ uri: anaKelime.Image }} style={{ height: 100, width: 100 }} />
+                </View>
+
+            }
+
 
             <View style={styles.secilenKelimeContainer}>
 
@@ -232,7 +242,12 @@ export default function DinlemeEgzersizScreen(route) {
                         onPress={() => !secili && DogruMu(item)} // Şık seçildiyse tıklamayı engelle
                         disabled={secili} // Şık seçildikten sonra butonlar disabled olacak
                     >
-                        <Text style={styles.sikText}>{item.Value}</Text>
+                        {route.route.params.egzersizTuru == 1
+                            ?
+                            <Text style={styles.sikText}>{item.value}</Text>
+                            :
+                            <Text style={styles.sikText}>{item.Value}</Text>
+                        }
                     </TouchableOpacity>
                 )}
             />
@@ -257,14 +272,14 @@ export default function DinlemeEgzersizScreen(route) {
 
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={()=>setOyunDurdu(!oyunDurdu)} // Devam etme fonksiyonunu buraya ekleyebilirsin
+                            onPress={() => setOyunDurdu(!oyunDurdu)} // Devam etme fonksiyonunu buraya ekleyebilirsin
                         >
                             <Text style={styles.buttonText}>▶️ Devam Et</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             style={[styles.button, { backgroundColor: '#FF4C4C' }]}
-                            onPress={()=>navigation.goBack()} // Çıkış fonksiyonunu buraya ekleyebilirsin
+                            onPress={() => navigation.goBack()} // Çıkış fonksiyonunu buraya ekleyebilirsin
                         >
                             <Text style={styles.buttonText}>❌ Çıkış Yap</Text>
                         </TouchableOpacity>

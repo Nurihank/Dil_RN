@@ -13,7 +13,6 @@ export default function SeçimEkrani(props) {
     const [MeslekSecimModalVisible, setMeslekSecimModalVisible] = useState(false)
     const [DilSecimModalVisible, setDilSecimModalVisible] = useState(false)
     const [OgrenilecekDilSecimModalVisible, setOgrenilecekDilSecimModalVisible] = useState(false)
-    const [DilSeviyesiModalVisible, setDilSeviyesiModalVisible] = useState(false)
     const navigation = useNavigation();
   const handleNext = () => {
     setMeslekSecimModalVisible(true)
@@ -45,8 +44,6 @@ export default function SeçimEkrani(props) {
     navigation.replace("Bottom")
   }
 
-
-  console.log(MeslekSecimModalVisible)
   return (
     
       <View style={styles.container}>

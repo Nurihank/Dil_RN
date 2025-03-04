@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { navigationRef } from './services/NavigationService.js';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SigninScreen from './screens/SigninScreen';
 import SignupScreen from "./screens/SignupScreen"
@@ -17,18 +19,20 @@ import TemelEgitimScreen from './screens/TemelEgitim/TemelEgitimScreen.js'
 import TemelEgitimOyunScreen from './screens/TemelEgitim/TemelEgitimOyunScreen';
 import PremiumScreen from './screens/MagazaScreen';
 import HatalarScreen from './screens/Egzersiz/Egzersizler/HatalarScreen';
-import DinlemeEgzersizScreen from './screens/Egzersiz/Egzersizler/DinlemeEgzersizScreen';
+import DinlemeGorselEgzersizScreen from './screens/Egzersiz/Egzersizler/DinlemeGorselEgzersizScreen';
 import StartScreen from './screens/StartScreen';
 import TestScreen from './screens/TestScreen';
+import Kesfet from './screens/Kesfet';
 
 export default function App() {
 
   const Stack = createNativeStackNavigator();
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator>
         <Stack.Screen name="StartScreen" component={StartScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Kesfets" component={Kesfet} options={{ headerShown: false }} />
         <Stack.Screen name="Signin" component={SigninScreen} />
         <Stack.Screen name="Signup" component={SignupScreen} />
         <Stack.Screen name="HomeScreens" component={HomeScreen} options={{ headerShown: false }} />
@@ -43,7 +47,7 @@ export default function App() {
         <Stack.Screen name="TemelEgitim" component={TemelEgitimScreen} options={{ headerShown: false }} />
         <Stack.Screen name="premium" component={PremiumScreen} options={{ headerShown: false }} />
         <Stack.Screen name="HataScreen" component={HatalarScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="DinlemeEgzersiz" component={DinlemeEgzersizScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="DinlemeGorselEgzersiz" component={DinlemeGorselEgzersizScreen} options={{ headerShown: false }} />
         <Stack.Screen name="TestScreen" component={TestScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

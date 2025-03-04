@@ -101,7 +101,7 @@ const Kesfet = () => {
   };
 
   useFocusEffect(
-    useCallback(() => {
+    useCallback(() => { 
       setUserID()
     }, [])
   );
@@ -115,7 +115,7 @@ const Kesfet = () => {
   useFocusEffect(
     useCallback(() => {
       meslekiEgitimSayisi()
-      temeliEgitimSayisi()
+      temeliEgitimSayisi() 
       sozlukTekrariKontrol()
       hataTekrariKontrol()
       egzersizKontrol()
@@ -124,7 +124,7 @@ const Kesfet = () => {
         hatalaraBakma === 1 &&
         sozlukTekrari === 1 &&
         meslekiEgitim === 3 &&
-        temeliEgitim === 3
+        temeliEgitim === 3 
       ) {
         gunlukGorevTamamlandi()
       } else {
