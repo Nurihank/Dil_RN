@@ -18,6 +18,7 @@ const Tab = createBottomTabNavigator();
 export default function BottomNavigator() {
     return (
         <Tab.Navigator screenOptions={({ route }) => ({
+            animation: "fade",
             tabBarStyle: { ...styles.tabBar },
             tabBarBackground: () => (
                 <BlurView tint="light" intensity={150} style={StyleSheet.absoluteFill} />
@@ -74,7 +75,7 @@ export default function BottomNavigator() {
                     return (
                         <View style={{ alignItems: 'center' }}>
                             {focused ? (
-                                <Feather name="compass" size={35} color="white" />
+                                <Feather name="compass" size={35} color="gray" />
                             ) : (
                                     <Feather name="compass" size={35} color="white" />)}
                         </View>

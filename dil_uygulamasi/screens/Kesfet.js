@@ -237,7 +237,7 @@ const Kesfet = () => {
         </TouchableOpacity>
         <View style={styles.content}>
           <View style={styles.animationContent}>
-            <Image source={require('../assets/meditation.png')} style={{ width: 200, height: 200 }} />
+            <Image source={require('../assets/worried.png')} style={{ width: 200, height: 200,marginVertical:15 }} />
 
             <Text style={styles.first}>Bugüne Hazır Mısın? </Text>
           </View>
@@ -250,7 +250,7 @@ const Kesfet = () => {
               <View style={styles.GorevAlani}>
                 <Text style={styles.text}>Mesleki Eğitim {meslekiEgitim}/3 </Text>
                 {meslekiEgitim >= 3 ?
-                  <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24 }} />
+                  <Image source={require('../assets/yes.png')} style={{ width: 24, height: 24,tintColor:"white" }} />
                   :
                   <TouchableOpacity onPress={() => navigation.navigate("Ana Sayfa")}>
                     <Image source={require('../assets/devams.png')} style={{ width: 24, height: 24 }} />
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   },
   premiumBanner: {
     width: "100%",
-    backgroundColor: "#7FA1C3",
+    backgroundColor: "#3C1A4A",
     padding: 10,
     alignItems: "center",
     position: "absolute",
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
   bannerText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "white",
+    color: "#FFFFFF",
   },
   overlay: {
     flex: 1,
@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   first: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1F324A', // Yazı rengini belirle
+    color: 'white', // Yazı rengini belirle
     textAlign: 'center',
   },
   area: {
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
 
   },
   headerText: {
-    color: '#7FA1C3', // Açık mor, zarif bir başlık
+    color: '#D8BFD8', // Açık mor, zarif bir başlık
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -489,7 +489,7 @@ const styles = StyleSheet.create({
 
   },
   card: {
-    backgroundColor: '#EDE5E5', // Canlı Mor, Kartların Arka Planı
+    backgroundColor: '#5A3173', // Canlı Mor, Kartların Arka Planı
     width: 120, // **Sabit genişlik (Kare)**
     height: 120, // **Sabit yükseklik (Kare)**
     borderRadius: 10,
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   text: {
-    color: '#2F4960', // Beyaz, net yazı
+    color: '#E0C3FC', // Beyaz, net yazı
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',

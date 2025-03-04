@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
     ellipsizeMode: 'tail', // Add "..." at the end if text is too long
   },
   accordionContent: {
-    backgroundColor: '#b09fcf', // Açık gri tonu
+    backgroundColor: '#b09fcf', 
     padding: 15,
     borderRadius: 12,
     marginBottom: 8,
@@ -418,7 +418,7 @@ const styles = StyleSheet.create({
   },
   bolumText: {
     fontSize: 18,
-    color: '#56307F ',
+    color: '#2A0040',
     flex: 1,
     fontWeight: "600"
   },
@@ -484,7 +484,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#4E1A66', // Daha koyu ve doygun mor tonu
     borderRadius: 14, // Hafif daha oval
-    backgroundColor: '#32184D', // Derin mor (soft ve karanlık)
+    backgroundColor: '#b09fcf', // Derin mor (soft ve karanlık)
     fontSize: 17,
     color: '#D8B4FF', // Açık lila tonu (Daha görünür ve şık)
     elevation: 5, // Hafif yükseltme efekti
@@ -499,9 +499,9 @@ const pickerSelectStyles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#4E1A66', // Aynı koyu mor çerçeve
     borderRadius: 25,
-    backgroundColor: '#32184D', // Aynı derin mor tonu
+    backgroundColor: '#b09fcf', // Aynı derin mor tonu
     fontSize: 17,
-    color: 'white', // Android için de açık lila rengi
+    color: '#2A0040', // Android için de açık lila rengi
     fontWeight: "bold",
     width: "90%",
     marginLeft: 18
